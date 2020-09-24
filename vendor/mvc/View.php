@@ -2,7 +2,9 @@
 
 namespace app\vendor\mvc;
 
-use app\Error;
+
+use app\vendor\Error;
+use app\vendor\lib\Log;
 
 /**
  * Class View
@@ -11,8 +13,8 @@ use app\Error;
  */
 class View
 {
-    private $left_delimiter, $right_delimiter, $template_dir, $compile_dir;
-    private $template_vals = array();
+    private string $template_dir, $compile_dir,$right_delimiter,$left_delimiter;
+    private array $template_vals = array();
 
     /**
      * View constructor.
@@ -36,9 +38,7 @@ class View
     public function render($tempalte_name)
     {
         $complied_file = $this->compile($tempalte_name);
-        if(isDebug()){
-            logs('[Speed]Compile time-consuming: ' . strval((microtime(true) - $GLOBALS['display_start']) * 1000) . 'ms', 'info');
-        }
+        Log::debug('View','Compile time-consuming: ' . strval((microtime(true) - $GLOBALS['display_start']) * 1000) . 'ms');
         ob_start();
         $_view_obj = &$this;
         extract($this->template_vals, EXTR_SKIP);
@@ -61,10 +61,7 @@ class View
             Error::err('Err: Directory "' . $this->compile_dir . '" is not writable or readable');
         $complied_file = $this->compile_dir . DS . md5(realpath($file)) . '.' . filemtime($file) . '.' . basename($template_name) . '.php';
         if (file_exists($complied_file)){
-            if(isDebug()){
-                logs('[View]Find cache file "'.$template_name.'"','info');
-                logs('[View]Return cache file "'.$template_name.'"','info');
-            }
+            Log::debug('View','Find cache file "'.$template_name.'"');
             return $complied_file;
         }
 
@@ -73,13 +70,14 @@ class View
         $template_data = $this->_compile_struct($template_data);
 
         $template_data = $this->_compile_function($template_data);
-        $template_data = '<?php use app\lib\speed\mvc; if(!class_exists("app\lib\speed\mvc\View", false)) exit("no direct access allowed");?>' . $template_data;
+        $template_data = '<?php use app\vendor\mvc; if(!class_exists("app\vendor\mvc\View", false)) exit("no direct access allowed");?>' . $template_data;
         $template_data = $this->_complie_script_get($template_data);
         $template_data = $this->_complie_script_put($template_data);
         $this->_clear_compliedfile($template_name);
 
         $tmp_file = $complied_file . uniqid('_tpl', true);
-        if (!file_put_contents($tmp_file, $template_data)) Error::err('Err: File "' . $tmp_file . '" can not be generated.');
+        if (!file_put_contents($tmp_file, $template_data))
+            Error::err('Err: File "' . $tmp_file . '" can not be generated.');
 
         $success = @rename($tmp_file, $complied_file);
         if (!$success) {
@@ -88,7 +86,7 @@ class View
         }
         if (!$success) Error::err('Err: File "' . $complied_file . '" can not be generated.');
         if(isDebug()){
-            logs('[View]Complied  file "'.$template_name.'" successful!','info');
+            Log::debug('View','Complied  file "'.$template_name.'" successful!');
         }
         return $complied_file;
     }
@@ -116,6 +114,7 @@ class View
             '<{\/foreach}>' => '<?php endforeach; }?>',
             '<{include\s*file=(.+?)}>' => '<?php include $_view_obj->compile($1); ?>',
         );
+
         $pattern = $replacement = array();
         foreach ($pattern_map as $p => $r) {
             $pattern = '/' . str_replace(array("<{", "}>"), array($this->left_delimiter . '\s*', '\s*' . $this->right_delimiter), $p) . '/i';

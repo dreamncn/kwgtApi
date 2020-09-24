@@ -2,6 +2,7 @@
 
 namespace app\vendor;
 use app\vendor\lib\Log;
+use app\vendor\mvc\Controller;
 use Exception;
 
 use Throwable;
@@ -63,22 +64,21 @@ class Error
 
         $msg = htmlspecialchars($msg);
         $traces = sizeof($errinfo) === 0 ? debug_backtrace() : $errinfo;
-        if (isset($GLOBALS['err_handler'])&&$GLOBALS['err_handler']) {
-            call_user_func($GLOBALS['err_handler'], $msg, $traces);
+        if (ob_get_contents()) ob_end_clean();
+
+        Log::warn("error", $msg);
+
+        if (!isDebug()) {
+            $obj = new Controller();
+            GLOBAL $__module;
+            $__module = '';
+            $obj->location($GLOBALS['error']);
+
         } else {
-            if (ob_get_contents()) ob_end_clean();
-            Log::warn("error", $msg);
 
-            if (!isDebug()) {
-                $obj = new Controller();
-                GLOBAL $__module;
-                $__module = '';
-                $obj->display($GLOBALS['error']);
-            } else {
-
-                self::display($msg, $traces);
-            }
+            self::display($msg, $traces);
         }
+        exit(-1);
     }
 
     /**
@@ -313,21 +313,14 @@ EOF;
     {
         global $__module, $__controller, $__action;
         $nameBase = "app\\controller\\$__module\\BaseController";
-        $nameBaseExt = "app\\controller\\BaseController";//全局控制文件
 
-        if(isDebug())
-            Log::warn("error", $msg);
-        if(method_exists($nameBaseExt, 'err404')){
-            $nameBaseExt::err404($__module, $__controller, $__action, $msg);
-            return;
-        }
-
-        if(method_exists($nameBase, 'err404')){
+        if(isDebug()||!method_exists($nameBase, 'err404')){
+            self::err($msg);
+        }else{
             $nameBase::err404($__module, $__controller, $__action, $msg);
-            return;
         }
 
-        self::err($msg);
+        exit(-1);
     }
 
 }

@@ -24,6 +24,7 @@ class Log
 
     public static function debug($tag, $msg)
     {
+        if(!isDebug())return;
         $self = new self($tag, 15);
         $self->write(1, $msg);
     }
@@ -91,6 +92,7 @@ class Log
         $self = new self($tag, 15);
         $self->write(2, $msg);
     }
+
 
     public function mkdirs($dir)
     {

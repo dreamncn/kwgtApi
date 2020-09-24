@@ -3,12 +3,14 @@
 namespace app\vendor\mvc;
 
 
+use app\vendor\lib\Log;
+
 class Controller
 {
-    public $layout='';
-    public $_auto_display = true;
+    public string $layout = '';
+    public bool $_auto_display = true;
     protected $_v;
-    private $_data = array();
+    private array $_data = array();
 
     public function __construct()
     {
@@ -29,25 +31,12 @@ class Controller
         $this->_data[$name] = $value;
     }
 
-    /**
-     * @param string $msg 跳转之前显示的信息
-     * @param string $url 跳转的url
-     */
-    public function tips($msg, $url)
-    {
-        $url = "location.href=\"{$url}\";";
-        echo "<html lang=''><head><title></title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><script>function sptips(){alert(\"{$msg}\");{$url}}</script></head><body onload=\"sptips()\"></body></html>";
-        exit;
-    }
 
     /**
-     * @param string $url 跳转的url
-     * @param int $delay 延时时间
+     * @param $url string 重定向
      */
-    public function jump($url, $delay = 0)
-    {
-        echo "<html lang=''><head><title></title><meta http-equiv='refresh' content='{$delay};url={$url}'></head><body></body></html>";
-        exit;
+    public function location($url){
+        header("Location: $url");
     }
 
     /**
@@ -57,13 +46,11 @@ class Controller
      */
     public function display($tpl_name, $return = false)
     {
-        if(isDebug()){
-            $GLOBALS['display_start']=microtime(true);
-            logs('[View]Try to compile file "'.$tpl_name.'"','info');
-        }
+        $GLOBALS['display_start']=microtime(true);
+        Log::debug('view','Try to compile file "'.$tpl_name.'"');
 
         if (!$this->_v) {
-            $compile_dir = isset($GLOBALS['compile_dir'])&&$GLOBALS['compile_dir']!==null ? $GLOBALS['compile_dir']: APP_TMP;
+            $compile_dir = APP_TMP;
             $this->_v = new View(APP_VIEW, $compile_dir);
         }
         $this->_v->assign(get_object_vars($this));

@@ -1,12 +1,10 @@
 <?php
 
 
-//多语言支持
-function lang($str){
+use app\vendor\Clean;
+use app\vendor\lib\Dump;
 
-}
-
-function url($m='index',$c = 'main', $a = 'index', $param = array())
+function url($m='index', $c = 'main', $a = 'index', $param = array())
 {
     if(is_array($m))
         $param=$m;
@@ -71,6 +69,14 @@ function url($m='index',$c = 'main', $a = 'index', $param = array())
     return $url;
 }
 
+function getRouteReal($url){
+
+}
+
+function getRouteUrl($m='index', $c = 'main', $a = 'index', $param = array()){
+
+}
+
 /**
  * @param null $var 需要输出的变量
  * @param bool $exit 是否退出
@@ -94,23 +100,23 @@ EOF;
 }
 
 /**
- * @param string $name
- * @param string $default
+ * @param null $name
+ * @param null $default
  * @param bool $trim 移除字符串两侧的空白字符或其他预定义字符
- * @param string $filter
+ * @param null $filter
  * @return mixed|string|null
  */
 
 function arg($name = null, $default = null, $trim = false, $filter = null)
 {
     switch ($filter) {
-        case Speed::filter_get:
+        case Clean::filter_get:
             $_REQUEST = $_GET;
             break;
-        case Speed::filter_post:
+        case Clean::filter_post:
             $_REQUEST = $_POST;
             break;
-        case Speed::filter_cookie:
+        case Clean::filter_cookie:
             $_REQUEST = $_COOKIE;
             break;
         default:
@@ -127,8 +133,11 @@ function arg($name = null, $default = null, $trim = false, $filter = null)
 }
 
 
-
-
+/**
+ * 检查编码
+ * @param $string string 编码类型
+ * @return string
+ */
 function chkCode($string)
 {
     $encode = mb_detect_encoding($string, array("ASCII", 'UTF-8', "GB2312", "GBK", 'BIG5'));
@@ -142,7 +151,7 @@ function chkCode($string)
  * @return bool
  */
 function isDebug(){
-    return isset($GLOBALS['debug'])&&$GLOBALS['debug'];
+    return isset($GLOBALS["frame"]['debug'])&&$GLOBALS["frame"]['debug'];
 }
 
 /**

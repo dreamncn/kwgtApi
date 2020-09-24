@@ -7,6 +7,8 @@ use app\vendor\lib\Log;
 date_default_timezone_set('PRC');
 define('FRAME_VERSION', '2.0');
 
+define('APP_CONTROLLER', APP_DIR .  DS . 'controller' . DS);
+
 define('APP_STORAGE', APP_DIR .  DS . 'storage' . DS);
 define('APP_TMP', APP_STORAGE.'view'.DS);//渲染完成的视图文件
 define('APP_CACHE', APP_STORAGE.'cache'.DS);//缓存文件
@@ -32,11 +34,11 @@ Loader::register();
 Config::register();
 // 注册错误和异常处理机制
 Error::register();
-if(isDebug()){
-    $GLOBALS['start']=microtime(true);
-    Log::Info("clean",'----------------------------------------------------------------------------------------------');
-    Log::Info("clean",'Basic loading completed,Framework startup.');
-}
+$GLOBALS['start']=microtime(true);
+Log::debug("clean",'----------------------------------------------------------------------------------------------');
+Log::debug("clean",'Basic loading completed,Framework startup.');
+
+
 
 
 
