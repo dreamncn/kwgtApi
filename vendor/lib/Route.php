@@ -1,6 +1,7 @@
 <?php
 namespace app\vendor\lib;
 use app\vendor\Error;
+use app\vendor\lib\Web\Response;
 
 /**
  * Class Route
@@ -22,23 +23,59 @@ class Route{
                          * /index/blog/read?id=3
                          * /index/blog/read?refer=/a/b/2.html
                          * */
+    /**
+     * @param $m
+     * @param $c
 
-    public static function url($c,$m,$a,$params=[]){
-        $params = empty($params) ? '' : '?' . http_build_query($params);
+     * @param $a
+     * @param array $params
+     * @return mixed
+     */
+    public static function url($m,$c,$a,$params=[]){
+        $paramsStr = empty($params) ? '' : '?' . http_build_query($params);
         $route = "$m/$c/$a";
-        $url = $_SERVER["SCRIPT_NAME"] . "/$route$params";
-        var_dump($url);
+        $url = Response::getAddress() . "/";
+        $default=$url.$route.$paramsStr;
         Cache::init(365 * 24 * 60 * 60, APP_ROUTE);
         //初始化路由缓存，不区分大小写
         $data=null;
         if(!isDebug())
-            $data = Cache::get('route_'.$url);
+            $data = Cache::get('route_'.$default);
         if($data!==null){
-            Log::debug('route','Find Rewrite Cache: ' . $url . ' => ' . $data);
+            Log::debug('route','Find Rewrite Cache: ' . $default . ' => ' . $data);
             return  $data;
         }
 
+        $arr= array_flip($GLOBALS['route']);
 
+
+        if(isset($arr[$route])){
+            Log::debug('route','Find Rule: ' . $arr[$route] );
+            //处理参数部分
+            $route_find=$arr[$route];
+            $route_find=str_replace("<m>",$m,$route_find);
+            $route_find=str_replace("<c>",$c,$route_find);
+            $route_find=str_replace("<a>",$a,$route_find);
+            foreach ($params as $key=>$val){
+                if(strpos($route_find,"<$key>")!==false){
+                    $route_find=str_replace("<$key>",$val,$route_find);
+                    unset($params[$key]);
+                }
+
+            }
+        }
+        Log::debug('route','Replace Rule: ' . $route_find );
+
+        if($route_find==$route||strpos($route_find,'<')!=false){
+            $retUrl=$default;
+        }else{
+            $paramsStr = empty($params) ? '' : '?' . http_build_query($params);
+            $retUrl=$url.$route_find.$paramsStr;
+        }
+        if(!isDebug())
+            Cache::set('route_'.$default,$retUrl);
+
+        return $retUrl;
 
     }
 
@@ -110,7 +147,9 @@ class Route{
         Log::debug("route","The original Url:$url");
         foreach ($GLOBALS['route'] as $rule => $mapper) {
 
-
+            if($rule==""){
+                $rule="$";
+            }
             $rule = $GLOBALS['http_scheme'] . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER["SCRIPT_NAME"]), '/\\') . '/' . $rule;
             Log::debug("route","-> Url Rule:$rule");
             $rule=strtolower($rule);

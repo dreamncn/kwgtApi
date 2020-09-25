@@ -3,6 +3,7 @@
 
 use app\vendor\Clean;
 use app\vendor\lib\Dump;
+use app\vendor\lib\Route;
 
 function url($m='index', $c = 'main', $a = 'index', $param = array())
 {
@@ -69,13 +70,7 @@ function url($m='index', $c = 'main', $a = 'index', $param = array())
     return $url;
 }
 
-function getRouteReal($url){
 
-}
-
-function getRouteUrl($m='index', $c = 'main', $a = 'index', $param = array()){
-
-}
 
 /**
  * @param null $var 需要输出的变量
@@ -110,13 +105,13 @@ EOF;
 function arg($name = null, $default = null, $trim = false, $filter = null)
 {
     switch ($filter) {
-        case Clean::filter_get:
+        case Route::Get:
             $_REQUEST = $_GET;
             break;
-        case Clean::filter_post:
+        case Route::Post:
             $_REQUEST = $_POST;
             break;
-        case Clean::filter_cookie:
+        case Route::Cookie:
             $_REQUEST = $_COOKIE;
             break;
         default:
