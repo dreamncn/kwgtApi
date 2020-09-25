@@ -2,6 +2,7 @@
 
 namespace app\vendor;
 use app\vendor\lib\Log;
+use app\vendor\lib\Web\Response;
 use app\vendor\mvc\Controller;
 use Exception;
 
@@ -69,13 +70,13 @@ class Error
         Log::warn("error", $msg);
 
         if (!isDebug()) {
-            $obj = new Controller();
-            GLOBAL $__module;
-            $__module = '';
-            $obj->location($GLOBALS['error']);
+            if($GLOBALS['frame']['error']!==null){
+                Response::location($GLOBALS['error']);
+            }else{
+                Response::msg(true,500,'System Error','Something bad.',3,'/','立即跳转');
+            }
 
         } else {
-
             self::display($msg, $traces);
         }
         exit(-1);
@@ -314,11 +315,18 @@ EOF;
         global $__module, $__controller, $__action;
         $nameBase = "app\\controller\\$__module\\BaseController";
 
-        if(isDebug()||!method_exists($nameBase, 'err404')){
-            self::err($msg);
+        if(!isDebug()){
+            if(method_exists($nameBase, 'err404')){
+                $nameBase::err404($__module, $__controller, $__action, $msg);
+            }else{
+                Response::msg(true,404,'404 Not Found','We don\'t konw this page.',3,'/','立即跳转');
+
+            }
+            Log::error('route',$msg);
         }else{
-            $nameBase::err404($__module, $__controller, $__action, $msg);
+            self::err($msg);
         }
+
 
         exit(-1);
     }

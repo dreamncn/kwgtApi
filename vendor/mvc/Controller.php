@@ -7,10 +7,10 @@ use app\vendor\lib\Log;
 
 class Controller
 {
-    public string $layout = '';
-    public bool $_auto_display = true;
+    public $layout = '';
+    public  $_auto_display = true;
     protected $_v;
-    private array $_data = array();
+    private  $_data = array();
 
     public function __construct()
     {
@@ -31,13 +31,6 @@ class Controller
         $this->_data[$name] = $value;
     }
 
-
-    /**
-     * @param $url string 重定向
-     */
-    public function location($url){
-        header("Location: $url");
-    }
 
     /**
      * @param null $tpl_name 模板名称

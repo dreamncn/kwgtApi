@@ -41,6 +41,7 @@ class Route{
 
 
     }
+
     public static function rewrite(){
         //不允许的参数
         if(isset($_REQUEST['m'])||isset($_REQUEST['a'])||isset($_REQUEST['c'])){
@@ -90,7 +91,8 @@ class Route{
                 'real' => $real,
                 'route' => $route_arr_cp
             ];
-            Cache::set($url, $arr);
+            if(!isDebug())
+                Cache::set($url, $arr);
             Log::debug('route','Rewrite Cache: ' . $real);
         }
 

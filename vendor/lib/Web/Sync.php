@@ -7,7 +7,7 @@
  * Description :异步请求处理
  */
 
-namespace app\vendor\Web;
+namespace app\vendor\lib\Web;
 use app\vendor\lib\Log;
 
 class Sync

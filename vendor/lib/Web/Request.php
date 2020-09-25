@@ -1,5 +1,5 @@
 <?php
-namespace app\vendor\Web;
+namespace app\vendor\lib\Web;
 /**
  * Class Request
  * @package app\lib\Web

@@ -1,5 +1,5 @@
 <?php
-namespace app\vendor\Web;
+namespace app\vendor\lib\Web;
 //web操作类
 class Web{
     /**
