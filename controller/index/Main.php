@@ -6,6 +6,8 @@ class Main extends BaseController
 {
     public function index()
     {
+        $this->a='2';
+
         //echo 'hello,clean-php!';
     }
     public function test()

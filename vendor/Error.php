@@ -69,14 +69,20 @@ class Error
 
         Log::warn("error", $msg);
 
+
         if (!isDebug()) {
-            if($GLOBALS['frame']['error']!==null){
-                Response::location($GLOBALS['error']);
-            }else{
+            global $__module, $__controller, $__action;
+            $nameBase = "app\\controller\\$__module\\BaseController";
+
+            if(method_exists($nameBase, 'err500'))
+                $nameBase::err500($__module, $__controller, $__action, $msg);
+            else{
                 Response::msg(true,500,'System Error','Something bad.',3,'/','立即跳转');
             }
 
         } else {
+            GLOBAL $__module;
+            $__module='';
             self::display($msg, $traces);
         }
         exit(-1);
@@ -319,6 +325,7 @@ EOF;
             if(method_exists($nameBase, 'err404')){
                 $nameBase::err404($__module, $__controller, $__action, $msg);
             }else{
+
                 Response::msg(true,404,'404 Not Found','We don\'t konw this page.',3,'/','立即跳转');
 
             }

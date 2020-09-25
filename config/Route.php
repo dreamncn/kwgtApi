@@ -7,6 +7,7 @@ return [
 
     "admin-<id>.html"=>"index/main/admin",
     "admin"=>"index/main/login",
+    "favicon.ico"=>"index/main/test",
 
 	"<m>/<c>/<a>"=>"<m>/<c>/<a>",
     ""=>"index/main/index",

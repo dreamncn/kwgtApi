@@ -4,7 +4,7 @@ use app\vendor\mvc\Controller;
 
 class BaseController extends Controller
 {
-    public  $layout = "layout";
+    public  $layout = "";
 
     function init()
     {

@@ -19,7 +19,7 @@ define('APP_TRASH', APP_STORAGE.'trash'.DS);//垃圾文件
 define('APP_CONF',APP_DIR . DS .'config'.DS);
 define('APP_LIB', APP_DIR . DS  . 'lib' . DS);
 define('APP_VIEW', APP_DIR . DS . 'view' . DS);
-
+define('APP_INNER',APP_DIR.DS.'inner_view'.DS);
 define('APP_UI', APP_DIR . DS.'public'. DS  . 'ui' . DS . 'view' . DS);
 define('APP_I', APP_DIR . DS . 'public'. DS  .'ui'.DS.'static'. DS);
 

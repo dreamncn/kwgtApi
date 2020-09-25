@@ -7,10 +7,13 @@ use app\vendor\lib\Log;
 
 class Controller
 {
-    public $layout = '';
-    public  $_auto_display = true;
-    protected $_v;
-    private  $_data = array();
+    private $layout = '';//layout布局文件
+    public $_auto_display = true;//是否自动展示
+    private $_auto_path_dir='';//非自动定位的view的路径的真实路径
+    protected $_v;//view对象
+    private  $_data = array();//模板参数数组
+
+
 
     public function __construct()
     {
@@ -21,14 +24,20 @@ class Controller
     {
     }
 
-    public function &__get($name)
-    {
-        return $this->_data[$name];
+    public function setLayout($file){
+        $this->layout=$file;
+    }
+    public function setAutoPathDir($dir){
+        $this->_auto_path_dir=$dir;
     }
 
-    function __set($name, $value)
+    function setData($name, $value)
     {
         $this->_data[$name] = $value;
+    }
+    function setArray($array)
+    {
+        $this->_data = $array;
     }
 
 
@@ -41,10 +50,12 @@ class Controller
     {
         $GLOBALS['display_start']=microtime(true);
         Log::debug('view','Try to compile file "'.$tpl_name.'"');
-
         if (!$this->_v) {
             $compile_dir = APP_TMP;
-            $this->_v = new View(APP_VIEW, $compile_dir);
+            if($this->_auto_path_dir!=="")
+                $this->_v = new View($this->_auto_path_dir, $compile_dir);
+            else
+                $this->_v = new View(APP_VIEW, $compile_dir);
         }
         $this->_v->assign(get_object_vars($this));
         $this->_v->assign($this->_data);

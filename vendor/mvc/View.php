@@ -8,14 +8,13 @@ use app\vendor\lib\Log;
 
 /**
  * Class View
- * @package lib\speed\mvc
+ * @package lib\vendor\mvc
  * 模板渲染输出类
  */
 class View
 {
-    private string $template_dir, $compile_dir,$right_delimiter,$left_delimiter;
-    private array $template_vals = array();
-
+    private  $template_dir, $compile_dir,$right_delimiter,$left_delimiter;
+    private  $template_vals = array();
     /**
      * View constructor.
      * @param $template_dir
@@ -70,7 +69,7 @@ class View
         $template_data = $this->_compile_struct($template_data);
 
         $template_data = $this->_compile_function($template_data);
-        $template_data = '<?php use app\vendor\mvc; if(!class_exists("app\vendor\mvc\View", false)) exit("no direct access allowed");?>' . $template_data;
+        $template_data = '<?php use app\vendor\mvc; if(!class_exists("app\\\\vendor\\\\mvc\\\\View", false)) exit("no direct access allowed");?>' . $template_data;
         $template_data = $this->_complie_script_get($template_data);
         $template_data = $this->_complie_script_put($template_data);
         $this->_clear_compliedfile($template_name);
