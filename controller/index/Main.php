@@ -10,7 +10,7 @@ class Main extends BaseController
         $this->setData('a','PHPer');
     }
     public function admin(){
-        //dump(arg('id'));
+        dump(arg('id'));
         dump(Route::url("index",'main','admin',['id'=>'222']));
         dump(Route::url("index",'main','admin',['p'=>'222']));
         dump(Route::url("index",'main','index',['p'=>'222']));

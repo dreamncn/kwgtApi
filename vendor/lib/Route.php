@@ -82,7 +82,7 @@ class Route{
     public static function rewrite(){
         //不允许的参数
         if(isset($_REQUEST['m'])||isset($_REQUEST['a'])||isset($_REQUEST['c'])){
-            Error::err("The following parameters are not allowed：m,a,c!");
+            Error::_err_router("The following parameters are not allowed：m,a,c!");
         }
 
         $url = strtolower(urldecode($_SERVER['REQUEST_URI']));
@@ -104,10 +104,10 @@ class Route{
             Log::debug("route","-> Match Rules:".print_r($route_arr,true));
 
             if(!isset($route_arr['m'])||!isset($route_arr['a'])||!isset($route_arr['c'])){
-                Error::err("Error Route! We need at least three parameters.");
+                Error::_err_router("Error Route! We need at least three parameters.");
             }
 
-            $route_arr = $_GET + $route_arr;//get中的参数直接覆盖
+            $route_arr = array_merge($_GET , $route_arr);//get中的参数直接覆盖
             $route_arr_cp = $route_arr;
 
             //重写缓存表
@@ -145,17 +145,19 @@ class Route{
 
         $url=strtolower($GLOBALS['http_scheme'].$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
         Log::debug("route","The original Url:$url");
+        if(strpos($url,'?')!==false){
+            $url=substr($url,0,strpos($url,'?'));
+        }
+        Log::debug("route","The original Url Without Params:$url");
         foreach ($GLOBALS['route'] as $rule => $mapper) {
-
-            if($rule==""){
-                $rule="$";
-            }
             $rule = $GLOBALS['http_scheme'] . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER["SCRIPT_NAME"]), '/\\') . '/' . $rule;
             Log::debug("route","-> Url Rule:$rule");
             $rule=strtolower($rule);
             $rule = '/' . str_ireplace(
                     array('\\\\',$GLOBALS['http_scheme'], '/', '<', '>', '.'),
-                    array('', '', '\/', '(?P<', '>[\x{4e00}-\x{9fa5}a-zA-Z0-9_-]+)', '\.'), $rule) . '/u';
+                    array('', '', '\/', '(?P<', '>[\x{4e00}-\x{9fa5}a-zA-Z0-9_-]+)', '\.'), $rule) . '$/u';
+
+
 
 
 
