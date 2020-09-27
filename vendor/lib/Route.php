@@ -46,13 +46,12 @@ class Route{
             return  $data;
         }
 
-
-
-
         $arr=str_replace("<m>",$m,$GLOBALS['route']);
         $arr=str_replace("<c>",$c,$arr);
         $arr=str_replace("<a>",$a,$arr);
         $arr= array_flip(array_unique($arr));
+
+
         $route_find=$route;
         if(isset($arr[$route])){
             Log::debug('route','Find Rule: ' . $arr[$route] );
@@ -69,11 +68,11 @@ class Route{
 
             }
         }
-        dump($route_find);
-        dump($arr);
+
+
         Log::debug('route','Replace Rule: ' . $route_find );
 
-        if($route_find==$route||strpos($route_find,'<')!=false){
+        if($route_find==$route||strpos($route_find,'<')!==false){
             $retUrl=$default;
         }else{
             $paramsStr = empty($params) ? '' : '?' . http_build_query($params);
