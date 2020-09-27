@@ -21,6 +21,14 @@ class Response
     }
 
     /**
+     * @return string 获取当前页面的URL
+     */
+    public static function getNowAddress()
+    {
+        return $GLOBALS['http_scheme'] . $_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI'];
+    }
+
+    /**
      * 获取本机IP
      * @return string
      */

@@ -1,5 +1,5 @@
 <?php
-namespace app\controller\index;
+namespace app\controller\admin;
 use app\vendor\mvc\Controller;
 
 class BaseController extends Controller
@@ -8,7 +8,7 @@ class BaseController extends Controller
 
     function init()
     {
-        //header("Content-type: text/html; charset=utf-8");
+        header("Content-type: text/html; charset=utf-8");
     }
 
     //public static function err404(){}

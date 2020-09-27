@@ -21,7 +21,8 @@ class Dump{
         if($len===0)
             echo $space."  <i><font color=\"#888a85\">empty</font></i> \r\n";
         foreach($param as $key=>$val) {
-            echo $space.sprintf("<i style='color: #333;'> %s </i><font color='#888a85'>=&gt;",$key);
+            $str=htmlspecialchars(chkCode($key),strlen($key));
+            echo $space.sprintf("<i style='color: #333;'> %s </i><font color='#888a85'>=&gt;",$str);
             $this->dumpType($val,$i);
             echo "</font> \r\n";
         }
@@ -71,10 +72,10 @@ class Dump{
     public function dumpType($param,$i=0){
         switch(gettype($param)) {
             case 'NULL' :
-                echo '<font color=\'#3465a4\'>null</font>';
+                echo '<span style="color: #3465a4">null</span>';
                 break;
             case 'boolean' :
-                echo "<small style='color: #333;font-weight: bold'>boolean</small> <font color='#75507b'>".($param?'true':'false')."</font>";
+                echo '<small style="color: #333;font-weight: bold">boolean</small> <span style="color:#75507b">'.($param?'true':'false')."</span>";
                 break;
             case 'integer' :
                 echo "<small style='color: #333;font-weight: bold'>int</small> <font color='#4e9a06'>$param</font>";

@@ -1,16 +1,17 @@
 <?php
-namespace app\controller\index;
+namespace app\controller\admin;
+use app\vendor\lib\Route;
 use app\vendor\lib\Web\Response;
 
 class Main extends BaseController
 {
     public function index()
     {
-        $this->setData('a','PHPer');
+        echo 'Hi,Admin';
     }
     public function admin(){
-        dump('路由生成');
-        dump(url('admin','main','index',['addr'=>'okkk']));
+        dump('Admin路由生成');
+        dump(url('admin','main','index',['addr'=>'123']));
     }
     public function test()
     {

@@ -24,8 +24,8 @@ define('APP_UI', APP_DIR . DS.'public'. DS  . 'ui' . DS . 'view' . DS);
 define('APP_I', APP_DIR . DS . 'public'. DS  .'ui'.DS.'static'. DS);
 
 
-//载入内置全局函数
-require APP_CORE . "Function.php";
+//载入内置助手函数
+require APP_CORE . "Helper.php";
 // 载入Loader类
 require APP_CORE . "Loader.php";
 // 注册自动加载

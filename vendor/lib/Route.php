@@ -46,9 +46,14 @@ class Route{
             return  $data;
         }
 
-        $arr= array_flip($GLOBALS['route']);
 
 
+
+        $arr=str_replace("<m>",$m,$GLOBALS['route']);
+        $arr=str_replace("<c>",$c,$arr);
+        $arr=str_replace("<a>",$a,$arr);
+        $arr= array_flip(array_unique($arr));
+        $route_find=$route;
         if(isset($arr[$route])){
             Log::debug('route','Find Rule: ' . $arr[$route] );
             //处理参数部分
@@ -64,6 +69,8 @@ class Route{
 
             }
         }
+        dump($route_find);
+        dump($arr);
         Log::debug('route','Replace Rule: ' . $route_find );
 
         if($route_find==$route||strpos($route_find,'<')!=false){
@@ -108,6 +115,7 @@ class Route{
             }
 
             $route_arr = array_merge($_GET , $route_arr);//get中的参数直接覆盖
+
             $route_arr_cp = $route_arr;
 
             //重写缓存表
@@ -119,6 +127,10 @@ class Route{
 
             $__action = ($route_arr['a']);
             unset($route_arr['a']);
+
+            if(url($__module,$__controller,$__action,$route_arr)!==Response::getNowAddress()){
+                Error::_err_router("Error Route! A defined route cannot be accessed directly.\nThis Address:".Response::getNowAddress().'\n Regular Address:'.url($__module,$__controller,$__action,$route_arr));
+            }
 
             $real = "$__module/$__controller/$__action";
             if (sizeof($route_arr)) {
@@ -150,19 +162,20 @@ class Route{
         }
         Log::debug("route","The original Url Without Params:$url");
         foreach ($GLOBALS['route'] as $rule => $mapper) {
-            $rule = $GLOBALS['http_scheme'] . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER["SCRIPT_NAME"]), '/\\') . '/' . $rule;
+            $rule = Response::getAddress() . '/' . $rule;
+
+
+
             Log::debug("route","-> Url Rule:$rule");
             $rule=strtolower($rule);
             $rule = '/' . str_ireplace(
                     array('\\\\',$GLOBALS['http_scheme'], '/', '<', '>', '.'),
-                    array('', '', '\/', '(?P<', '>[\x{4e00}-\x{9fa5}a-zA-Z0-9_-]+)', '\.'), $rule) . '$/u';
-
+                    array('', '', '\/', '(?P<', '>[\x{4e00}-\x{9fa5}a-zA-Z0-9_\.-]+)', '\.'), $rule) . '$/u';
 
 
 
 
             if (preg_match($rule, $url, $matchs)) {
-
                 $route = explode("/", $mapper);
                 if (isset($route[2])) {
                     list($route_arr['m'], $route_arr['c'], $route_arr['a']) = $route;
