@@ -152,6 +152,18 @@ class Error
     {
 
 
+        if(isConsole()){
+            echo $msg."\n";
+
+            foreach ($traces as $trace) {
+                if (is_array($trace) && !empty($trace["file"])) {
+                   echo "{$trace["file"]} on line {$trace["line"]}"."\n";
+                }
+            }
+
+            return;
+        }
+
         echo <<<EOF
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

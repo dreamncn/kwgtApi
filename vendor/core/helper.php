@@ -92,7 +92,8 @@ function isDebug(){
  * @return bool
  */
 function isConsole(){
-    return isset($GLOBALS["clean_console"])&&$GLOBALS['clean_console'];
+
+    return isset($_SERVER['CLEAN_CONSOLE'])&&$_SERVER['CLEAN_CONSOLE'];
 }
 /**
  * 取随机字符串
