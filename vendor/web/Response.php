@@ -6,7 +6,7 @@
  * Description:响应类
  */
 
-namespace app\vendor\lib\Web;
+namespace app\vendor\web;
 use app\vendor\mvc\Controller;
 
 class Response
@@ -63,8 +63,8 @@ class Response
         $data=get_defined_vars();
         $obj=new Controller();
         $obj->setArray($data);
-        $obj->setAutoPathDir(APP_INNER);
-        if(file_exists(APP_INNER.$code.'.html'))
+        $obj->setAutoPathDir(APP_INNER.DS."tip");
+        if(file_exists(APP_INNER.DS."tip".$code.'.html'))
             $obj->display($code);
         else
             $obj->display('common');

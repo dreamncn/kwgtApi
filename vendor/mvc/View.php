@@ -3,9 +3,6 @@
 namespace app\vendor\mvc;
 
 
-use app\vendor\Error;
-use app\vendor\lib\Log;
-
 /**
  * Class View
  * @package lib\vendor\mvc

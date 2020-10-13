@@ -1,4 +1,8 @@
 <?php
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
+
 /**
  * Cache.php
  * Created By Dreamn.
@@ -7,7 +11,7 @@
  * Description :  缓存类
  */
 
-namespace app\vendor\lib;
+namespace app\vendor\debug\lib;
 
 class Cache
 {

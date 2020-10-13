@@ -1,7 +1,6 @@
 <?php
-namespace app\vendor\lib;
-use app\vendor\Error;
-use app\vendor\lib\Web\Response;
+namespace app\vendor\web;
+use app\vendor\debug\Error;
 
 /**
  * Class Route

@@ -1,5 +1,7 @@
 <?php
-namespace app\vendor;
+
+
+namespace app\vendor\core;
 /*
  * 配置管理
  * */

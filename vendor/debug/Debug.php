@@ -1,5 +1,5 @@
 <?php
-namespace app\lib\Debug;
+namespace app\vendor\debug;
 /**
  * Class Debug
  * @package app\lib\Debug

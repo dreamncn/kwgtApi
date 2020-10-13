@@ -1,11 +1,13 @@
 <?php
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
 
-namespace app\vendor;
-use app\vendor\lib\Log;
-use app\vendor\lib\Web\Response;
-use app\vendor\mvc\Controller;
+namespace app\vendor\debug;
+
+
+use app\vendor\web\Response;
 use Exception;
-
 use Throwable;
 
 class Error
@@ -138,6 +140,8 @@ class Error
         }
         return $returns;
     }
+
+
 
     /**
      * 错误渲染

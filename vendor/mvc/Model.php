@@ -2,7 +2,7 @@
 
 namespace app\vendor\mvc;
 
-use app\Mysql;
+
 
 /**
  * Class Model

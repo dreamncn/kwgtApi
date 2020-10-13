@@ -1,6 +1,6 @@
 <?php
 namespace app\controller\index;
-use app\vendor\lib\Web\Response;
+use app\vendor\web\Response;
 
 class Main extends BaseController
 {

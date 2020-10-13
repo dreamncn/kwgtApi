@@ -1,13 +1,18 @@
 <?php
 
-namespace app\vendor;
-use app\vendor\lib\Log;
+
+namespace app\vendor\core;
+
+
+use app\vendor\debug\Error;
+use app\vendor\debug\Log;
+
 
 class Loader
 {
     public static function register()
     {
-        spl_autoload_register('app\\vendor\\Loader::autoload', true, true);
+        spl_autoload_register('app\\vendor\\core\\Loader::autoload', true, true);
         $data = scandir(APP_LIB);
         foreach ($data as $value){
             if($value != '.' && $value != '..'){

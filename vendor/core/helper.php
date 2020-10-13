@@ -1,7 +1,8 @@
 <?php
 
-use app\vendor\lib\Dump;
-use app\vendor\lib\Route;
+
+use app\vendor\debug\Dump;
+use app\vendor\web\Route;
 
 function url($m='index', $c = 'main', $a = 'index', $param = array())
 {
@@ -86,7 +87,13 @@ function chkCode($string)
 function isDebug(){
     return isset($GLOBALS["frame"]['debug'])&&$GLOBALS["frame"]['debug'];
 }
-
+/**
+ * 判断当前是否为命令行状态
+ * @return bool
+ */
+function isConsole(){
+    return isset($GLOBALS["clean_console"])&&$GLOBALS['clean_console'];
+}
 /**
  * 取随机字符串
  * @param int $length

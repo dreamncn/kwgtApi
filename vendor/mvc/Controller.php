@@ -3,7 +3,7 @@
 namespace app\vendor\mvc;
 
 
-use app\vendor\lib\Log;
+use app\vendor\debug\Log;
 
 class Controller
 {

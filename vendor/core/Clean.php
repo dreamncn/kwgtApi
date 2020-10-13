@@ -1,10 +1,10 @@
 <?php
 
-namespace app\vendor;
 
-use app\vendor\lib\Log;
-use app\vendor\lib\Route;
-use app\vendor\mvc\Controller;
+namespace app\vendor\core;
+
+
+use app\vendor\web\Route;
 
 /**
  * Class Clean

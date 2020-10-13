@@ -1,7 +1,6 @@
 <?php
 /*
 数据库配置
-支持主从切换，热备份。
 */
 return [
 	"main"=>[
@@ -11,24 +10,6 @@ return [
 		"password"=>"toor",//数据库密码
 		"db"=>"test",//数据库的库名
 		"charset"=>"utf-8"//数据库编码
-	],//主数据库
-	"sub"=>[
-		"sub1"=>[
-		"type"=>"mysql",
-		"host"=>"localhost",
-		"username"=>"root",
-		"password"=>"toor",
-		"db"=>"test",
-		"charset"=>"utf-8"
-	],
-		"sub2"=>[
-		"type"=>"mysql",
-		"host"=>"localhost",
-		"username"=>"root",
-		"password"=>"toor",
-		"db"=>"test",
-		"charset"=>"utf-8"
-	]
 	]
 ];
 

@@ -1,6 +1,11 @@
 <?php
-namespace app\vendor\lib;
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
+
+namespace app\vendor\debug;
 use ReflectionClass;
+use ReflectionException;
 
 class Dump{
 
@@ -47,7 +52,7 @@ class Dump{
         static $pads = [];
         try {
             $reflect = new ReflectionClass($obj);
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             $reflect = null;
         }
         if(!$reflect){

@@ -5,7 +5,7 @@
  * Date : 7/31/2020 1:38 AM
  * Description:
  */
-namespace app\vendor\lib\sql;
+namespace app\vendor\debug\sql;
 use app\core\Error;
 use PDO;
 use PDOException;

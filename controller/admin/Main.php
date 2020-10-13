@@ -1,7 +1,7 @@
 <?php
 namespace app\controller\admin;
-use app\vendor\lib\Route;
-use app\vendor\lib\Web\Response;
+use app\vendor\debug\Route;
+use app\vendor\web\Response;
 
 class Main extends BaseController
 {

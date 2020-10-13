@@ -1,6 +1,11 @@
 <?php
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
 
-namespace app\vendor\lib;
+namespace app\vendor\debug;
+use Exception;
+
 class Log
 {
     private $handler;
@@ -116,7 +121,7 @@ class Log
                 unlink(APP_LOG.$date.$logName);
             }
 
-        }catch (\Exception $e){
+        }catch (Exception $e){
 
         }
     }
