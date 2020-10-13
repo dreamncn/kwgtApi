@@ -2,8 +2,9 @@
 
 
 namespace app\vendor\core;
-
-
+use app\vendor\debug\Error;
+use app\vendor\debug\Log;
+use app\vendor\mvc\Controller;
 use app\vendor\web\Route;
 
 /**

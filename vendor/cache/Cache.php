@@ -11,7 +11,7 @@
  * Description :  缓存类
  */
 
-namespace app\vendor\debug\lib;
+namespace app\vendor\cache;
 
 class Cache
 {

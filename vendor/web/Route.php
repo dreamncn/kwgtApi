@@ -1,6 +1,8 @@
 <?php
 namespace app\vendor\web;
 use app\vendor\debug\Error;
+use app\vendor\cache\Cache;
+use app\vendor\debug\Log;
 
 /**
  * Class Route

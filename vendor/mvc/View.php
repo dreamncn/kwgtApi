@@ -1,7 +1,8 @@
 <?php
 
 namespace app\vendor\mvc;
-
+use app\vendor\debug\Error;
+use app\vendor\debug\Log;
 
 /**
  * Class View

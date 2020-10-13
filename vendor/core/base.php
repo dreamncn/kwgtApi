@@ -1,7 +1,5 @@
 <?php
 namespace app\vendor\core;
-
-
 use app\vendor\debug\Error;
 use app\vendor\debug\Log;
 
