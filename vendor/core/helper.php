@@ -18,6 +18,13 @@ function url($m='index', $c = 'main', $a = 'index', $param = array())
 
 function dump($var, $exit = false)
 {
+    if(isConsole()){
+        $line = debug_backtrace()[0]['file'] . ':' . debug_backtrace()[0]['line'];
+        echo $line."\n";
+        var_dump($var);
+        if ($exit) exit;
+        return;
+    }
     $line = debug_backtrace()[0]['file'] . ':' . debug_backtrace()[0]['line'];
     echo <<<EOF
 <style>pre {display: block;padding: 9.5px;margin: 0 0 10px;font-size: 13px;line-height: 1.42857143;color: #333;word-break: break-all;word-wrap: break-word;background-color:#f5f5f5;border: 1px solid #ccc;border-radius: 4px;}</style><div style="text-align: left">

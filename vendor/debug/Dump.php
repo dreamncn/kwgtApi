@@ -75,6 +75,7 @@ class Dump{
         array_pop($pads);
     }
     public function dumpType($param,$i=0){
+
         switch(gettype($param)) {
             case 'NULL' :
                 echo '<span style="color: #3465a4">null</span>';

@@ -1,8 +1,8 @@
 <?php
 $_SERVER['CLEAN_CONSOLE']=true;
 $_SERVER["HTTP_HOST"]="localhost";
+$_SERVER["REQUEST_URI"]="/".$argv[1];
 
-//print_r($argv);
 include './public/index.php';
 
 

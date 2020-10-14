@@ -47,6 +47,8 @@ class Route{
             return  $data;
         }
 
+
+
         $arr=str_replace("<m>",$m,$GLOBALS['route']);
         $arr=str_replace("<c>",$c,$arr);
         $arr=str_replace("<a>",$a,$arr);
@@ -110,6 +112,8 @@ class Route{
 
             Log::debug("route","-> Match Rules:".print_r($route_arr,true));
 
+
+
             if(!isset($route_arr['m'])||!isset($route_arr['a'])||!isset($route_arr['c'])){
                 Error::_err_router("Error Route! We need at least three parameters.");
             }
@@ -129,7 +133,7 @@ class Route{
             unset($route_arr['a']);
 
             if(url($__module,$__controller,$__action,$route_arr)!==Response::getNowAddress()){
-                Error::_err_router("Error Route! A defined route cannot be accessed directly.\nThis Address:".Response::getNowAddress().'\n Regular Address:'.url($__module,$__controller,$__action,$route_arr));
+                Error::_err_router("Error Route! A defined route cannot be accessed directly.\nThis Address:".Response::getNowAddress().'  Regular Address:'.url($__module,$__controller,$__action,$route_arr));
             }
 
             $real = "$__module/$__controller/$__action";
@@ -156,6 +160,8 @@ class Route{
         $route_arr=[];
 
         $url=strtolower($GLOBALS['http_scheme'].$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+
+
         Log::debug("route","The original Url:$url");
         if(strpos($url,'?')!==false){
             $url=substr($url,0,strpos($url,'?'));
