@@ -1,12 +1,21 @@
 <?php
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
+
 /**
- * File sql.php
- * Author : Dreamn
- * Date : 7/31/2020 1:38 AM
- * Description:
+ * File sql
+ *
+ * @package app\vendor\sql
+ * Date: 2020/10/14 1:50 下午
+ * Author: ankio
+ * Desciption:sql sql的封装
  */
-namespace app\vendor\debug\sql;
-use app\core\Error;
+
+namespace app\vendor\sql;
+
+use app\vendor\cache\Cache;
+use app\vendor\debug\Error;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -14,82 +23,21 @@ class sql{
     protected $sql=[];//查询过的sql语句列表
     protected $opt=[];//封装常见的数据库查询选项
     protected $page=null;//开启分页的分页数据
-    protected $table_name;
+    protected $tableName;
     protected $traSql=null;//编译完成的sql语句
     protected $bindParam=[];//绑定的参数列表
 
-    public function __construct($table_name='')
+    public function __construct($tableName='')
     {
         if (!class_exists("PDO") || !in_array("mysql", PDO::getAvailableDrivers(), true)) {
             Error::err('Database Err: PDO or PDO_MYSQL doesn\'t exist!');
         }
         //初始化基础数据
         $this->opt['type']='select';
-        $this->opt['table_name']=$table_name;
-        $this->table_name=$table_name;
+        $this->opt['tableName']=$tableName;
+        $this->tableName=$tableName;
     }
-    //对数据进行处理，转换成编译所需的sql语句
-    private function translateSql(){
-        $sql=$this->opt['type'];//select insert delete update
-        $table=$this->opt['table_name'];//必填项目
-        if($sql==''||$table=='')Error::err('Database Err: Missing required item "select/insert/delete/update" and "table"');
-        switch($sql){
-            case 'select':
-                $sql='';
-                $sql.=$this->getOpt('SELECT','field');
-                $sql.=$this->getOpt('FROM','table_name');
-                $sql.=$this->getOpt('WHERE','where');
-                $sql.=$this->getOpt('ORDER BY','order');
-                $sql.=$this->getOpt('LIMIT','limit');
-                break;
-            case 'update':
-                $sql='';
-                $sql.=$this->getOpt('UPDATE','table_name');
-                $sql.=$this->getOpt('SET','set');
-                $sql.=$this->getOpt('WHERE','where');
-                break;
-            case 'insert':
-                $sql='';
-                if(isset($this->opt['model'])){
-                    switch ($this->opt['model']){
-                        case self::Duplicate:
-                            $sql.=$this->getOpt('INSERT INTO','table_name');
-                            $sql.=$this->getOpt('','key');
-                            $sql.=$this->getOpt('VALUES','values');
-                            $sql.=$this->getOpt('ON DUPLICATE KEY UPDATE','colums');
-                            break;
-                        case self::Normal:
-                            $sql.=$this->getOpt('INSERT INTO','table_name');
-                            $sql.=$this->getOpt('','key');
-                            $sql.=$this->getOpt('VALUES','values');
-                            break;
-                        case self::Ignore:
-                            $sql.=$this->getOpt('INSERT IGNORE INTO','table_name');
-                            $sql.=$this->getOpt('','key');
-                            $sql.=$this->getOpt('VALUES','values');
-                            break;
-                    }
-                }
 
-                break;
-            case 'delete':
-                $sql='';
-                $sql.=$this->getOpt('DELETE FROM','table_name');
-                $sql.=$this->getOpt('WHERE','where');
-                break;
-        }
-        $this->traSql=$sql;
-        if(isDebug()){
-            logs('[SQL]'.$sql,'info');
-        }
-    }
-    /*
-     * 获取设置的字段信息
-     * */
-    private function getOpt($head,$opt){
-        if(isset($this->opt[$opt]))return ' '.$head.' '.$this->opt[$opt].' ';
-        return ' ';
-    }
     /**
      * 获取数据库连接函数
      * @param $db_config array 数据库配置信息
@@ -97,28 +45,37 @@ class sql{
      */
     protected function dbInstance($db_config)
     {
-        if (empty($GLOBALS['mysql_instances'])) {
-            try {
-                $GLOBALS['mysql_instances'] = new PDO(
-                    'mysql:dbname=' . $db_config['MYSQL_DB'] . ';host=' . $db_config['MYSQL_HOST'] . ';port=' . $db_config['MYSQL_PORT'],
-                    $db_config['MYSQL_USER'],
-                    $db_config['MYSQL_PASS'],
-                    array(
-                        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $db_config['MYSQL_CHARSET'] . '\'',
-                        PDO::ATTR_PERSISTENT => true
-                    ));
-            } catch (PDOException $e) {
-                Error::err('Database Err: ' . $e->getMessage());
-            }
+        try {
+            return new PDO(
+                'mysql:dbname=' . $db_config['MYSQL_DB'] . ';host=' . $db_config['MYSQL_HOST'] . ';port=' . $db_config['MYSQL_PORT'],
+                $db_config['MYSQL_USER'],
+                $db_config['MYSQL_PASS'],
+                array(
+                    PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $db_config['MYSQL_CHARSET'] . '\'',
+                    PDO::ATTR_PERSISTENT => true
+                ));
+        } catch (PDOException $e) {
+            Error::err('Database Err: ' . $e->getMessage());
         }
-        return $GLOBALS['mysql_instances'];
+        return null;
     }
+
+    //对数据进行处理，转换成编译所需的sql语句
+    private function translateSql(){}
+    /*
+     * 获取设置的字段信息
+     * */
+    protected function getOpt($head,$opt){
+        if(isset($this->opt[$opt]))return ' '.$head.' '.$this->opt[$opt].' ';
+        return ' ';
+    }
+
     /**
-     * @param string $table_name
+     * @param string $tableName
      * @return sql
      */
-    protected function table($table_name){
-        $this->opt['table_name']=$table_name;
+    protected function table($tableName){
+        $this->opt['tableName']=$tableName;
         return $this;
     }
 
@@ -189,5 +146,9 @@ class sql{
         return false;
     }
 
+    public function commit(){
+        $this->translateSql();
+        return $this->execute($this->traSql,$this->bindParam,false);
+    }
 
 }

@@ -7,7 +7,7 @@
  * Description :Mysql底层封装类
  */
 
-namespace app\core\lib\sql;
+namespace app\vendor\sql;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -135,7 +135,7 @@ class Mysql1
         $this->sql[] = $sql;
 
         $sth = $this->dbInstance($GLOBALS['mysql'])->prepare($sql);
-       
+
         if (is_array($params) && !empty($params)) foreach ($params as $k => &$v) {
             if (is_int($v)) {
                 $data_type = PDO::PARAM_INT;
@@ -194,7 +194,7 @@ class Mysql1
         if($union!==''){
             if(is_array($conditions) && !empty($conditions))$union=' AND '.$union;
         }
-        
+
         if (is_array($conditions) && !empty($conditions)) {
 
             $sql = null;
@@ -216,7 +216,7 @@ class Mysql1
 
             }
             if (!$sql) $sql = join(" AND ", $join);
-            
+
             $this->opt['where'] =    $sql.$union;
             $this->bindParam+= $conditions;
         }
@@ -366,7 +366,7 @@ class Mysql1
         }else $this->opt['limit']=$limit;
         return $this;
     }
-    
+
 
     public function orderBy( $string)
     {

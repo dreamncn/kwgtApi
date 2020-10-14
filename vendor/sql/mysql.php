@@ -1,11 +1,20 @@
 <?php
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
+
 /**
- * File mysql.php
- * Author : Dreamn
- * Date : 7/31/2020 1:42 AM
- * Description:
+ * File mysql
+ *
+ * @package app\vendor\sql
+ * Date: 2020/10/14 1:50 下午
+ * Author: ankio
+ * Desciption: sql的集合类
  */
-namespace app\core\lib\sql;
-class mysql extends sql{
+namespace app\vendor\sql;
+
+
+class mysql extends sql
+{
 
 }
