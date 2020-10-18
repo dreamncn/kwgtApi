@@ -4,20 +4,11 @@ namespace app\vendor\mvc;
 
 
 
-/**
- * Class Model
- * @package lib\speed\mvc
- */
-class Model extends Mysql
+use app\vendor\sql\mysql;
+
+
+class Model extends mysql
 {
-
-    public $page;
-    /**
-     * 数据表名称
-     * @var string $table_name
-     */
-    protected $table_name;
-
 
     /**
      * Model constructor.
@@ -25,7 +16,7 @@ class Model extends Mysql
      */
     public function __construct($table_name = null)
     {
-        if ($table_name) $this->table_name = $table_name;
+       // if ($table_name) $this->table_name = $table_name;
         parent::__construct($table_name);
     }
 
@@ -35,6 +26,10 @@ class Model extends Mysql
      * 单个设置
      * */
     public function setOption($idName,$id,$opt,$val){
-      return  $this->update()->where(array($idName=>$id))->set(array($opt=>$val))->commit();
+      return  $this->update()->where([$idName=>$id])->set([$opt=>$val])->commit();
     }
+
+
+
+
 }

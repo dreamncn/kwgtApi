@@ -1,12 +1,17 @@
 <?php
-namespace app\vendor\sql;
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
+
+namespace app\vendor\sql\sql;
 
 use app\vendor\debug\Log;
 
-class select extends sql{
-    /************select语句封装***********/
+class select extends sqlBase {
+    protected $page=null;//开启分页的分页数据
     /**
      * @param string $field
+     *
      * @return select
      */
     public function select($field="*"){
@@ -24,6 +29,34 @@ class select extends sql{
     public function table($table_name){
         return parent::table($table_name);
     }
+
+    /**
+     * @param $string
+     *
+     * @return $this
+     */
+    public function orderBy($string)
+    {
+        $this->opt['order']=$string;
+        return $this;
+    }
+
+
+    public function limit($limit='1')
+    {
+        unset($this->opt['page']);
+        $this->opt['limit']=$limit;
+        return $this;
+    }
+    public function page($start=1,$count=10,$range=10)
+    {
+        unset($this->opt['limit']);
+        $this->opt['page'] = true;
+        $this->opt['start'] =$start;
+        $this->opt['count'] =$count;
+        $this->opt['range'] =$range;
+        return $this;
+    }
     /**
      * @param array $conditions 查询条件，支持后面几种格式
      * @return select
@@ -35,7 +68,7 @@ class select extends sql{
     private function translateSql(){
         $sql='';
         $sql.=$this->getOpt('SELECT','field');
-        $sql.=$this->getOpt('FROM','table_name');
+        $sql.=$this->getOpt('FROM','tableName');
         $sql.=$this->getOpt('WHERE','where');
         $sql.=$this->getOpt('ORDER BY','order');
         $sql.=$this->getOpt('LIMIT','limit');
@@ -54,13 +87,13 @@ class select extends sql{
 
             $sql.=$this->getOpt('ORDER BY','order');
 
-            $total = $this->execute( $sql, $this->bindParam,true);
+            $total = $this->sql->execute( $sql, $this->bindParam,true);
             $this->page=$this->pager($this->opt['start'], $this->opt['count'], $this->opt['range'], $total[0]['M_COUNTER']);
             if(!empty($this->page))
                 $this->opt['limit'] =  $this->page['offset'] . ',' . $this->page['limit'];
         }
         $this->translateSql();
-        return $this->execute($this->traSql,$this->bindParam,true);
+        return $this->sql->execute($this->traSql,$this->bindParam,true);
     }
     /**
      * 分页处理函数
@@ -103,4 +136,9 @@ class select extends sql{
         }
         return $this->page;
     }
+    public function getPage(){
+        return $this->page;
+    }
+
+
 }
