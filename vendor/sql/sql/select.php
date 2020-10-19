@@ -72,7 +72,7 @@ class select extends sqlBase {
         $sql.=$this->getOpt('WHERE','where');
         $sql.=$this->getOpt('ORDER BY','order');
         $sql.=$this->getOpt('LIMIT','limit');
-        $this->traSql=$sql;
+        $this->traSql=$sql.";";
         if(isDebug()){
             Log::debug('SQL',$sql);
         }

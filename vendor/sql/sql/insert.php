@@ -102,7 +102,7 @@ class insert extends sqlBase
                 $sql.=$this->getOpt('VALUES','values');
                 break;
         }
-        $this->traSql=$sql;
+        $this->traSql=$sql.";";
         if(isDebug()){
             Log::debug('SQL',$sql);
         }

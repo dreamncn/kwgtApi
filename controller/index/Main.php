@@ -29,8 +29,8 @@ class Main extends BaseController
         $sql->emptyTable("log");
         $data =  $sql->select()->commit();
         dump($data);
-        $sql->insert(Model::Normal)->keyValue(['id'=>1,'urls'=>'okkkk','ip'=>"12.041232"])->commit();
-        $sql->insert(Model::Normal)->keyValue(['id'=>2,'urls'=>'okkkk','ip'=>"12.041232"])->commit();
+        $sql->insert(Model::Normal)->keyValue(['urls'=>'okkkk','ip'=>"12.041232"])->commit();
+        $sql->insert(Model::Normal)->keyValue(['urls'=>'okkkk','ip'=>"12.041232"])->commit();
 
         $data =  $sql->select()->commit();
         dump($data);
@@ -55,6 +55,7 @@ class Main extends BaseController
         dump("transaction");
         $sql->beginTransaction();
         $sql->insert(Model::Normal)->keyValue(['urls'=>"傻逼号"])->commit();
+        $sql->update()->set(["ip"=>45456])->where(['urls'=>"傻逼号"])->commit();
         dump($sql->select()->commit());
         $sql->rollBack();
         dump("rollBack");

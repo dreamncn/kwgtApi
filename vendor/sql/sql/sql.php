@@ -89,7 +89,7 @@ class sql{
         $sth = $this->dbInstance($GLOBALS['database'][$this->sqlIndex])->prepare($sql);
         if($sth==false)
             Error::err('Database SQL: "' . $sql . '", Can\'t prepared! ' );
-        if (is_array($params) && !empty($params)) foreach ($params as $k => &$v) {
+        if (is_array($params) && !empty($params)) foreach ($params as $k => $v) {
             if (is_int($v)) {
                 $data_type = PDO::PARAM_INT;
             } elseif (is_bool($v)) {
@@ -104,7 +104,14 @@ class sql{
         }
         if ($sth->execute()){
             $end=microtime(true)-$start;
-            $this->sqlList[]=[$sql,strval($end*1000)."ms"];
+            if(isDebug()){
+                $sqlDefault=$sql;
+                foreach ($params as $k => $v){
+                    $sqlDefault=str_replace($k, "\"$v\"", $sqlDefault);
+                }
+                $this->sqlList[]=[$sql,$sqlDefault,strval($end*1000)."ms"];
+            }
+
             return $readonly ? $sth->fetchAll(PDO::FETCH_ASSOC) : $sth->rowCount();
 
         }

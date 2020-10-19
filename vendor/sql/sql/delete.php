@@ -40,7 +40,7 @@ class delete extends sqlBase
         $sql='';
         $sql.=$this->getOpt('DELETE FROM','tableName');
         $sql.=$this->getOpt('WHERE','where');
-        $this->traSql=$sql;
+        $this->traSql=$sql.";";
 
         if(isDebug()){
             Log::debug('SQL',$sql);

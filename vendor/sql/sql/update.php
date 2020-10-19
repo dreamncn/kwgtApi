@@ -56,7 +56,7 @@ class update extends sqlBase
         $sql.=$this->getOpt('UPDATE','tableName');
         $sql.=$this->getOpt('SET','set');
         $sql.=$this->getOpt('WHERE','where');
-        $this->traSql=$sql;
+        $this->traSql=$sql.";";
 
         if(isDebug()){
             Log::debug('SQL',$sql);
