@@ -27,16 +27,16 @@ class Sync
      * @param string $identify 唯一标识符
      * @return bool
      */
-    public static function request($url, $method = 'GET', $data = array('i'=>0), $cookie = array(), $identify = 'clear')
+    public static function request($url, $method = 'GET', $data = array('i' => 0), $cookie = array(), $identify = 'clear')
     {
 
         $url_array = parse_url($url); //获取URL信息，以便平凑HTTP HEADER
         $port = $url_array['scheme'] == 'http' ? 80 : 443;
         $fp = fsockopen(($url_array['scheme'] == 'http' ? "" : 'ssl://') . $url_array['host'], $port, $errno, $errstr, 30);
         if (!$fp) {
-            self::$err = '无法向该URL发起请求'.$errstr;
+            self::$err = '无法向该URL发起请求' . $errstr;
             if (isDebug()) {
-                Log::warn('Sync','异步发起失败，原因：' . self::$err);
+                Log::warn('Sync', '异步发起失败，原因：' . self::$err);
             }
             return false;
         }
@@ -46,28 +46,28 @@ class Sync
             $getPath = $url_array['path'];
 
         $header = $method . " " . $getPath;
-        $header .= " HTTP/1.1".PHP_EOL;
-        $header .= "Host: " . $url_array['host'] . "".PHP_EOL; //HTTP 1.1 Host域不能省略
+        $header .= " HTTP/1.1" . PHP_EOL;
+        $header .= "Host: " . $url_array['host'] . "" . PHP_EOL; //HTTP 1.1 Host域不能省略
         $token = getRandom(128);
         file_put_contents(APP_TRASH . md5(md5($token . $identify)), json_encode(array('token' => $token, 'timeout' => time() + 60)));
-        $header .= "Token: " . md5($token) . "".PHP_EOL;
-        $header .= "Identify: " . md5($token . $identify) . "".PHP_EOL;
-        $header .= "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13 ".PHP_EOL;
-        $header .= "Connection:Close".PHP_EOL;
+        $header .= "Token: " . md5($token) . "" . PHP_EOL;
+        $header .= "Identify: " . md5($token . $identify) . "" . PHP_EOL;
+        $header .= "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13 " . PHP_EOL;
+        $header .= "Connection:Close" . PHP_EOL;
         if (!empty($cookie)) {
             $_cookie = strval(NULL);
             foreach ($cookie as $k => $v) {
                 $_cookie .= $k . "=" . $v . "; ";
             }
-            $cookie_str = "Cookie: " . $_cookie . " ".PHP_EOL;//传递Cookie
+            $cookie_str = "Cookie: " . $_cookie . " " . PHP_EOL;//传递Cookie
             $header .= $cookie_str;
         }
 
         if (!empty($data)) {
-            $_post = "".PHP_EOL . http_build_query($data);
-            $post_str = "Content-Type: application/x-www-form-urlencoded".PHP_EOL;//POST数据
-            $post_str .= "Content-Length: " . strlen($_post) . " ".PHP_EOL;//POST数据的长度
-            $post_str .= $_post . PHP_EOL.PHP_EOL." "; //传递POST数据
+            $_post = "" . PHP_EOL . http_build_query($data);
+            $post_str = "Content-Type: application/x-www-form-urlencoded" . PHP_EOL;//POST数据
+            $post_str .= "Content-Length: " . strlen($_post) . " " . PHP_EOL;//POST数据的长度
+            $post_str .= $_post . PHP_EOL . PHP_EOL . " "; //传递POST数据
             $header .= $post_str;
         }
         fwrite($fp, $header);
@@ -83,7 +83,7 @@ class Sync
     {
         if (!self::checkToken()) {
             if (isDebug()) {
-                Log::warn('Sync','异步响应失败，原因：' . self::$err);
+                Log::warn('Sync', '异步响应失败，原因：' . self::$err);
             }
             exit;
         }
@@ -115,7 +115,7 @@ class Sync
             }
             $token = json_decode(trim(file_get_contents($file)), true);
             unlink($file);
-            if ($token && isset($token['timeout']) &&  isset($token['token'])) {
+            if ($token && isset($token['timeout']) && isset($token['token'])) {
                 if (intval($token['timeout']) < time()) {
                     self::$err = '响应超时';
                     return false;

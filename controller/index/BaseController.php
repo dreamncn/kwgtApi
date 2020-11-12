@@ -1,10 +1,12 @@
 <?php
+
 namespace app\controller\index;
+
 use app\vendor\mvc\Controller;
 
 class BaseController extends Controller
 {
-    public  $layout = "";
+    public $layout = "";
 
     function init()
     {

@@ -7,6 +7,7 @@
  */
 
 namespace app\vendor\web;
+
 use app\vendor\mvc\Controller;
 
 class Response
@@ -25,7 +26,7 @@ class Response
      */
     public static function getNowAddress()
     {
-        return $GLOBALS['http_scheme'] . $_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI'];
+        return $GLOBALS['http_scheme'] . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'];
     }
 
     /**
@@ -37,7 +38,8 @@ class Response
         return gethostbyname(gethostname());
     }
 
-    public static function location($url){
+    public static function location($url)
+    {
         header("Location:{$url}");
     }
 
@@ -50,21 +52,22 @@ class Response
      * @param string $url 跳转地址
      * @param string $desc 跳转描述
      */
-    public static function msg($err=false,$code=404,$title="",$msg="",$time=3,$url='',$desc="立即跳转"){
-        GLOBAL $__module;
-        $__module='';
+    public static function msg($err = false, $code = 404, $title = "", $msg = "", $time = 3, $url = '', $desc = "立即跳转")
+    {
+        global $__module;
+        $__module = '';
         header("Content-type: text/html; charset=utf-8", true, $code);
-        $err=$err?":(":":)";
+        $err = $err ? ":(" : ":)";
 
-        if($time==0){
+        if ($time == 0) {
             self::location($url);
             return;
         }
-        $data=get_defined_vars();
-        $obj=new Controller();
+        $data = get_defined_vars();
+        $obj = new Controller();
         $obj->setArray($data);
-        $obj->setAutoPathDir(APP_INNER.DS."tip");
-        if(file_exists(APP_INNER.DS."tip".$code.'.html'))
+        $obj->setAutoPathDir(APP_INNER . DS . "tip");
+        if (file_exists(APP_INNER . DS . "tip" . $code . '.html'))
             $obj->display($code);
         else
             $obj->display('common');

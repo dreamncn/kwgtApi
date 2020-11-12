@@ -1,6 +1,7 @@
 <?php
 
 namespace app\vendor\mvc;
+
 use app\vendor\debug\Error;
 use app\vendor\debug\Log;
 
@@ -11,8 +12,9 @@ use app\vendor\debug\Log;
  */
 class View
 {
-    private  $template_dir, $compile_dir,$right_delimiter,$left_delimiter;
-    private  $template_vals = array();
+    private $template_dir, $compile_dir, $right_delimiter, $left_delimiter;
+    private $template_vals = array();
+
     /**
      * View constructor.
      * @param $template_dir
@@ -35,7 +37,7 @@ class View
     public function render($tempalte_name)
     {
         $complied_file = $this->compile($tempalte_name);
-        Log::debug('View','Compile time-consuming: ' . strval((microtime(true) - $GLOBALS['display_start']) * 1000) . 'ms');
+        Log::debug('View', 'Compile time-consuming: ' . strval((microtime(true) - $GLOBALS['display_start']) * 1000) . 'ms');
         ob_start();
         $_view_obj = &$this;
         extract($this->template_vals, EXTR_SKIP);
@@ -49,7 +51,7 @@ class View
      */
     public function compile($template_name)
     {
-        GLOBAL $__module;
+        global $__module;
         $template_name = ($__module == '' ? '' : $__module . DS) . $template_name . '.html';
         $file = $this->template_dir . DS . $template_name;
         if (!file_exists($file))
@@ -57,8 +59,8 @@ class View
         if (!is_writable($this->compile_dir) || !is_readable($this->compile_dir))
             Error::err('Err: Directory "' . $this->compile_dir . '" is not writable or readable');
         $complied_file = $this->compile_dir . DS . md5(realpath($file)) . '.' . filemtime($file) . '.' . basename($template_name) . '.php';
-        if (file_exists($complied_file)){
-            Log::debug('View','Find cache file "'.$template_name.'"');
+        if (file_exists($complied_file)) {
+            Log::debug('View', 'Find cache file "' . $template_name . '"');
             return $complied_file;
         }
 
@@ -82,8 +84,8 @@ class View
             $success = @rename($tmp_file, $complied_file);
         }
         if (!$success) Error::err('Err: File "' . $complied_file . '" can not be generated.');
-        if(isDebug()){
-            Log::debug('View','Complied  file "'.$template_name.'" successful!');
+        if (isDebug()) {
+            Log::debug('View', 'Complied  file "' . $template_name . '" successful!');
         }
         return $complied_file;
     }

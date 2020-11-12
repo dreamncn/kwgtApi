@@ -33,26 +33,26 @@ class Error
      */
     public static function appException($e)
     {
-        $err=explode('Stack trace:',$e);
-        if(sizeof($err)!==2){
+        $err = explode('Stack trace:', $e);
+        if (sizeof($err) !== 2) {
             self::err($e);
-        }else{
-            $msg=$err[0];
+        } else {
+            $msg = $err[0];
             $isMatched = preg_match_all('/in\s(.*php):([0-9]+)/', $msg, $matches);
-            if($isMatched){
-                $trace["file"]=$matches[1][0];
-                $trace["line"]=$matches[2][0];
-                $traces[]=$trace;
+            if ($isMatched) {
+                $trace["file"] = $matches[1][0];
+                $trace["line"] = $matches[2][0];
+                $traces[] = $trace;
             }
             $isMatched = preg_match_all('/#[0-9]+\s(.*php)\((.*?)\):/', $err[1], $matches);
-            if($isMatched){
-                for($i=0;$i<$isMatched;$i++){
-                    $trace["file"]=$matches[1][$i];
-                    $trace["line"]=$matches[2][$i];
-                    $traces[]=$trace;
+            if ($isMatched) {
+                for ($i = 0; $i < $isMatched; $i++) {
+                    $trace["file"] = $matches[1][$i];
+                    $trace["line"] = $matches[2][$i];
+                    $traces[] = $trace;
                 }
-                self::err($msg,$traces);
-            }else self::err($msg);
+                self::err($msg, $traces);
+            } else self::err($msg);
         }
 
     }
@@ -76,15 +76,15 @@ class Error
             global $__module, $__controller, $__action;
             $nameBase = "app\\controller\\$__module\\BaseController";
 
-            if(method_exists($nameBase, 'err500'))
+            if (method_exists($nameBase, 'err500'))
                 $nameBase::err500($__module, $__controller, $__action, $msg);
-            else{
-                Response::msg(true,500,'System Error','Something bad.',3,'/','立即跳转');
+            else {
+                Response::msg(true, 500, 'System Error', 'Something bad.', 3, '/', '立即跳转');
             }
 
         } else {
-            GLOBAL $__module;
-            $__module='';
+            global $__module;
+            $__module = '';
             self::display($msg, $traces);
         }
         exit(-1);
@@ -97,15 +97,15 @@ class Error
      */
     public static function _err_highlight_code($code)
     {
-        $code = preg_replace('/(\/\*\*)/', '///**',$code);
-        $code =  preg_replace('/(\s\*)[^\/]/', '//*',$code);
-        $code =  preg_replace('/(\*\/)/', '//*/',$code);
+        $code = preg_replace('/(\/\*\*)/', '///**', $code);
+        $code = preg_replace('/(\s\*)[^\/]/', '//*', $code);
+        $code = preg_replace('/(\*\/)/', '//*/', $code);
         if (preg_match('/<\?(php)?[^[:graph:]]/i', $code)) {
             $return = highlight_string($code, TRUE);
         } else {
-            $return =  preg_replace('/(&lt;\?php&nbsp;)+/i', "", highlight_string("<?php " . $code, true));
+            $return = preg_replace('/(&lt;\?php&nbsp;)+/i', "", highlight_string("<?php " . $code, true));
         }
-        return str_replace(array('//*/','///**','//*'),array('*/','/**','*'),$return);
+        return str_replace(array('//*/', '///**', '//*'), array('*/', '/**', '*'), $return);
     }
 
     /**
@@ -142,7 +142,6 @@ class Error
     }
 
 
-
     /**
      * 错误渲染
      * @param $msg
@@ -152,12 +151,12 @@ class Error
     {
 
 
-        if(isConsole()){
-            echo $msg."\n";
+        if (isConsole()) {
+            echo $msg . "\n";
 
             foreach ($traces as $trace) {
                 if (is_array($trace) && !empty($trace["file"])) {
-                   echo "{$trace["file"]} on line {$trace["line"]}"."\n";
+                    echo "{$trace["file"]} on line {$trace["line"]}" . "\n";
                 }
             }
 
@@ -337,16 +336,16 @@ EOF;
         global $__module, $__controller, $__action;
         $nameBase = "app\\controller\\$__module\\BaseController";
 
-        if(!isDebug()){
-            if(method_exists($nameBase, 'err404')){
+        if (!isDebug()) {
+            if (method_exists($nameBase, 'err404')) {
                 $nameBase::err404($__module, $__controller, $__action, $msg);
-            }else{
+            } else {
 
-                Response::msg(true,404,'404 Not Found','We don\'t konw this page.',3,'/','立即跳转');
+                Response::msg(true, 404, '404 Not Found', 'We don\'t konw this page.', 3, '/', '立即跳转');
 
             }
-            Log::error('route',$msg);
-        }else{
+            Log::error('route', $msg);
+        } else {
             self::err($msg);
         }
 

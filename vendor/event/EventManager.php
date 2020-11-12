@@ -3,6 +3,7 @@
  * 事件管理器
  * Class EventManager
  */
+
 namespace app\vendor\event;
 class EventManager
 {
@@ -13,7 +14,7 @@ class EventManager
      * @param EventSource $eventObject
      * @param EventListener $listener
      */
-    public static function  attach(EventSource $eventObject, EventListener $listener)
+    public static function attach(EventSource $eventObject, EventListener $listener)
     {
         //一个事件名绑定多个监听器
         self::$eventList[$eventObject->getEventName()][] = $listener;
@@ -23,7 +24,7 @@ class EventManager
      * 解除绑定事件
      * @param EventSource $eventObject
      */
-    public static  function detach(EventSource $eventObject)
+    public static function detach(EventSource $eventObject)
     {
         unset(self::$eventList[$eventObject->getEventName()]);
     }
@@ -32,7 +33,7 @@ class EventManager
      * 触发事件
      * @param EventSource $eventObject
      */
-    public static  function fire(EventSource $eventObject)
+    public static function fire(EventSource $eventObject)
     {
         foreach (self::$eventList as $attachEventName => $listenerList) {
             //匹配监听列表

@@ -4,15 +4,17 @@
  ******************************************************************************/
 
 namespace app\vendor\debug;
+
 use Exception;
 
 class Log
 {
     private $handler;
     private $level;
+
     public function __construct($file = '', $level = 15)
     {
-        $file=APP_LOG . date('Y-m-d') . DS . $file . '.log';
+        $file = APP_LOG . date('Y-m-d') . DS . $file . '.log';
         $dir_name = dirname($file);
         //目录不存在就创建
         if (!file_exists($dir_name)) {
@@ -29,7 +31,7 @@ class Log
 
     public static function debug($tag, $msg)
     {
-        if(!isDebug())return;
+        if (!isDebug()) return;
         $self = new self($tag, 15);
         $self->write(1, $msg);
     }
@@ -109,19 +111,19 @@ class Log
 
     public static function rm($date, $logName)
     {
-        try{
-            if($date==null&&$logName==null){
+        try {
+            if ($date == null && $logName == null) {
                 rmdir(APP_LOG);
                 mkdir(APP_LOG);
             }
-            if($date!==null&&$logName==null){
-                rmdir(APP_LOG.$date);
+            if ($date !== null && $logName == null) {
+                rmdir(APP_LOG . $date);
             }
-            if($date!==null&&$logName!==null){
-                unlink(APP_LOG.$date.$logName);
+            if ($date !== null && $logName !== null) {
+                unlink(APP_LOG . $date . $logName);
             }
 
-        }catch (Exception $e){
+        } catch (Exception $e) {
 
         }
     }

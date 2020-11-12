@@ -2,6 +2,7 @@
 
 
 namespace app\vendor\core;
+
 use app\vendor\debug\Error;
 use app\vendor\debug\Log;
 use app\vendor\mvc\Controller;
@@ -41,7 +42,7 @@ class Clean
         }
         //允许跨域
         $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
-        if (in_array(str_replace($GLOBALS['http_scheme'],'',$origin), $GLOBALS["frame"]['host'])) {
+        if (in_array(str_replace($GLOBALS['http_scheme'], '', $origin), $GLOBALS["frame"]['host'])) {
             header('Access-Control-Allow-Origin:' . $origin);
         }
 
@@ -50,25 +51,23 @@ class Clean
 
     static public function createObj()
     {
-        GLOBAL $__module, $__controller, $__action;
+        global $__module, $__controller, $__action;
         if ($__controller === 'BaseController') Error::_err_router("Err: Controller 'BaseController' is not correct!Not allowed to be accessed！");
 
         $controller_name = ucfirst($__controller);
-        $action_name =  $__action;
+        $action_name = $__action;
 
-        Log::debug('mvc','Module: ' . $__module);
-        Log::debug('mvc','Controller: ' . $controller_name);
-        Log::debug('mvc','Action: ' . $action_name);
-        Log::debug('clean','Routing time-consuming: ' . strval((microtime(true) - $GLOBALS['start']) * 1000) . 'ms');
+        Log::debug('mvc', 'Module: ' . $__module);
+        Log::debug('mvc', 'Controller: ' . $controller_name);
+        Log::debug('mvc', 'Action: ' . $action_name);
+        Log::debug('clean', 'Routing time-consuming: ' . strval((microtime(true) - $GLOBALS['start']) * 1000) . 'ms');
 
         if (!self::is_available_classname($__module)) Error::_err_router("Err: Module '$__module' is not correct!");
 
 
-
-        if (!is_dir(APP_CONTROLLER  . $__module)) Error::_err_router("Error: Module '$__module' is not exists!");
+        if (!is_dir(APP_CONTROLLER . $__module)) Error::_err_router("Error: Module '$__module' is not exists!");
 
         $controller_name = 'app\\controller\\' . $__module . '\\' . $controller_name;
-
 
 
         if (!self::is_available_classname($__controller))
@@ -80,31 +79,31 @@ class Clean
 
         $auto_tpl_name = $__controller . '_' . $__action;
 
-        $auto_tpl_file_exists=file_exists(APP_VIEW . $__module . DS . $auto_tpl_name . '.html');
+        $auto_tpl_file_exists = file_exists(APP_VIEW . $__module . DS . $auto_tpl_name . '.html');
 
-        $controller_class_exists=class_exists($controller_name, true);
+        $controller_class_exists = class_exists($controller_name, true);
 
-        $controller_method_exists=method_exists($controller_name, $action_name);
+        $controller_method_exists = method_exists($controller_name, $action_name);
 
-        if (!$controller_class_exists&&!$auto_tpl_file_exists){
+        if (!$controller_class_exists && !$auto_tpl_file_exists) {
             Error::_err_router("Error: Controller '$controller_name' is not exists!");
         }
 
-        if (!$controller_method_exists&&!$auto_tpl_file_exists){
+        if (!$controller_method_exists && !$auto_tpl_file_exists) {
             Error::_err_router("Error: Method '$action_name' of '$controller_name' is not exists!");
         }
 
-        if($controller_class_exists&&$controller_method_exists){
+        if ($controller_class_exists && $controller_method_exists) {
             $controller_obj = new $controller_name();
             $controller_obj->$action_name();
             if ($controller_obj->_auto_display) {
                 if ($auto_tpl_file_exists) $controller_obj->display($auto_tpl_name);
             }
-        }else{
+        } else {
             $controller_obj = new Controller();
             if ($auto_tpl_file_exists) $controller_obj->display($auto_tpl_name);
         }
-        Log::debug('Clean','Total time-consuming: ' . strval((microtime(true) - $GLOBALS['start']) * 1000) . 'ms');
+        Log::debug('Clean', 'Total time-consuming: ' . strval((microtime(true) - $GLOBALS['start']) * 1000) . 'ms');
 
     }
 

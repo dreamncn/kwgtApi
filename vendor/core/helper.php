@@ -4,11 +4,23 @@
 use app\vendor\debug\Dump;
 use app\vendor\web\Route;
 
-function url($m='index', $c = 'main', $a = 'index', $param = array())
+
+/*数据库常量*/
+define('SQL_INSERT_NORMAL', 0);
+define('SQL_INSERT_IGNORE', 1);
+define('SQL_INSERT_DUPLICATE', 2);
+/*类型常量*/
+define('PARAM_STRING', 0);
+define('PARAM_INT', 1);
+define('PARAM_BOOLEN', 2);
+define('PARAM_DOUBLE', 3);
+define('PARAM_NULL', 4);
+
+
+function url($m = 'index', $c = 'main', $a = 'index', $param = array())
 {
     return Route::url(...func_get_args());
 }
-
 
 
 /**
@@ -18,9 +30,9 @@ function url($m='index', $c = 'main', $a = 'index', $param = array())
 
 function dump($var, $exit = false)
 {
-    if(isConsole()){
+    if (isConsole()) {
         $line = debug_backtrace()[0]['file'] . ':' . debug_backtrace()[0]['line'];
-        echo $line."\n";
+        echo $line . "\n";
         var_dump($var);
         if ($exit) exit;
         return;
@@ -43,12 +55,13 @@ EOF;
 /**
  * @param null $name
  * @param null $default
- * @param bool $trim 移除字符串两侧的空白字符或其他预定义字符
+ * @param int $type
  * @param null $filter
+ * @param bool $trim
  * @return mixed|string|null
  */
 
-function arg($name = null, $default = null, $trim = false, $filter = null)
+function arg($name = null, $default = null, $type = PARAM_STRING, $filter = null, $trim = true)
 {
     switch ($filter) {
         case Route::Get:
@@ -86,22 +99,25 @@ function chkCode($string)
 }
 
 
-
 /**
  * 判断当前是否为调试状态
  * @return bool
  */
-function isDebug(){
-    return isset($GLOBALS["frame"]['debug'])&&$GLOBALS["frame"]['debug'];
+function isDebug()
+{
+    return isset($GLOBALS["frame"]['debug']) && $GLOBALS["frame"]['debug'];
 }
+
 /**
  * 判断当前是否为命令行状态
  * @return bool
  */
-function isConsole(){
+function isConsole()
+{
 
-    return isset($_SERVER['CLEAN_CONSOLE'])&&$_SERVER['CLEAN_CONSOLE'];
+    return isset($_SERVER['CLEAN_CONSOLE']) && $_SERVER['CLEAN_CONSOLE'];
 }
+
 /**
  * 取随机字符串
  * @param int $length

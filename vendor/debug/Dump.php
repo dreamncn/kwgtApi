@@ -4,58 +4,64 @@
  ******************************************************************************/
 
 namespace app\vendor\debug;
+
 use ReflectionClass;
 use ReflectionException;
 
-class Dump{
+class Dump
+{
 
-    private function dumpString($param) {
+    private function dumpString($param)
+    {
 
-        $str = sprintf("<small style='color: #333;font-weight: bold'>string</small> <font color='#cc0000'>'%s'</font> <i>(length=%d)</i>",htmlspecialchars(chkCode($param)),strlen($param));
+        $str = sprintf("<small style='color: #333;font-weight: bold'>string</small> <font color='#cc0000'>'%s'</font> <i>(length=%d)</i>", htmlspecialchars(chkCode($param)), strlen($param));
         echo $str;
     }
 
-    private function dumpArr($param,$i=0) {
+    private function dumpArr($param, $i = 0)
+    {
 
         $len = count($param);
-        $space='';
-        for($m=0;$m<$i;$m++)
-            $space.= "    ";
+        $space = '';
+        for ($m = 0; $m < $i; $m++)
+            $space .= "    ";
         $i++;
         echo "<b style='color: #333;'>array</b> <i style='color: #333;'>(size=$len)</i> \r\n";
-        if($len===0)
-            echo $space."  <i><font color=\"#888a85\">empty</font></i> \r\n";
-        foreach($param as $key=>$val) {
-            $str=htmlspecialchars(chkCode($key),strlen($key));
-            echo $space.sprintf("<i style='color: #333;'> %s </i><font color='#888a85'>=&gt;",$str);
-            $this->dumpType($val,$i);
+        if ($len === 0)
+            echo $space . "  <i><font color=\"#888a85\">empty</font></i> \r\n";
+        foreach ($param as $key => $val) {
+            $str = htmlspecialchars(chkCode($key), strlen($key));
+            echo $space . sprintf("<i style='color: #333;'> %s </i><font color='#888a85'>=&gt;", $str);
+            $this->dumpType($val, $i);
             echo "</font> \r\n";
         }
         //echo "\r\n";
     }
 
-    private function dumpObj($param,$i=0) {
+    private function dumpObj($param, $i = 0)
+    {
         $className = get_class($param);
-        if($className=='stdClass'&&$result=json_encode($param)){
-            $this->dumpArr(json_decode($result,true),$i);
+        if ($className == 'stdClass' && $result = json_encode($param)) {
+            $this->dumpArr(json_decode($result, true), $i);
             return;
         }
         static $objId = 1;
         echo "<b style='color: #333;'>Object</b> <i style='color: #333;'>$className</i>";
         $objId++;
-        $this->dumpProp($param,$className,$objId);
+        $this->dumpProp($param, $className, $objId);
 
     }
-    public  function dumpProp($obj,$className,$num)
+
+    public function dumpProp($obj, $className, $num)
     {
-        if($className==get_class($obj)&&$num>2)return;
+        if ($className == get_class($obj) && $num > 2) return;
         static $pads = [];
         try {
             $reflect = new ReflectionClass($obj);
         } catch (ReflectionException $e) {
             $reflect = null;
         }
-        if(!$reflect){
+        if (!$reflect) {
             echo "Something Err";
             return;
         }
@@ -69,19 +75,21 @@ class Dump{
 
             $prop[$index]->setAccessible(true);
             $prop_name = $prop[$index]->getName();
-            echo "\n", implode('', $pads),sprintf("<i style='color: #333;'> %s </i><font color='#888a85'>=&gt;",$prop_name);
-            $this->dumpType($prop[$index]->getValue($obj),$num);
+            echo "\n", implode('', $pads), sprintf("<i style='color: #333;'> %s </i><font color='#888a85'>=&gt;", $prop_name);
+            $this->dumpType($prop[$index]->getValue($obj), $num);
         }
         array_pop($pads);
     }
-    public function dumpType($param,$i=0){
 
-        switch(gettype($param)) {
+    public function dumpType($param, $i = 0)
+    {
+
+        switch (gettype($param)) {
             case 'NULL' :
                 echo '<span style="color: #3465a4">null</span>';
                 break;
             case 'boolean' :
-                echo '<small style="color: #333;font-weight: bold">boolean</small> <span style="color:#75507b">'.($param?'true':'false')."</span>";
+                echo '<small style="color: #333;font-weight: bold">boolean</small> <span style="color:#75507b">' . ($param ? 'true' : 'false') . "</span>";
                 break;
             case 'integer' :
                 echo "<small style='color: #333;font-weight: bold'>int</small> <font color='#4e9a06'>$param</font>";
@@ -93,10 +101,10 @@ class Dump{
                 $this->dumpString($param);
                 break;
             case 'array' :
-                $this->dumpArr($param,$i);
+                $this->dumpArr($param, $i);
                 break;
             case 'object' :
-                $this->dumpObj($param,$i);
+                $this->dumpObj($param, $i);
                 break;
             case 'resource' :
                 echo '<font color=\'#3465a4\'>resource</font>';

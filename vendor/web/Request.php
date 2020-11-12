@@ -1,15 +1,16 @@
 <?php
+
 namespace app\vendor\web;
 /**
  * Class Request
  * @package app\lib\Web
  * Web拓展类
  */
-
 class Request
 {
-    public static function getHeader() {
-        if(function_exists('getallheaders'))return getallheaders();
+    public static function getHeader()
+    {
+        if (function_exists('getallheaders')) return getallheaders();
         $headers = array();
         foreach ($_SERVER as $key => $value) {
             if ('HTTP_' == substr($key, 0, 5)) {
@@ -29,6 +30,7 @@ class Request
         }
         return $headers;
     }
+
     /**
      * 获取客户端浏览器信息 添加win10 edge浏览器判断
      * @param null
@@ -163,31 +165,39 @@ class Request
             $ip = "127.0.0.1";
         return $ip;
     }
+
     /**
      * 是否为Pjax请求
      * @return bool
      */
-    public static function isPjax(){
+    public static function isPjax()
+    {
         return (isset($_SERVER['HTTP_X_PJAX']) && $_SERVER['HTTP_X_PJAX'] == 'true');
     }
+
     /**
      * 是否是AJAx提交的
      * @return bool
      */
-    public static function isAjax(){
+    public static function isAjax()
+    {
         return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
     }
+
     /**
      * 是否是GET提交的
      */
-    public static function isGet(){
+    public static function isGet()
+    {
         return $_SERVER['REQUEST_METHOD'] == 'GET';
     }
+
     /**
      * 是否是POST提交
      * @return int
      */
-    public static function isPost() {
+    public static function isPost()
+    {
         return $_SERVER['REQUEST_METHOD'] == 'POST';
     }
 }

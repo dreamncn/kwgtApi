@@ -1,0 +1,11 @@
+---
+# 路由配置
+"index/main-api-<id>.asp": "index/main/api"
+"admin-<id>.html": "index/main/admin"
+"<file>.php": "index/main/test"
+
+"dontgo/<c>/<a>": "admin/<c>/<a>"
+# index页面路由
+"": "index/main/index"
+# 默认路由方案
+"<m>/<c>/<a>": "<m>/<c>/<a>"

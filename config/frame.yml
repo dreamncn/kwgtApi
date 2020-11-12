@@ -1,0 +1,9 @@
+---
+host:
+  # 绑定域名
+  - "localhost:8080"
+  - "localhost"
+crossDomain: [ ]
+# 允许跨域的域名，要求是数组
+#是否为调试模式
+debug: true
