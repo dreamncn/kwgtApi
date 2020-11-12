@@ -23,7 +23,6 @@ class Config
             }
             exit('Something error,please contact to this site administrator.');
         }
-        // $GLOBALS["database"]= ConfigManger::getInstance("db")->get();
         $GLOBALS["route"] = ConfigManger::getInstance("route")->get();
 
     }

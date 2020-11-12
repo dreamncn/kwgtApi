@@ -73,7 +73,7 @@ class Main extends BaseController
 
     public function config()
     {
-        $data = Config::getInstance("config")->get();
+        $data = Config::getInstance("db")->get();
         dump($data);
         Config::getInstance("config")->setAll([
             "api_okkk" => 1121211,

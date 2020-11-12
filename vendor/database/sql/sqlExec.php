@@ -39,12 +39,11 @@ class sqlExec
         $this->getDbFile();
     }
 
-    private function getDbData()
+    public function getDbData()
     {
         if ($this->dbData === null) {
             return $this->getDbFile();
-        }
-        return $this->dbData === null;
+        }else return $this->dbData;
     }
 
     private function getDbFile()
@@ -62,7 +61,7 @@ class sqlExec
     {
         $this->getDbFile();
         $this->sqlIndex = $sqlIndex;
-        $this->sqlType = isset($this->getDbData()[$sqlIndex]['type']) ? $GLOBALS['database'][$sqlIndex]['type'] : "mysql";
+        $this->sqlType = isset($this->getDbData()[$sqlIndex]['type']) ? $this->getDbData()[$sqlIndex]['type'] : "mysql";
         return $this;
     }
 

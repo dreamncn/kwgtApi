@@ -118,7 +118,7 @@ class Insert extends sqlBase
     {
         $this->translateSql();
         $this->sql->execute($this->traSql, $this->bindParam, false);
-        return $this->sql->dbInstance($GLOBALS['database'][$this->sql->sqlIndex])->lastInsertId();
+        return $this->sql->dbInstance($this->sql->getDbData()[$this->sql->sqlIndex])->lastInsertId();
     }
 
 }
