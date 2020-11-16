@@ -10,36 +10,49 @@ class EventManager
     private static $eventList = [];
 
     /**
-     * 绑定事件
-     * @param EventSource $eventObject
-     * @param EventListener $listener
+     * 自动注册事件
      */
-    public static function attach(EventSource $eventObject, EventListener $listener)
+    public static function register(){
+        $data = scandir(APP_EXTEND);
+        foreach ($data as $value) {
+            if ($value != '.' && $value != '..') {
+                $file = APP_EXTEND . DS . $value . DS . 'register.php';
+                if (file_exists($file)) include $file;
+            }
+        }
+    }
+    /**
+     * 绑定事件
+     * @param String $eventName
+     * @param String $listener
+     */
+    public static function attach(String $eventName, String $listener)
     {
         //一个事件名绑定多个监听器
-        self::$eventList[$eventObject->getEventName()][] = $listener;
+        self::$eventList[$eventName][] = $listener;
     }
 
     /**
      * 解除绑定事件
-     * @param EventSource $eventObject
+     * @param String $eventName
      */
-    public static function detach(EventSource $eventObject)
+    public static function detach($eventName)
     {
-        unset(self::$eventList[$eventObject->getEventName()]);
+        unset(self::$eventList[$eventName]);
     }
 
     /**
      * 触发事件
-     * @param EventSource $eventObject
+     * @param String $eventName
+     * @param $data
      */
-    public static function fire(EventSource $eventObject)
+    public static function fire(string $eventName, $data)
     {
         foreach (self::$eventList as $attachEventName => $listenerList) {
             //匹配监听列表
-            if ($eventObject->getEventName() == $attachEventName) {
+            if ($eventName == $attachEventName) {
                 foreach ($listenerList as $eventListener) {
-                    $eventListener->handleEvent($eventObject->getEventData());
+                    (new $eventListener())->handleEvent($data);
                 }
             }
         }

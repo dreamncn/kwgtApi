@@ -46,12 +46,14 @@ class Config
     public function setAll($data)
     {
         $this->fileData = $data;
-        file_put_contents($this->fileName, Spyc::YAMLDump($this->fileData));
+        $file = $this->path . $this->fileName;
+        file_put_contents($file, Spyc::YAMLDump($this->fileData));
     }
 
     public function set($key, $val)
     {
         $this->fileData[$key] = $val;
-        file_put_contents($this->fileName, Spyc::YAMLDump($this->fileData));
+        $file = $this->path . $this->fileName;
+        file_put_contents($file, Spyc::YAMLDump($this->fileData));
     }
 }

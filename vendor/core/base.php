@@ -4,6 +4,7 @@ namespace app\vendor\core;
 
 use app\vendor\debug\Error;
 use app\vendor\debug\Log;
+use app\vendor\event\EventManager;
 
 date_default_timezone_set('PRC');
 define('FRAME_VERSION', '2.0');
@@ -16,7 +17,7 @@ define('APP_CACHE', APP_STORAGE . 'cache' . DS);//缓存文件
 define('APP_ROUTE', APP_STORAGE . 'route' . DS);//路由缓存文件
 define('APP_LOG', APP_STORAGE . 'logs' . DS);//日志文件
 define('APP_TRASH', APP_STORAGE . 'trash' . DS);//垃圾文件
-define('APP_EXTEND', APP_STORAGE . 'extend' . DS);//拓展目录
+define('APP_EXTEND', APP_DIR. DS . 'extend' . DS);//拓展目录
 define('APP_CONF', APP_DIR . DS . 'config' . DS);
 define('APP_LIB', APP_DIR . DS . 'lib' . DS);
 define('APP_VIEW', APP_DIR . DS . 'static' . DS . 'view' . DS);
@@ -35,7 +36,13 @@ Loader::register();
 Config::register();
 // 注册错误和异常处理机制
 Error::register();
+// 事件模型注册
+EventManager::register();
+
 $GLOBALS['start'] = microtime(true);
+
+EventManager::fire("beforeRunFrame",null);
+
 Log::debug("clean", '----------------------------------------------------------------------------------------------');
 Log::debug("clean", 'Basic loading completed,Framework startup.');
 

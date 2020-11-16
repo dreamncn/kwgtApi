@@ -5,6 +5,7 @@ namespace app\vendor\core;
 
 use app\vendor\debug\Error;
 use app\vendor\debug\Log;
+use app\vendor\event\EventManager;
 use app\vendor\mvc\Controller;
 use app\vendor\web\Route;
 
@@ -46,6 +47,7 @@ class Clean
             header('Access-Control-Allow-Origin:' . $origin);
         }
 
+        EventManager::fire("afterFrameInit",null);
 
     }
 
@@ -56,7 +58,7 @@ class Clean
 
         $controller_name = ucfirst($__controller);
         $action_name = $__action;
-
+        Log::debug('clean', "[MVC] $__module/$controller_name/$action_name");
         Log::debug('mvc', 'Module: ' . $__module);
         Log::debug('mvc', 'Controller: ' . $controller_name);
         Log::debug('mvc', 'Action: ' . $action_name);

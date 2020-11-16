@@ -9,12 +9,7 @@ use app\vendor\web\Route;
 define('SQL_INSERT_NORMAL', 0);
 define('SQL_INSERT_IGNORE', 1);
 define('SQL_INSERT_DUPLICATE', 2);
-/*类型常量*/
-define('PARAM_STRING', 0);
-define('PARAM_INT', 1);
-define('PARAM_BOOLEN', 2);
-define('PARAM_DOUBLE', 3);
-define('PARAM_NULL', 4);
+
 
 
 function url($m = 'index', $c = 'main', $a = 'index', $param = array())
@@ -55,27 +50,12 @@ EOF;
 /**
  * @param null $name
  * @param null $default
- * @param int $type
- * @param null $filter
  * @param bool $trim
  * @return mixed|string|null
  */
 
-function arg($name = null, $default = null, $type = PARAM_STRING, $filter = null, $trim = true)
+function arg($name = null, $default = null, $trim = true)
 {
-    switch ($filter) {
-        case Route::Get:
-            $_REQUEST = $_GET;
-            break;
-        case Route::Post:
-            $_REQUEST = $_POST;
-            break;
-        case Route::Cookie:
-            $_REQUEST = $_COOKIE;
-            break;
-        default:
-    }
-    if (!isset($_REQUEST['m'])) $_REQUEST['m'] = 'index';
     if ($name) {
         if (!isset($_REQUEST[$name])) return $default;
         $arg = $_REQUEST[$name];
@@ -120,12 +100,24 @@ function isConsole()
 
 /**
  * 取随机字符串
- * @param int $length
+ * @param int $length 字符串长度
+ * @param bool $upper 是否包含大写字母
+ * @param bool $lower 是否包含小写字母
+ * @param bool $number 是否包含数字
  * @return string
  */
-function getRandom($length = 8)
+function getRandom($length = 8,$upper=true,$lower=true,$number=true)
 {
-    $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $charsList=[
+        'abcdefghijklmnopqrstuvwxyz',
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        '0123456789'
+    ];
+    $chars="";
+    if($upper)$chars.=$charsList[0];
+    if($lower)$chars.=$charsList[1];
+    if($number)$chars.=$charsList[2];
+    if($chars==="")$chars=$charsList[2];
     $password = '';
     for ($i = 0; $i < $length; $i++) {
         $password .= $chars[mt_rand(0, strlen($chars) - 1)];

@@ -5,6 +5,7 @@ namespace app\vendor\web;
 use app\vendor\cache\Cache;
 use app\vendor\debug\Error;
 use app\vendor\debug\Log;
+use app\vendor\event\EventManager;
 
 /**
  * Class Route
@@ -82,6 +83,7 @@ class Route
 
     public static function rewrite()
     {
+
         //不允许的参数
         if (isset($_REQUEST['m']) || isset($_REQUEST['a']) || isset($_REQUEST['c'])) {
             Error::_err_router("The following parameters are not allowed：m,a,c!");
@@ -141,12 +143,14 @@ class Route
             Log::debug('route', 'Rewrite Cache: ' . $real);
         }
 
-        $_REQUEST = array_merge($_GET, $_POST, $_COOKIE, $route_arr_cp);
+        $_REQUEST = array_merge($_GET, $_POST, $route_arr_cp);
 
         global $__module, $__controller, $__action;
         $__module = $_REQUEST['m'];
         $__controller = $_REQUEST['c'];
         $__action = $_REQUEST['a'];
+
+        EventManager::fire("afterRoute",[$__module, $__controller, $__action]);
     }
 
     public static function convertUrl()
