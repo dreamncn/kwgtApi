@@ -17,10 +17,30 @@ namespace app\vendor\database\sql;
 
 use app\vendor\debug\Error;
 
+/**
+ * +----------------------------------------------------------
+ * Class Insert
+ * +----------------------------------------------------------
+ * @package app\vendor\database\sql
+ * +----------------------------------------------------------
+ * Date: 2020/11/21 12:40 下午
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption:插入语句的语法糖包装
+ * +----------------------------------------------------------
+ */
 class Insert extends sqlBase
 {
-    /*SQL语句插入方式*/
-    public function insert($model = SQL_INSERT_NORMAL)
+	/**
+	 * +----------------------------------------------------------
+	 * 用来初始化的
+	 * +----------------------------------------------------------
+	 * @param  int  $model
+	 * +----------------------------------------------------------
+	 * @return $this
+	 * +----------------------------------------------------------
+	 */
+	public function insert($model = SQL_INSERT_NORMAL)
     {
         $this->opt = [];
         $this->opt['tableName'] = $this->tableName;
@@ -30,43 +50,60 @@ class Insert extends sqlBase
         return $this;
     }
 
-    public function table($table_name)
+	/**
+	 * +----------------------------------------------------------
+	 * 设置表
+	 * +----------------------------------------------------------
+	 * @param $table_name
+	 * +----------------------------------------------------------
+	 * @return Insert
+	 * +----------------------------------------------------------
+	 */
+	public function table($table_name)
     {
         return parent::table($table_name);
     }
 
-    public function where($conditions)
+	/**
+	 * +----------------------------------------------------------
+	 * 设置查询条件
+	 * +----------------------------------------------------------
+	 * @param $conditions
+	 * +----------------------------------------------------------
+	 * @return Insert
+	 * +----------------------------------------------------------
+	 */
+	public function where($conditions)
     {
         return parent::where($conditions);
     }
 
-    public function keyValue($kv)
+	/**
+	 * +----------------------------------------------------------
+	 * 设置添加的kv数组
+	 * +----------------------------------------------------------
+	 * @param $kv array 数组对应的插入值
+	 * +----------------------------------------------------------
+	 * @return Insert
+	 * +----------------------------------------------------------
+	 */
+	public function keyValue($kv)
     {
         $key = array_keys($kv);
         $value = array_values($kv);
         return $this->keys($key)->values([$value]);
     }
 
-    public function keys($key, $colums = array())
-    {
-        if ($this->opt['model'] == SQL_INSERT_DUPLICATE && sizeof($colums) == 0) {
-            Error::err('Database Err: duplicate insert must have update field');
-        }
-        $value = '';
-        foreach ($key as $v) {
-            $value .= "`{$v}`,";
-        }
-        $value = '(' . rtrim($value, ",") . ')';
-        $this->opt['key'] = $value;
-        foreach ($colums as $k) {
-            $update[] = "`{$k}`" . " = VALUES(" . $k . ')';
-        }
-        if ($colums !== [])
-            $this->opt['colums'] = implode(', ', $update);
-        return $this;
-    }
-
-    public function values($row)
+	/**
+	 * +----------------------------------------------------------
+	 * 插入值
+	 * +----------------------------------------------------------
+	 * @param $row array 需要插入的数组
+	 * +----------------------------------------------------------
+	 * @return $this
+	 * +----------------------------------------------------------
+	 */
+	public function values($row)
     {
         $length = sizeof($row);
         $k = 0;
@@ -89,7 +126,55 @@ class Insert extends sqlBase
         return $this;
     }
 
-    private function translateSql()
+	/**
+	 * +----------------------------------------------------------
+	 * 需要插入的Key
+	 * +----------------------------------------------------------
+	 * @param    array     $key
+	 * @param  array  $columns
+	 * +----------------------------------------------------------
+	 * @return $this
+	 * +----------------------------------------------------------
+	 */
+	public function keys($key, $columns = [])
+    {
+        if ($this->opt['model'] == SQL_INSERT_DUPLICATE && sizeof($columns) == 0) {
+            Error::err('数据库错误：DUPLICATE模式必须具有更新字段。');
+        }
+        $value = '';
+        foreach ($key as $v) {
+            $value .= "`{$v}`,";
+        }
+        $value = '(' . rtrim($value, ",") . ')';
+        $this->opt['key'] = $value;
+        foreach ($columns as $k) {
+            $update[] = "`{$k}`" . " = VALUES(" . $k . ')';
+        }
+        if ($columns !== [])
+            $this->opt['columns'] = implode(', ', $update);
+        return $this;
+    }
+
+	/**
+	 * +----------------------------------------------------------
+	 * 提交修改
+	 * +----------------------------------------------------------
+	 * @return mixed
+	 * +----------------------------------------------------------
+	 */
+	public function commit()
+    {
+        $this->translateSql();
+        $this->sql->execute($this->traSql, $this->bindParam, false);
+        return $this->sql->dbInstance($this->sql->getDbData()[$this->sql->sqlIndex])->lastInsertId();
+    }
+
+	/**
+	 * +----------------------------------------------------------
+	 * 构造sql
+	 * +----------------------------------------------------------
+	 */
+	private function translateSql()
     {
         $sql = '';
         switch ($this->opt['model']) {
@@ -97,7 +182,7 @@ class Insert extends sqlBase
                 $sql .= $this->getOpt('INSERT INTO', 'tableName');
                 $sql .= $this->getOpt('', 'key');
                 $sql .= $this->getOpt('VALUES', 'values');
-                $sql .= $this->getOpt('ON DUPLICATE KEY UPDATE', 'colums');
+                $sql .= $this->getOpt('ON DUPLICATE KEY UPDATE', 'columns');
                 break;
             case SQL_INSERT_NORMAL:
                 $sql .= $this->getOpt('INSERT INTO', 'tableName');
@@ -112,13 +197,6 @@ class Insert extends sqlBase
         }
         $this->traSql = $sql . ";";
 
-    }
-
-    public function commit()
-    {
-        $this->translateSql();
-        $this->sql->execute($this->traSql, $this->bindParam, false);
-        return $this->sql->dbInstance($this->sql->getDbData()[$this->sql->sqlIndex])->lastInsertId();
     }
 
 }

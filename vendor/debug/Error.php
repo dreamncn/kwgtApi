@@ -8,162 +8,136 @@ namespace app\vendor\debug;
 
 use app\vendor\web\Response;
 use Exception;
-use Throwable;
 
+/**
+ * +----------------------------------------------------------
+ * Class Error
+ * +----------------------------------------------------------
+ * @package app\vendor\debug
+ * +----------------------------------------------------------
+ * Date: 2020/11/20 12:09 上午
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption:框架错误处理
+ * +----------------------------------------------------------
+ */
 class Error
 {
-    /**
-     * 注册异常处理
-     * @access public
-     * @return void
-     */
-    public static function register()
-    {
-        error_reporting(E_ALL);
-        set_error_handler([__CLASS__, 'appError']);
-        set_exception_handler([__CLASS__, 'appException']);
-        register_shutdown_function([__CLASS__, 'appShutdown']);
-    }
 
-    /**
-     * 异常处理
-     * @access public
-     * @param Exception|Throwable $e 异常
-     * @return void
-     */
-    public static function appException($e)
-    {
-        $err = explode('Stack trace:', $e);
-        if (sizeof($err) !== 2) {
-            self::err($e);
-        } else {
-            $msg = $err[0];
-            $isMatched = preg_match_all('/in\s(.*php):([0-9]+)/', $msg, $matches);
-            if ($isMatched) {
-                $trace["file"] = $matches[1][0];
-                $trace["line"] = $matches[2][0];
-                $traces[] = $trace;
-            }
-            $isMatched = preg_match_all('/#[0-9]+\s(.*php)\((.*?)\):/', $err[1], $matches);
-            if ($isMatched) {
-                for ($i = 0; $i < $isMatched; $i++) {
-                    $trace["file"] = $matches[1][$i];
-                    $trace["line"] = $matches[2][$i];
-                    $traces[] = $trace;
-                }
-                self::err($msg, $traces);
-            } else self::err($msg);
-        }
-
-    }
-
-    /**
-     * 直接报错函数
-     * @param $msg
-     * @param array $errinfo
-     */
-    public static function err($msg, $errinfo = array())
-    {
-
-        $msg = htmlspecialchars($msg);
-        $traces = sizeof($errinfo) === 0 ? debug_backtrace() : $errinfo;
-        if (ob_get_contents()) ob_end_clean();
-
-        Log::warn("error", $msg);
+	/**
+	 * +----------------------------------------------------------
+	 * 注册错误处理机制
+	 * +----------------------------------------------------------
+	 */
+	public static function register()
+	{
+		error_reporting(E_ALL);
+		set_error_handler([__CLASS__, 'appError']);
+		set_exception_handler([__CLASS__, 'appException']);
+		register_shutdown_function([__CLASS__, 'appShutdown']);
+	}
 
 
-        if (!isDebug()) {
-            global $__module, $__controller, $__action;
-            $nameBase = "app\\controller\\$__module\\BaseController";
-
-            if (method_exists($nameBase, 'err500'))
-                $nameBase::err500($__module, $__controller, $__action, $msg);
-            else {
-                Response::msg(true, 500, 'System Error', 'Something bad.', 3, '/', '立即跳转');
-            }
-
-        } else {
-            global $__module;
-            $__module = '';
-            self::display($msg, $traces);
-        }
-        exit(-1);
-    }
-
-    /**
-     * 代码高亮
-     * @param $code
-     * @return string|string[]
-     */
-    public static function _err_highlight_code($code)
-    {
-        $code = preg_replace('/(\/\*\*)/', '///**', $code);
-        $code = preg_replace('/(\s\*)[^\/]/', '//*', $code);
-        $code = preg_replace('/(\*\/)/', '//*/', $code);
-        if (preg_match('/<\?(php)?[^[:graph:]]/i', $code)) {
-            $return = highlight_string($code, TRUE);
-        } else {
-            $return = preg_replace('/(&lt;\?php&nbsp;)+/i', "", highlight_string("<?php " . $code, true));
-        }
-        return str_replace(array('//*/', '///**', '//*'), array('*/', '/**', '*'), $return);
-    }
-
-    /**
-     *
-     * @param $file
-     * @param $line
-     * @return array|mixed
-     */
-    public static function _err_getsource($file, $line)
-    {
-
-        if (!(file_exists($file) && is_file($file))) {
-            return $GLOBALS['error'];
-        }
-        $data = file($file);
-        $count = count($data) - 1;
-        $start = $line - 5;
-        if ($start < 1) {
-            $start = 1;
-        }
-        $end = $line + 5;
-        if ($end > $count) {
-            $end = $count + 1;
-        }
-        $returns = array();
-        for ($i = $start; $i <= $end; $i++) {
-            if ($i == $line) {
-                $returns[] = "<div id='current'>" . $i . ".&nbsp;" . self::_err_highlight_code($data[$i - 1]) . "</div>";
-            } else {
-                $returns[] = $i . ".&nbsp;" . self::_err_highlight_code($data[$i - 1]);
-            }
-        }
-        return $returns;
-    }
+	/**
+	 * +----------------------------------------------------------
+	 * 异常退出
+	 * +----------------------------------------------------------
+	 * @param $e
+	 * +----------------------------------------------------------
+	 */
+	public static function appException($e)
+	{
+		$err = explode('Stack trace:', $e);
+		if (sizeof($err) !== 2) {
+			self::err($e);
+		} else {
+			$msg       = $err[0];
+			$isMatched = preg_match_all('/in\s(.*php):([0-9]+)/', $msg,
+				$matches);
+			if ($isMatched) {
+				$trace["file"] = $matches[1][0];
+				$trace["line"] = $matches[2][0];
+				$traces[]      = $trace;
+			}
+			$isMatched = preg_match_all('/#[0-9]+\s(.*php)\((.*?)\):/', $err[1],
+				$matches);
+			if ($isMatched) {
+				for ($i = 0; $i < $isMatched; $i++) {
+					$trace["file"] = $matches[1][$i];
+					$trace["line"] = $matches[2][$i];
+					$traces[]      = $trace;
+				}
+				self::err($msg, $traces);
+			} else {
+				self::err($msg);
+			}
+		}
+	}
 
 
-    /**
-     * 错误渲染
-     * @param $msg
-     * @param $traces
-     */
-    public static function display($msg, $traces)
-    {
+	/**
+	 * +----------------------------------------------------------
+	 * 报错退出
+	 * +----------------------------------------------------------
+	 * @param         $msg
+	 * @param  array  $errinfo
+	 * +----------------------------------------------------------
+	 */
+	public static function err($msg, $errinfo = [])
+	{
+		$msg    = htmlspecialchars($msg);
+		$traces = sizeof($errinfo) === 0 ? debug_backtrace() : $errinfo;
+		if (ob_get_contents()) {
+			ob_end_clean();
+		}
+
+		Log::warn("error", $msg);
 
 
-        if (isConsole()) {
-            echo $msg . "\n";
+		if ( ! isDebug()) {
+			global $__module, $__controller, $__action;
+			$nameBase = "app\\controller\\$__module\\BaseController";
 
-            foreach ($traces as $trace) {
-                if (is_array($trace) && !empty($trace["file"])) {
-                    echo "{$trace["file"]} on line {$trace["line"]}" . "\n";
-                }
-            }
+			if (method_exists($nameBase, 'err500')) {
+				$nameBase::err500($__module, $__controller, $__action, $msg);
+			} else {
+				Response::msg(true, 500, 'System Error', 'Something bad.', 3,
+					'/', '立即跳转');
+			}
+		} else {
+			global $__module;
+			$__module = '';
+			self::display($msg, $traces);
+		}
+		Log::debug('Clean', '出现异常: ' . $msg);
+		Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
+		exit();
+	}
 
-            return;
-        }
 
-        echo <<<EOF
+	/**
+	 * +----------------------------------------------------------
+	 * 渲染错误
+	 * +----------------------------------------------------------
+	 * @param $msg
+	 * @param $traces
+	 * +----------------------------------------------------------
+	 */
+	public static function display($msg, $traces)
+	{
+		if (isConsole()) {
+			echo $msg."\n";
+
+			foreach ($traces as $trace) {
+				if (is_array($trace) && ! empty($trace["file"])) {
+					echo "{$trace["file"]} on line {$trace["line"]}"."\n";
+				}
+			}
+
+			return;
+		}
+
+		echo <<<EOF
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="">
@@ -268,90 +242,176 @@ class Error
     <div id="contents"><h2>{$msg}</h2>
 EOF;
 
-        foreach ($traces as $trace) {
-            if (is_array($trace) && !empty($trace["file"])) {
-                $souceline = self::_err_getsource($trace["file"], $trace["line"]);
-                if ($souceline) {
-                    echo <<<EOF
+		foreach ($traces as $trace) {
+			if (is_array($trace) && ! empty($trace["file"])) {
+				$souceline = self::_err_getsource($trace["file"],
+					$trace["line"]);
+				if ($souceline) {
+					echo <<<EOF
                 <ul><li><span>{$trace["file"]} on line {$trace["line"]} </span></li></ul>
                 <div id="oneborder">
 EOF;
-                    foreach ($souceline as $singleline) echo $singleline;
-                    echo '</div>';
-                }
-            }
-        }
+					foreach ($souceline as $singleline) {
+						echo $singleline;
+					}
+					echo '</div>';
+				}
+			}
+		}
 
-        echo <<<EOF
+		echo <<<EOF
         </div>
 </div>
 <div style="clear:both;padding-bottom:50px;"></div>
 </body>
 </html>
 EOF;
-
-    }
-
-    /**
-     * 错误处理
-     * @access public
-     * @param integer $errno 错误编号
-     * @param integer $errstr 详细错误信息
-     * @param string $errfile 出错的文件
-     * @param integer $errline 出错行号
-     * @return void
-     */
-    public static function appError($errno, $errstr, $errfile = '', $errline = 0)
-    {
-        if (0 === error_reporting() || 30711 === error_reporting()) return;
-        $msg = "ERROR";
-        if ($errno == E_WARNING) $msg = "WARNING";
-        if ($errno == E_NOTICE) $msg = "NOTICE";
-        if ($errno == E_STRICT) $msg = "STRICT";
-        if ($errno == 8192) $msg = "DEPRECATED";
-        self::err("$msg: $errstr in $errfile on line $errline");
-
-    }
-
-    /**
-     * 异常中止处理
-     * @access public
-     * @return void
-     */
-    public static function appShutdown()
-    {
-        if (error_get_last()) {
-            $err = error_get_last();
-            self::err("Fatal error: {$err['message']} in {$err['file']} on line {$err['line']}");
-
-        }
-    }
-
-    /**
-     * 错误路由
-     * @param $msg
-     */
-    public static function _err_router($msg)
-    {
-        global $__module, $__controller, $__action;
-        $nameBase = "app\\controller\\$__module\\BaseController";
-
-        if (!isDebug()) {
-            if (method_exists($nameBase, 'err404')) {
-                $nameBase::err404($__module, $__controller, $__action, $msg);
-            } else {
-
-                Response::msg(true, 404, '404 Not Found', 'We don\'t konw this page.', 3, '/', '立即跳转');
-
-            }
-            Log::error('route', $msg);
-        } else {
-            self::err($msg);
-        }
+	}
 
 
-        exit(-1);
-    }
+	/**
+	 * +----------------------------------------------------------
+	 * 获取高亮源码
+	 * +----------------------------------------------------------
+	 * @param $file
+	 * @param $line
+	 * +----------------------------------------------------------
+	 * @return array|mixed
+	 * +----------------------------------------------------------
+	 */
+	public static function _err_getsource($file, $line)
+	{
+		if ( ! (file_exists($file) && is_file($file))) {
+			return $GLOBALS['error'];
+		}
+		$data  = file($file);
+		$count = count($data) - 1;
+		$start = $line - 5;
+		if ($start < 1) {
+			$start = 1;
+		}
+		$end = $line + 5;
+		if ($end > $count) {
+			$end = $count + 1;
+		}
+		$returns = [];
+		for ($i = $start; $i <= $end; $i++) {
+			if ($i == $line) {
+				$returns[] = "<div id='current'>".$i.".&nbsp;"
+					.self::_err_highlight_code($data[$i - 1])."</div>";
+			} else {
+				$returns[] = $i.".&nbsp;".self::_err_highlight_code($data[$i
+					- 1]);
+			}
+		}
+
+		return $returns;
+	}
+
+
+	/**
+	 * +----------------------------------------------------------
+	 * 代码高亮
+	 * +----------------------------------------------------------
+	 * @param $code
+	 * +----------------------------------------------------------
+	 * @return string|string[]
+	 * +----------------------------------------------------------
+	 */
+	public static function _err_highlight_code($code)
+	{
+		$code = preg_replace('/(\/\*\*)/', '///**', $code);
+		$code = preg_replace('/(\s\*)[^\/]/', '//*', $code);
+		$code = preg_replace('/(\*\/)/', '//*/', $code);
+		if (preg_match('/<\?(php)?[^[:graph:]]/i', $code)) {
+			$return = highlight_string($code, true);
+		} else {
+			$return = preg_replace('/(&lt;\?php&nbsp;)+/i', "",
+				highlight_string("<?php ".$code, true));
+		}
+
+		return str_replace(['//*/', '///**', '//*'], ['*/', '/**', '*'],
+			$return);
+	}
+
+
+	/**
+	 * +----------------------------------------------------------
+	 * 报错退出
+	 * +----------------------------------------------------------
+	 * @param          $errno
+	 * @param          $errstr
+	 * @param  string  $errfile
+	 * @param  int     $errline
+	 * +----------------------------------------------------------
+	 */
+	public static function appError(
+		$errno,
+		$errstr,
+		$errfile = '',
+		$errline = 0
+	) {
+		if (0 === error_reporting() || 30711 === error_reporting()) {
+			return;
+		}
+		$msg = "ERROR";
+		if ($errno == E_WARNING) {
+			$msg = "WARNING";
+		}
+		if ($errno == E_NOTICE) {
+			$msg = "NOTICE";
+		}
+		if ($errno == E_STRICT) {
+			$msg = "STRICT";
+		}
+		if ($errno == 8192) {
+			$msg = "DEPRECATED";
+		}
+		self::err("$msg: $errstr in $errfile on line $errline");
+	}
+
+
+	/**
+	 * +----------------------------------------------------------
+	 * 无法恢复的异常
+	 * +----------------------------------------------------------
+	 */
+	public static function appShutdown()
+	{
+		if (error_get_last()) {
+			$err = error_get_last();
+			self::err("Fatal error: {$err['message']} in {$err['file']} on line {$err['line']}");
+		}
+	}
+
+
+	/**
+	 * +----------------------------------------------------------
+	 * 错误路由
+	 * +----------------------------------------------------------
+	 * @param $msg
+	 * +----------------------------------------------------------
+	 */
+	public static function _err_router($msg)
+	{
+		global $__module, $__controller, $__action;
+		$nameBase = "app\\controller\\$__module\\BaseController";
+
+		if ( ! isDebug()) {
+			if (method_exists($nameBase, 'err404')) {
+				$nameBase::err404($__module, $__controller, $__action, $msg);
+			} else {
+				Response::msg(true, 404, '404 Not Found', '无法找到该页面.', 3, '/',
+					'立即跳转');
+			}
+			Log::warn('route', $msg);
+		} else {
+			self::err($msg);
+		}
+		Log::debug('Clean', '出现路由错误: ' . $msg);
+		Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
+		exit();
+	}
 
 }
 

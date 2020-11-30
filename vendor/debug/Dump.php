@@ -8,37 +8,30 @@ namespace app\vendor\debug;
 use ReflectionClass;
 use ReflectionException;
 
+/**
+ * +----------------------------------------------------------
+ * Class Dump
+ * +----------------------------------------------------------
+ * @package app\vendor\debug
+ * +----------------------------------------------------------
+ * Date: 2020/11/20 11:24 下午
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption: 调试输出类
+ * +----------------------------------------------------------
+ */
 class Dump
 {
 
-    private function dumpString($param)
-    {
-
-        $str = sprintf("<small style='color: #333;font-weight: bold'>string</small> <font color='#cc0000'>'%s'</font> <i>(length=%d)</i>", htmlspecialchars(chkCode($param)), strlen($param));
-        echo $str;
-    }
-
-    private function dumpArr($param, $i = 0)
-    {
-
-        $len = count($param);
-        $space = '';
-        for ($m = 0; $m < $i; $m++)
-            $space .= "    ";
-        $i++;
-        echo "<b style='color: #333;'>array</b> <i style='color: #333;'>(size=$len)</i> \r\n";
-        if ($len === 0)
-            echo $space . "  <i><font color=\"#888a85\">empty</font></i> \r\n";
-        foreach ($param as $key => $val) {
-            $str = htmlspecialchars(chkCode($key), strlen($key));
-            echo $space . sprintf("<i style='color: #333;'> %s </i><font color='#888a85'>=&gt;", $str);
-            $this->dumpType($val, $i);
-            echo "</font> \r\n";
-        }
-        //echo "\r\n";
-    }
-
-    private function dumpObj($param, $i = 0)
+	/**
+	 * +----------------------------------------------------------
+	 * 输出对象
+	 * +----------------------------------------------------------
+	 * @param       $param
+	 * @param  int  $i
+	 * +----------------------------------------------------------
+	 */
+	private function dumpObj($param, $i = 0)
     {
         $className = get_class($param);
         if ($className == 'stdClass' && $result = json_encode($param)) {
@@ -52,7 +45,99 @@ class Dump
 
     }
 
-    public function dumpProp($obj, $className, $num)
+	/**
+	 * +----------------------------------------------------------
+	 * 输出数组
+	 * +----------------------------------------------------------
+	 * @param       $param
+	 * @param  int  $i
+	 * +----------------------------------------------------------
+	 */
+	private function dumpArr($param, $i = 0)
+    {
+
+        $len = count($param);
+        $space = '';
+        for ($m = 0; $m < $i; $m++)
+            $space .= "    ";
+        $i++;
+        echo "<b style='color: #333;'>array</b> <i style='color: #333;'>(size=$len)</i> \r\n";
+        if ($len === 0)
+            echo $space . "  <i  style='color: #888a85;'>empty</i> \r\n";
+        foreach ($param as $key => $val) {
+            $str = htmlspecialchars(chkCode($key), strlen($key));
+            echo $space . sprintf("<i style='color: #333;'> %s </i><i  style='color: #888a85;'>=&gt;", $str);
+            $this->dumpType($val, $i);
+            echo "</i> \r\n";
+        }
+    }
+
+	/**
+	 * +----------------------------------------------------------
+	 * 自动选择类型输出
+	 * +----------------------------------------------------------
+	 * @param       $param
+	 * @param  int  $i
+	 * +----------------------------------------------------------
+	 */
+	public function dumpType($param, $i = 0)
+    {
+
+        switch (gettype($param)) {
+            case 'NULL' :
+                echo '<span style="color: #3465a4">null</span>';
+                break;
+            case 'boolean' :
+                echo '<small style="color: #333;font-weight: bold">boolean</small> <span style="color:#75507b">' . ($param ? 'true' : 'false') . "</span>";
+                break;
+            case 'integer' :
+                echo "<small style='color: #333;font-weight: bold'>int</small> <i style='color:#4e9a06'>$param</i>";
+                break;
+            case 'double' :
+                echo "<small style='color: #333;font-weight: bold'>float</small> <i style='color:#f57900'>$param</i>";
+                break;
+            case 'string' :
+                $this->dumpString($param);
+                break;
+            case 'array' :
+                $this->dumpArr($param, $i);
+                break;
+            case 'object' :
+                $this->dumpObj($param, $i);
+                break;
+            case 'resource' :
+                echo '<i style=\'color:#3465a4\'>resource</i>';
+                break;
+            default :
+                echo '<i style=\'color:#3465a4\'>unknow type</i>';
+                break;
+        }
+    }
+
+	/**
+	 * +----------------------------------------------------------
+	 * 输出文本
+	 * +----------------------------------------------------------
+	 * @param $param
+	 * +----------------------------------------------------------
+	 */
+	private function dumpString($param)
+    {
+
+        $str = sprintf("<small style='color: #333;font-weight: bold'>string</small> <i style='color:#cc0000'>'%s'</i> <i>(length=%d)</i>", htmlspecialchars(chkCode($param)), strlen($param));
+        echo $str;
+    }
+
+	/**
+	 * +----------------------------------------------------------
+	 * 输出类对象
+	 * +----------------------------------------------------------
+	 * @param $obj
+	 * @param $className
+	 * @param $num
+	 * +----------------------------------------------------------
+	 */
+	public function dumpProp($obj, $className, $num)
     {
         if ($className == get_class($obj) && $num > 2) return;
         static $pads = [];
@@ -75,44 +160,10 @@ class Dump
 
             $prop[$index]->setAccessible(true);
             $prop_name = $prop[$index]->getName();
-            echo "\n", implode('', $pads), sprintf("<i style='color: #333;'> %s </i><font color='#888a85'>=&gt;", $prop_name);
+            echo "\n", implode('', $pads), sprintf("<i style='color: #333;'> %s </i><i style='color:#888a85'>=&gt;", $prop_name);
             $this->dumpType($prop[$index]->getValue($obj), $num);
         }
         array_pop($pads);
-    }
-
-    public function dumpType($param, $i = 0)
-    {
-
-        switch (gettype($param)) {
-            case 'NULL' :
-                echo '<span style="color: #3465a4">null</span>';
-                break;
-            case 'boolean' :
-                echo '<small style="color: #333;font-weight: bold">boolean</small> <span style="color:#75507b">' . ($param ? 'true' : 'false') . "</span>";
-                break;
-            case 'integer' :
-                echo "<small style='color: #333;font-weight: bold'>int</small> <font color='#4e9a06'>$param</font>";
-                break;
-            case 'double' :
-                echo "<small style='color: #333;font-weight: bold'>float</small> <font color='#f57900'>$param</font>";
-                break;
-            case 'string' :
-                $this->dumpString($param);
-                break;
-            case 'array' :
-                $this->dumpArr($param, $i);
-                break;
-            case 'object' :
-                $this->dumpObj($param, $i);
-                break;
-            case 'resource' :
-                echo '<font color=\'#3465a4\'>resource</font>';
-                break;
-            default :
-                echo '<font color=\'#3465a4\'>unknow type</font>';
-                break;
-        }
     }
 
 }

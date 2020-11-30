@@ -1,16 +1,16 @@
 <?php
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
 
 use app\vendor\core\Clean;
-
+//定义运行根目录
 define('APP_DIR', dirname(dirname(__FILE__)));
+//定义斜杠符号
 define('DS', DIRECTORY_SEPARATOR);
+//定义程序的核心目录
 define('APP_CORE', APP_DIR . DS . 'vendor' . DS);
+//载入基础函数
 require_once(APP_CORE . "core" . DS . "base.php");
-
-$installFile = APP_DIR . DS . "install" . DS . "index.php";
-
-if (is_file($installFile) && !is_file(APP_DIR . "install" . DS . "lock")) {
-    require_once($installFile);
-} else {
-    Clean::Run();
-}
+//框架启动
+Clean::Run();

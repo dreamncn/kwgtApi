@@ -1,8 +1,5 @@
 <component name="CopyrightManager">
   <settings default="Clean">
-    <module2copyright>
-      <element module="Project Files" copyright="Clean" />
-    </module2copyright>
     <LanguageOptions name="HTML">
       <option name="separateBefore" value="true" />
       <option name="separateAfter" value="true" />

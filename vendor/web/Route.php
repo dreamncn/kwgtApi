@@ -1,4 +1,7 @@
 <?php
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
 
 namespace app\vendor\web;
 
@@ -7,25 +10,36 @@ use app\vendor\debug\Error;
 use app\vendor\debug\Log;
 use app\vendor\event\EventManager;
 
+
 /**
+ * +----------------------------------------------------------
  * Class Route
- * @package app\vendor\lib
- * @note URL路由类
+ * +----------------------------------------------------------
+ * @package app\vendor\web
+ * +----------------------------------------------------------
+ * Date: 2020/11/22 11:24 下午
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption:路由类
+ * +----------------------------------------------------------
  */
 class Route
 {
-    const Post = 3;
-    const Get = 1;
-    const Cookie = 2;
 
-    /**
-     * @param $m
-     * @param $c
-     * @param $a
-     * @param array $params
-     * @return mixed
-     */
-    public static function url($m, $c, $a, $params = [])
+
+	/**
+	 * +----------------------------------------------------------
+	 * 路由URL生成
+	 * +----------------------------------------------------------
+	 * @param         $m
+	 * @param         $c
+	 * @param         $a
+	 * @param  array  $params
+	 * +----------------------------------------------------------
+	 * @return mixed|string
+	 * +----------------------------------------------------------
+	 */
+	public static function url($m, $c, $a, $params = [])
     {
         $paramsStr = empty($params) ? '' : '?' . http_build_query($params);
         $route = "$m/$c/$a";
@@ -81,12 +95,17 @@ class Route
 
     }
 
-    public static function rewrite()
+	/**
+	 * +----------------------------------------------------------
+	 * 路由重写
+	 * +----------------------------------------------------------
+	 */
+	public static function rewrite()
     {
-
+	    Log::debug('clean', '[Clean]响应URL: ' . Response::getNowAddress());
         //不允许的参数
         if (isset($_REQUEST['m']) || isset($_REQUEST['a']) || isset($_REQUEST['c'])) {
-            Error::_err_router("The following parameters are not allowed：m,a,c!");
+            Error::_err_router("以下参数名不允许：m,a,c!");
         }
 
         $url = strtolower(urldecode($_SERVER['REQUEST_URI']));
@@ -98,18 +117,18 @@ class Route
         }
         Log::debug("route", "--------------------------------");
         if ($data !== null && isset($data['real']) && isset($data['route'])) {
-            Log::debug('route', 'Find Rewrite Cache: ' . $url . ' => ' . $data['real']);
+            Log::debug('route', '发现路由缓存: ' . $url . ' => ' . $data['real']);
             $route_arr_cp = $data['route'];
 
         } else {
-            Log::debug('route', 'Not Find Rewrite Cache: ' . $url);
+            Log::debug('route', '未发现路由缓存: ' . $url);
             $route_arr = self::convertUrl();
 
-            Log::debug("route", "-> Match Rules:" . print_r($route_arr, true));
+            Log::debug("route", "-> 匹配规则:" . print_r($route_arr, true));
 
 
             if (!isset($route_arr['m']) || !isset($route_arr['a']) || !isset($route_arr['c'])) {
-                Error::_err_router("Error Route! We need at least three parameters.");
+                Error::_err_router("错误的路由! 我们需要至少三个参数.");
             }
 
             $route_arr = array_merge($_GET, $route_arr);//get中的参数直接覆盖
@@ -127,7 +146,7 @@ class Route
             unset($route_arr['a']);
 
             if (url($__module, $__controller, $__action, $route_arr) !== Response::getNowAddress()) {
-                Error::_err_router("Error Route! A defined route cannot be accessed directly.\nThis Address:" . Response::getNowAddress() . '  Regular Address:' . url($__module, $__controller, $__action, $route_arr));
+                Error::_err_router("错误的路由，该路由已被定义，请使用定义路由访问.\n当前地址:" . Response::getNowAddress() . '  定义的路由为:' . url($__module, $__controller, $__action, $route_arr));
             }
 
             $real = "$__module/$__controller/$__action";
@@ -136,11 +155,12 @@ class Route
             }
             $arr = [
                 'real' => $real,
-                'route' => $route_arr_cp
+                'route' => $route_arr_cp,
             ];
             if (!isDebug())
                 Cache::set($url, $arr);
-            Log::debug('route', 'Rewrite Cache: ' . $real);
+            Log::debug('route', '路由路径: ' . $real);
+	        Log::debug('clean', '[Route]路由路径: ' . $real);
         }
 
         $_REQUEST = array_merge($_GET, $_POST, $route_arr_cp);
@@ -150,36 +170,43 @@ class Route
         $__controller = $_REQUEST['c'];
         $__action = $_REQUEST['a'];
 
-        EventManager::fire("afterRoute",[$__module, $__controller, $__action]);
+        EventManager::fire("afterRoute", [$__module, $__controller, $__action]);
     }
 
-    public static function convertUrl()
+	/**
+	 * +----------------------------------------------------------
+	 * 路由匹配
+	 * +----------------------------------------------------------
+	 * @return array
+	 * +----------------------------------------------------------
+	 */
+	public static function convertUrl()
     {
         $route_arr = [];
 
         $url = strtolower($GLOBALS['http_scheme'] . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 
 
-        Log::debug("route", "The original Url:$url");
+        Log::debug("route", "真实URL:$url");
         if (strpos($url, '?') !== false) {
             $url = substr($url, 0, strpos($url, '?'));
         }
-        Log::debug("route", "The original Url Without Params:$url");
+        Log::debug("route", "不带参数的URL:$url");
         foreach ($GLOBALS['route'] as $rule => $mapper) {
             $rule = Response::getAddress() . '/' . $rule;
 
 
-            Log::debug("route", "-> Url Rule:$rule");
+            Log::debug("route", "-> 路由规则:$rule");
             $rule = strtolower($rule);
             $rule = '/' . str_ireplace(
-                    array('\\\\', $GLOBALS['http_scheme'], '/', '<', '>', '.'),
-                    array('', '', '\/', '(?P<', '>[\x{4e00}-\x{9fa5}a-zA-Z0-9_\.-]+)', '\.'), $rule) . '$/u';
+                    ['\\\\', $GLOBALS['http_scheme'], '/', '<', '>', '.'],
+                    ['', '', '\/', '(?P<', '>[\x{4e00}-\x{9fa5}a-zA-Z0-9_\.-]+)', '\.'], $rule) . '$/u';
 
 
             if (preg_match($rule, $url, $matchs)) {
                 $route = explode("/", $mapper);
                 if (isset($route[2])) {
-                    list($route_arr['m'], $route_arr['c'], $route_arr['a']) = $route;
+                    [$route_arr['m'], $route_arr['c'], $route_arr['a']] = $route;
                 }
                 foreach ($matchs as $matchkey => $matchval) {
                     if (!is_int($matchkey)) $route_arr[$matchkey] = $matchval;

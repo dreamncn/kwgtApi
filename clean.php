@@ -1,8 +1,13 @@
 <?php
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
 
 use app\vendor\debug\codeCheck;
 
-function help(){
+
+function help()
+{
     echo <<<EOF
 Usage: php clean.php [options] 
 
@@ -14,28 +19,41 @@ EOF;
     return null;
 }
 
-function run($argv){
-    if(!isset($argv[2]))return help();
+function run($argv)
+{
+    if (!isset($argv[2])) return help();
     $_SERVER['CLEAN_CONSOLE'] = true;
     $_SERVER["HTTP_HOST"] = "localhost";
     $_SERVER["REQUEST_URI"] = "/" . $argv[2];
     include './public/index.php';
     return null;
 }
-function release(){
+
+function release()
+{
 
 }
-function check(){
+
+function check()
+{
     codeCheck::run();
 }
-if(!isset($argv[1]))
+
+if (!isset($argv[1]))
     return help();
 
-switch($argv[1]){
-    case "check":check();break;
-    case "release":release();break;
-    case "run":run($argv);break;
-    default:help();
+switch ($argv[1]) {
+    case "check":
+        check();
+        break;
+    case "release":
+        release();
+        break;
+    case "run":
+        run($argv);
+        break;
+    default:
+        help();
 }
 
 

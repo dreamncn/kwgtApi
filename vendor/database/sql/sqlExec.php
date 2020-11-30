@@ -21,43 +21,73 @@ use PDO;
 use PDOException;
 use PDOStatement;
 
+/**
+ * +----------------------------------------------------------
+ * Class sqlExec
+ * +----------------------------------------------------------
+ * @package app\vendor\database\sql
+ * +----------------------------------------------------------
+ * Date: 2020/11/20 11:35 下午
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption:数据库执行基类
+ * +----------------------------------------------------------
+ */
 class sqlExec
 {
 
 
-    protected $sqlType = "mysql";
     public $sqlIndex = "master";
-    private $sqlList = [];
-    private $db = null;
-    private $name = null;
-    private $dbData = null;
+    protected $sqlType = "mysql";
+	private $sqlList = [];
+	private $db = null;
+	private $name = null;
+	private $dbData = null;
 
-    public function setDbFile($file, $name)
+
+	/**
+	 * +----------------------------------------------------------
+	 * 设置数据库信息存储文件
+	 * +----------------------------------------------------------
+	 * @param $file
+	 * @param $name
+	 * +----------------------------------------------------------
+	 */
+	public function setDbFile($file, $name)
     {
         $this->db = $file;
         $this->name = $name;
         $this->getDbFile();
     }
 
-    public function getDbData()
-    {
-        if ($this->dbData === null) {
-            return $this->getDbFile();
-        }else return $this->dbData;
-    }
-
-    private function getDbFile()
+	/**
+	 * +----------------------------------------------------------
+	 * 获取数据库信息
+	 * +----------------------------------------------------------
+	 * @return mixed|null
+	 * +----------------------------------------------------------
+	 */
+	private function getDbFile()
     {
         if ($this->db !== null && $this->name !== null) {
-            $this->dbData = Config::getInstance($this->name)->setLoaction($this->db)->get();
+            $this->dbData = Config::getInstance($this->name)->setLocation($this->db)->get();
         } else {
-            $this->dbData = Config::getInstance("db")->get();;
+            $this->dbData = Config::getInstance("db")->get();
         }
         return $this->dbData;
 
     }
 
-    public function setDatabase($sqlIndex)
+	/**
+	 * +----------------------------------------------------------
+	 * 设置数据库
+	 * +----------------------------------------------------------
+	 * @param $sqlIndex
+	 * +----------------------------------------------------------
+	 * @return $this
+	 * +----------------------------------------------------------
+	 */
+	public function setDatabase($sqlIndex)
     {
         $this->getDbFile();
         $this->sqlIndex = $sqlIndex;
@@ -65,53 +95,55 @@ class sqlExec
         return $this;
     }
 
-    /**
-     * 获取数据库连接函数
-     *
-     * @param $db_config array 数据库配置信息
-     *
-     * @return PDO
-     */
-    public function dbInstance($db_config)
+	/**
+	 * +----------------------------------------------------------
+	 * 获取数据库数据
+	 * +----------------------------------------------------------
+	 * @return mixed|null
+	 * +----------------------------------------------------------
+	 */
+	public function getDbData()
     {
+        if ($this->dbData === null) {
+            return $this->getDbFile();
+        } else return $this->dbData;
+    }
 
-        $dsn = [
-            "mysql" => "mysql:dbname={$db_config['db']};host={$db_config['host']};port={$db_config['port']}",
-            "sqlite3" => "sqlite:{$db_config['host']}",
-            "sqlite2" => "sqlite:{$db_config['host']}",
-            "sqlserver" => "odbc:Driver={SQL Server};Server={$db_config['host']};Database={$db_config['db']}",
-        ];
-        $connectData = "";
-        try {
-
-            if (!isset($dsn[$this->sqlType]))
-                Error::err("Database Err: We don't support this type database.({$this->sqlType})");
-            $connectData = $dsn[$this->sqlType];
-            return new PDO(
-                $dsn[$this->sqlType],
-                $db_config['username'],
-                $db_config['password'],
-                array(
-                    PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $db_config['charset'] . '\'',
-                    PDO::ATTR_PERSISTENT => true
-                ));
-        } catch (PDOException $e) {
-            Error::err('Database Err: ' . $e->getMessage() . ". SQL Connected Data  {$connectData}");
+	/**
+	 * +----------------------------------------------------------
+	 * 清空数据表
+	 * +----------------------------------------------------------
+	 * @param $string
+	 * +----------------------------------------------------------
+	 * @return false|mixed
+	 * +----------------------------------------------------------
+	 */
+	public function emptyTable($string)
+    {
+        switch ($this->sqlType) {
+            case "sqlite2":
+            case "sqlite3":
+                return $this->execute("DELETE FROM '$string';");
+            case "mysql":
+                return $this->execute("TRUNCATE TABLE '$string';");
         }
-        return null;
+
+        return $this->execute("TRUNCATE TABLE '$string';");
     }
 
 
-    /**
-     * 直接执行sql语句
-     *
-     * @param string $sql sql语句
-     * @param array $params
-     * @param bool $readonly 是否为查找模式
-     *
-     * @return mixed
-     */
-    public function execute($sql, $params = array(), $readonly = false)
+	/**
+	 * +----------------------------------------------------------
+	 * 数据库执行
+	 * +----------------------------------------------------------
+	 * @param         $sql
+	 * @param  array  $params
+	 * @param  false  $readonly
+	 * +----------------------------------------------------------
+	 * @return array|false|int
+	 * +----------------------------------------------------------
+	 */
+	public function execute($sql, $params = [], $readonly = false)
     {
 
         $start = microtime(true);
@@ -121,7 +153,7 @@ class sqlExec
 
         $sth = $this->dbInstance($this->getDbData()[$this->sqlIndex])->prepare($sql);
         if ($sth == false)
-            Error::err('Database SQL: "' . $sql . '", Can\'t prepared! ');
+            Error::err('SQL语句错误: "' . $sql . '", 无法进行预编译! ');
         if (is_array($params) && !empty($params)) foreach ($params as $k => $v) {
             if (is_int($v)) {
                 $data_type = PDO::PARAM_INT;
@@ -150,25 +182,56 @@ class sqlExec
 
         }
         $err = $sth->errorInfo();
-        Error::err('Database SQL: "' . $sql . '", ErrorInfo: ' . $err[2]);
+        Error::err('SQL语句错误: "' . $sql . '", 错误信息: ' . $err[2]);
         return false;
     }
 
-
-    public function emptyTable($string)
+	/**
+	 * +----------------------------------------------------------
+	 * 获取数据库对象
+	 * +----------------------------------------------------------
+	 * @param $db_config
+	 * +----------------------------------------------------------
+	 * @return PDO|null
+	 * +----------------------------------------------------------
+	 */
+	public function dbInstance($db_config)
     {
-        switch ($this->sqlType) {
-            case "sqlite2":
-            case "sqlite3":
-                return $this->execute("DELETE FROM '$string';");
-            case "mysql":
-                return $this->execute("TRUNCATE TABLE '$string';");
-        }
 
-        return $this->execute("TRUNCATE TABLE '$string';");
+        $dsn = [
+            "mysql" => "mysql:dbname={$db_config['db']};host={$db_config['host']};port={$db_config['port']}",
+            "sqlite3" => "sqlite:{$db_config['host']}",
+            "sqlite2" => "sqlite:{$db_config['host']}",
+            "sqlserver" => "odbc:Driver={SQL Server};Server={$db_config['host']};Database={$db_config['db']}",
+        ];
+        $connectData = "";
+        try {
+
+            if (!isset($dsn[$this->sqlType]))
+                Error::err("数据库错误: 我们不支持该类型数据库.({$this->sqlType})");
+            $connectData = $dsn[$this->sqlType];
+            return new PDO(
+                $dsn[$this->sqlType],
+                $db_config['username'],
+                $db_config['password'],
+                [
+                    PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $db_config['charset'] . '\'',
+                    PDO::ATTR_PERSISTENT => true,
+                ]);
+        } catch (PDOException $e) {
+            Error::err('数据库错误: ' . $e->getMessage() . ". 数据库信息：  {$connectData}");
+        }
+        return null;
     }
 
-    public function dumpSql()
+	/**
+	 * +----------------------------------------------------------
+	 * 输出sql语句
+	 * +----------------------------------------------------------
+	 * @return array
+	 * +----------------------------------------------------------
+	 */
+	public function dumpSql()
     {
         return $this->sqlList;
     }

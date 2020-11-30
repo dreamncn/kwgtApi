@@ -1,28 +1,41 @@
 <?php
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
 
 namespace app\vendor\mvc;
 
 use app\vendor\debug\Error;
 use app\vendor\debug\Log;
 
+
 /**
+ * +----------------------------------------------------------
  * Class View
- * @package lib\vendor\mvc
- * 模板渲染输出类
+ * +----------------------------------------------------------
+ * @package app\vendor\mvc
+ * +----------------------------------------------------------
+ * Date: 2020/11/30 11:42 下午
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption:视图渲染
+ * +----------------------------------------------------------
  */
 class View
 {
     private $template_dir, $compile_dir, $right_delimiter, $left_delimiter;
-    private $template_vals = array();
+    //      模板路径         编译路径       左边分隔符          右边分隔符
+    private $template_vals = [];
+	//      模板变量
 
-    /**
-     * View constructor.
-     * @param $template_dir
-     * @param $compile_dir
-     * @param string $left_delimiter
-     * @param string $right_delimiter
-     */
-    public function __construct($template_dir, $compile_dir, $left_delimiter = '<{', $right_delimiter = '}>')
+	/**
+	 * View constructor.
+	 * @param          $template_dir
+	 * @param          $compile_dir
+	 * @param  string  $left_delimiter
+	 * @param  string  $right_delimiter
+	 */
+	public function __construct($template_dir, $compile_dir, $left_delimiter = '<{', $right_delimiter = '}>')
     {
         $this->left_delimiter = $left_delimiter;
         $this->right_delimiter = $right_delimiter;
@@ -30,29 +43,41 @@ class View
         $this->compile_dir = $compile_dir;
     }
 
-    /**
-     * @param $tempalte_name
-     * @return false|string
-     */
-    public function render($tempalte_name)
+
+	/**
+	 * +----------------------------------------------------------
+	 * 编译并渲染
+	 * +----------------------------------------------------------
+	 * @param $tempalte_name
+	 * +----------------------------------------------------------
+	 * @return false|string
+	 * +----------------------------------------------------------
+	 */
+	public function render($tempalte_name)
     {
         $complied_file = $this->compile($tempalte_name);
         Log::debug('View', 'Compile time-consuming: ' . strval((microtime(true) - $GLOBALS['display_start']) * 1000) . 'ms');
         ob_start();
-        $_view_obj = &$this;
         extract($this->template_vals, EXTR_SKIP);
         include $complied_file;
         return ob_get_clean();
     }
 
-    /**
-     * @param $template_name
-     * @return string
-     */
-    public function compile($template_name)
+
+	/**
+	 * +----------------------------------------------------------
+	 * 模板编译
+	 * +----------------------------------------------------------
+	 * @param $template_name
+	 * +----------------------------------------------------------
+	 * @return string
+	 * +----------------------------------------------------------
+	 */
+	public function compile($template_name)
     {
         global $__module;
         $template_name = ($__module == '' ? '' : $__module . DS) . $template_name . '.html';
+        //自动化模板名字
         $file = $this->template_dir . DS . $template_name;
         if (!file_exists($file))
             Error::err('Err: "' . $file . '" is not exists!');
@@ -90,11 +115,20 @@ class View
         return $complied_file;
     }
 
-    private function _compile_struct($template_data)
+	/**
+	 * +----------------------------------------------------------
+	 *
+	 * +----------------------------------------------------------
+	 * @param $template_data
+	 * +----------------------------------------------------------
+	 * @return string|string[]|null
+	 * +----------------------------------------------------------
+	 */
+	private function _compile_struct($template_data)
     {
         $foreach_inner_before = '<?php if(!empty($1)){ $_foreach_$3_counter = 0; $_foreach_$3_total = count($1);?>';
         $foreach_inner_after = '<?php $_foreach_$3_index = $_foreach_$3_counter;$_foreach_$3_iteration = $_foreach_$3_counter + 1;$_foreach_$3_first = ($_foreach_$3_counter == 0);$_foreach_$3_last = ($_foreach_$3_counter == $_foreach_$3_total - 1);$_foreach_$3_counter++;?>';
-        $pattern_map = array(
+        $pattern_map = [
             '<{\*([\s\S]+?)\*}>' => '<?php /* $1*/?>',
             '<{#(.*?)}>' => '<?php echo $1; ?>',
             '(<{((?!}>).)*?)(\$[\w\"\'\[\]]+?)\.(\w+)(.*?}>)' => '$1$3[\'$4\']$5',
@@ -112,11 +146,11 @@ class View
             '<{foreach\s*(\$[\$\w\.\"\'\[\]]+?)\s*as\s*(\$[\w\"\'\[\]]+?)\s*=>\s*\$([\w\"\'\[\]]+?)}>' => $foreach_inner_before . '<?php foreach( $1 as $2 => $$3 ) : ?>' . $foreach_inner_after,
             '<{\/foreach}>' => '<?php endforeach; }?>',
             '<{include\s*file=(.+?)}>' => '<?php include $_view_obj->compile($1); ?>',
-        );
+        ];
 
-        $pattern = $replacement = array();
+        $pattern = $replacement = [];
         foreach ($pattern_map as $p => $r) {
-            $pattern = '/' . str_replace(array("<{", "}>"), array($this->left_delimiter . '\s*', '\s*' . $this->right_delimiter), $p) . '/i';
+            $pattern = '/' . str_replace(["<{", "}>"], [$this->left_delimiter . '\s*', '\s*' . $this->right_delimiter], $p) . '/i';
             $count = 1;
             while ($count != 0) {
                 $template_data = preg_replace($pattern, $r, $template_data, -1, $count);
@@ -125,13 +159,64 @@ class View
         return $template_data;
     }
 
-    private function _compile_function($template_data)
+	/**
+	 * +----------------------------------------------------------
+	 *
+	 * +----------------------------------------------------------
+	 * @param $template_data
+	 * +----------------------------------------------------------
+	 * @return string|string[]|null
+	 * +----------------------------------------------------------
+	 */
+	private function _compile_function($template_data)
     {
         $pattern = '/' . $this->left_delimiter . '(\w+)\s*(.*?)' . $this->right_delimiter . '/';
-        return preg_replace_callback($pattern, array($this, '_compile_function_callback'), $template_data);
+        return preg_replace_callback($pattern, [$this, '_compile_function_callback'], $template_data);
     }
 
-    private function _clear_compliedfile($tempalte_name)
+	/**
+	 * +----------------------------------------------------------
+	 *
+	 * +----------------------------------------------------------
+	 * @param $template_data
+	 * +----------------------------------------------------------
+	 * @return string|string[]
+	 * +----------------------------------------------------------
+	 */
+	public function _complie_script_get($template_data)
+    {
+        $isMatched = preg_match_all('/<!--include_start-->([\s\S]*?)<!--include_end-->/', $template_data, $matches);
+        if ($isMatched && $isMatched === 1) {
+            $script = $matches[1][0];
+            $template_data = str_replace($matches[0][0], '<?php $template_file_script="' . base64_encode($script) . '";?>', $template_data);
+        }
+        return $template_data;
+    }
+
+	/**
+	 * +----------------------------------------------------------
+	 *
+	 * +----------------------------------------------------------
+	 * @param $template_data
+	 * +----------------------------------------------------------
+	 * @return string|string[]
+	 * +----------------------------------------------------------
+	 */
+	public function _complie_script_put($template_data)
+    {
+
+        $template_data = str_replace('<!--template_file_script-->', '<?php echo isset($template_file_script)?base64_decode($template_file_script):"";?>', $template_data);
+        return $template_data;
+    }
+
+	/**
+	 * +----------------------------------------------------------
+	 *
+	 * +----------------------------------------------------------
+	 * @param $tempalte_name
+	 * +----------------------------------------------------------
+	 */
+	private function _clear_compliedfile($tempalte_name)
     {
         $dir = scandir($this->compile_dir);
         if ($dir) {
@@ -144,11 +229,16 @@ class View
         }
     }
 
-    /**
-     * @param $mixed
-     * @param string $val
-     */
-    public function assign($mixed, $val = '')
+
+	/**
+	 * +----------------------------------------------------------
+	 *
+	 * +----------------------------------------------------------
+	 * @param          $mixed
+	 * @param  string  $val
+	 * +----------------------------------------------------------
+	 */
+	public function assign($mixed, $val = '')
     {
         if (is_array($mixed)) {
             foreach ($mixed as $k => $v) {
@@ -159,7 +249,16 @@ class View
         }
     }
 
-    private function _compile_function_callback($matches)
+	/**
+	 * +----------------------------------------------------------
+	 *
+	 * +----------------------------------------------------------
+	 * @param $matches
+	 * +----------------------------------------------------------
+	 * @return string|string[]|null
+	 * +----------------------------------------------------------
+	 */
+	private function _compile_function_callback($matches)
     {
 
         if (empty($matches[2])) return '<?php echo ' . $matches[1] . '();?>';
@@ -176,22 +275,5 @@ class View
             Error::err('Err: Parameters of \'' . $matches[1] . '\' is incorrect!');
         }
         return '<?php echo ' . $matches[1] . '(' . $params . ');?>';
-    }
-
-    public function _complie_script_get($template_data)
-    {
-        $isMatched = preg_match_all('/<!--include_start-->([\s\S]*?)<!--include_end-->/', $template_data, $matches);
-        if ($isMatched && $isMatched === 1) {
-            $script = $matches[1][0];
-            $template_data = str_replace($matches[0][0], '<?php $template_file_script="' . base64_encode($script) . '";?>', $template_data);
-        }
-        return $template_data;
-    }
-
-    public function _complie_script_put($template_data)
-    {
-
-        $template_data = str_replace('<!--template_file_script-->', '<?php echo isset($template_file_script)?base64_decode($template_file_script):"";?>', $template_data);
-        return $template_data;
     }
 }

@@ -1,16 +1,18 @@
 ---
-host:
+host :
   # 绑定域名
   - "localhost:8080"
   - "localhost"
-# 允许跨域的域名，要求是数组
-crossDomain: [ ]
 #是否为调试模式,发布前请关闭调试模式
-debug: true
+debug : true
 # 项目名
-app: cleanPHP
+app : cleanPHP
 # 项目升级次数
-verCode: 1
+verCode : 1
 # 项目版本名称
-verName: 1.0.0b1
+verName : 1.0.0b1
+# 日志有效期(天)
+logValidTime : 30
+# 安装程序模块名
+install : install
 

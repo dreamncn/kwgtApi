@@ -1,4 +1,7 @@
 <?php
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
 
 namespace app\vendor\mvc;
 
@@ -7,11 +10,11 @@ use app\vendor\debug\Log;
 
 class Controller
 {
-    private $layout = '';//layout布局文件
-    public $_auto_display = true;//是否自动展示
-    private $_auto_path_dir = '';//非自动定位的view的路径的真实路径
-    protected $_v;//view对象
-    private $_data = array();//模板参数数组
+    public $_auto_display = true;//layout布局文件
+    protected $_v;//是否自动展示
+    private $layout = '';//非自动定位的view的路径的真实路径
+    private $_auto_path_dir = '';//view对象
+    private $_data = [];//模板参数数组
 
 
     public function __construct()
@@ -46,7 +49,8 @@ class Controller
 
     /**
      * @param null $tpl_name 模板名称
-     * @param bool $return 是否直接返回
+     * @param bool $return   是否直接返回
+     *
      * @return false|string
      */
     public function display($tpl_name, $return = false)

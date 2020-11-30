@@ -3,15 +3,6 @@
  * Copyright (c) 2020. CleanPHP. All Rights Reserved.
  ******************************************************************************/
 
-/**
- * File mysql
- *
- * @package app\vendor\sql
- * Date: 2020/10/14 1:50 下午
- * Author: ankio
- * Desciption: sql的集合类
- */
-
 namespace app\vendor\database;
 
 
@@ -21,33 +12,72 @@ use app\vendor\database\sql\Select;
 use app\vendor\database\sql\sqlExec;
 use app\vendor\database\sql\Update;
 
+/**
+ * +----------------------------------------------------------
+ * Class Sql
+ * +----------------------------------------------------------
+ * @package app\vendor\database
+ * +----------------------------------------------------------
+ * Date: 2020/11/22 11:05 下午
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption:sql的集合类
+ * +----------------------------------------------------------
+ */
 class Sql
 {
-    private $tableName;
-    private $instances = [];
-    protected $sqlIndex = "master";
+	/**
+	 * @var string
+	 */
+	protected $sqlIndex = "master";
+	/**
+	 * @var mixed|string
+	 */
+	private $tableName;
+	/**
+	 * @var array
+	 */
+	private $instances = [];
 
-    /*SQL语句插入方式*/
 
-    public function __construct($tableName = '')
+	/**
+	 * Sql constructor.
+	 * @param  string  $tableName
+	 */
+	public function __construct($tableName = '')
     {
         $this->sql = new sqlExec();
         $this->tableName = $tableName;
     }
 
-    /**
-     * 因为分离select、update等语法糖，导致无法使用事务进行统一管理
-     * 除非底部共用一个sql执行，顶部多层封装，不使用继承，就是说，执行类与基类完全分离，最后commit实例化执行类执行，通过顶层共享sql执行类获取完整上下文
-     */
 
-    /**
-     * @param string $name
-     *
-     * @return Delete|Insert|Select|Update|sqlExec
-     */
-    private function sqlInstance($name = "")
+	/**
+	 * +----------------------------------------------------------
+	 * select
+	 * +----------------------------------------------------------
+	 * @param  string  $field
+	 * +----------------------------------------------------------
+	 * @return mixed
+	 * +----------------------------------------------------------
+	 */
+	public function select($field = "*")
     {
-        if ($name === "") return $this->sql;
+        return $this->sqlInstance("Select")->select($field);
+    }
+
+
+	/**
+	 * +----------------------------------------------------------
+	 * 获取sql实例
+	 * +----------------------------------------------------------
+	 * @param  string  $name
+	 * +----------------------------------------------------------
+	 * @return sqlExec|Insert|Select|Delete|Update
+	 * +----------------------------------------------------------
+	 */
+	private function sqlInstance($name = "")
+    {
+        if ($name === "") return $this->sql;//为空直接获取执行实例
         $class = 'app\vendor\database\sql\\' . $name;
         if (isset($this->instances[$name]) && get_class($this->instances[$name]) === $class)
             return $this->instances[$name];
@@ -60,71 +90,155 @@ class Sql
         return $this->instances[$name];
     }
 
-
-    public function select($field = "*")
-    {
-        return $this->sqlInstance("Select")->select($field);
-    }
-
-    public function getPage()
+	/**
+	 * +----------------------------------------------------------
+	 * 获取分页数据
+	 * +----------------------------------------------------------
+	 * @return mixed
+	 * +----------------------------------------------------------
+	 */
+	public function getPage()
     {
         return $this->sqlInstance("Select")->getPage();
     }
 
-    public function delete()
+	/**
+	 * +----------------------------------------------------------
+	 * 删除
+	 * +----------------------------------------------------------
+	 * @return mixed
+	 * +----------------------------------------------------------
+	 */
+	public function delete()
     {
         return $this->sqlInstance("Delete")->delete();
     }
 
-    public function insert($model)
+	/**
+	 * +----------------------------------------------------------
+	 * 插入
+	 * +----------------------------------------------------------
+	 * @param $model int 数据库插入模式
+	 * +----------------------------------------------------------
+	 * @return mixed
+	 * +----------------------------------------------------------
+	 */
+	public function insert($model)
     {
         return $this->sqlInstance("Insert")->insert($model);
     }
 
-    public function update()
+	/**
+	 * +----------------------------------------------------------
+	 * 更新
+	 * +----------------------------------------------------------
+	 * @return mixed
+	 * +----------------------------------------------------------
+	 */
+	public function update()
     {
         return $this->sqlInstance("Update")->update();
     }
 
-    public function execute($sql, $params = array(), $readonly = false)
+	/**
+	 * +----------------------------------------------------------
+	 * 数据库执行
+	 * +----------------------------------------------------------
+	 * @param  string  $sql 执行的sql语句
+	 * @param  array  $params 绑定参数
+	 * @param  false  $readonly 是否只读
+	 * +----------------------------------------------------------
+	 * @return array|false|int
+	 * +----------------------------------------------------------
+	 */
+	public function execute($sql, $params = [], $readonly = false)
     {
         return $this->sqlInstance()->execute($sql, $params, $readonly);
     }
 
-    public function dumpSql()
+	/**
+	 * +----------------------------------------------------------
+	 * 输出所有查询的语句
+	 * +----------------------------------------------------------
+	 * @return array
+	 * +----------------------------------------------------------
+	 */
+	public function dumpSql()
     {
         return $this->sql->dumpSql();
     }
 
-    public function beginTransaction()
+	/**
+	 * +----------------------------------------------------------
+	 * 事务开始
+	 * +----------------------------------------------------------
+	 */
+	public function beginTransaction()
     {
         $this->sqlInstance()->execute("BEGIN");
     }
 
-    public function rollBack()
+	/**
+	 * +----------------------------------------------------------
+	 * 事务回滚
+	 * +----------------------------------------------------------
+	 */
+	public function rollBack()
     {
         $this->sqlInstance()->execute("ROLLBACK");
     }
 
-    public function commit()
+	/**
+	 * +----------------------------------------------------------
+	 * 事务提交
+	 * +----------------------------------------------------------
+	 */
+	public function commit()
     {
         $this->sqlInstance()->execute("COMMIT");
     }
 
-    public function setDbLocation($path,$name){
-        $this->sql->setDbFile($path,$name);
+	/**
+	 * +----------------------------------------------------------
+	 * 设置数据库配置文件位置
+	 * +----------------------------------------------------------
+	 * @param $path string 文件位置
+	 * @param $name string 文件名
+	 * +----------------------------------------------------------
+	 * @return $this
+	 * +----------------------------------------------------------
+	 */
+	public function setDbLocation($path, $name)
+    {
+        $this->sql->setDbFile($path, $name);
         return $this;
     }
 
-    public function setDatabase($sqlType)
+	/**
+	 * +----------------------------------------------------------
+	 * 设置数据库配置文件中的配置选择
+	 * +----------------------------------------------------------
+	 * @param $sqlType string 配置文件名
+	 * +----------------------------------------------------------
+	 * @return $this
+	 * +----------------------------------------------------------
+	 */
+	public function setDatabase($sqlType)
     {
         $this->sql->setDatabase($sqlType);
         $this->sqlIndex = $sqlType;
         return $this;
     }
 
-    public function emptyTable($string)
+	/**
+	 * +----------------------------------------------------------
+	 * 清空数据表
+	 * +----------------------------------------------------------
+	 * @param $table string 预清空的数据表
+	 * +----------------------------------------------------------
+	 */
+	public function emptyTable($table)
     {
-        $this->sqlInstance()->emptyTable($string);
+        $this->sqlInstance()->emptyTable($table);
     }
 }

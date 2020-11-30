@@ -3,21 +3,30 @@
  * Copyright (c) 2020. CleanPHP. All Rights Reserved.
  ******************************************************************************/
 
-/**
- * File update
- *
- * @package app\vendor\sql
- * Date: 2020/10/14 11:27 下午
- * Author: ankio
- * Desciption:
- */
-
 namespace app\vendor\database\sql;
 
-
+/**
+ * +----------------------------------------------------------
+ * Class Update
+ * +----------------------------------------------------------
+ * @package app\vendor\database\sql
+ * +----------------------------------------------------------
+ * Date: 2020/11/22 10:55 下午
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption: 更新
+ * +----------------------------------------------------------
+ */
 class Update extends sqlBase
 {
-    public function update()
+	/**
+	 * +----------------------------------------------------------
+	 * 初始化
+	 * +----------------------------------------------------------
+	 * @return $this
+	 * +----------------------------------------------------------
+	 */
+	public function update()
     {
         $this->opt = [];
         $this->opt['tableName'] = $this->tableName;
@@ -26,17 +35,44 @@ class Update extends sqlBase
         return $this;
     }
 
-    public function table($table_name)
+	/**
+	 * +----------------------------------------------------------
+	 * 设置表
+	 * +----------------------------------------------------------
+	 * @param $table_name
+	 * +----------------------------------------------------------
+	 * @return Update
+	 * +----------------------------------------------------------
+	 */
+	public function table($table_name)
     {
         return parent::table($table_name);
     }
 
-    public function where($conditions)
+	/**
+	 * +----------------------------------------------------------
+	 * 设置条件
+	 * +----------------------------------------------------------
+	 * @param $conditions
+	 * +----------------------------------------------------------
+	 * @return Update
+	 * +----------------------------------------------------------
+	 */
+	public function where($conditions)
     {
         return parent::where($conditions);
     }
 
-    public function set($row)
+	/**
+	 * +----------------------------------------------------------
+	 * 设置更新字段信息
+	 * +----------------------------------------------------------
+	 * @param $row array
+	 * +----------------------------------------------------------
+	 * @return $this
+	 * +----------------------------------------------------------
+	 */
+	public function set($row)
     {
         $values = [];
         $set = '';
@@ -54,7 +90,25 @@ class Update extends sqlBase
         return $this;
     }
 
-    private function translateSql()
+	/**
+	 * +----------------------------------------------------------
+	 * 提交
+	 * +----------------------------------------------------------
+	 * @return mixed
+	 * +----------------------------------------------------------
+	 */
+	public function commit()
+    {
+        $this->translateSql();
+        return $this->sql->execute($this->traSql, $this->bindParam, false);
+    }
+
+	/**
+	 * +----------------------------------------------------------
+	 * 编译
+	 * +----------------------------------------------------------
+	 */
+	private function translateSql()
     {
         $sql = '';
         $sql .= $this->getOpt('UPDATE', 'tableName');
@@ -63,11 +117,5 @@ class Update extends sqlBase
         $this->traSql = $sql . ";";
 
 
-    }
-
-    public function commit()
-    {
-        $this->translateSql();
-        return $this->sql->execute($this->traSql, $this->bindParam, false);
     }
 }

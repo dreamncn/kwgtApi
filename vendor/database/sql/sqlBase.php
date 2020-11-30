@@ -18,6 +18,18 @@ namespace app\vendor\database\sql;
 use app\vendor\debug\Error;
 use PDO;
 
+/**
+ * +----------------------------------------------------------
+ * Class sqlBase
+ * +----------------------------------------------------------
+ * @package app\vendor\database\sql
+ * +----------------------------------------------------------
+ * Date: 2020/11/20 11:32 下午
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption:sql数据对象构成的基类
+ * +----------------------------------------------------------
+ */
 class sqlBase
 {
 
@@ -29,13 +41,12 @@ class sqlBase
     protected $sql = null;
 
 
-    /**
-     * sql constructor.
-     *
-     * @param string $tableName
-     * @param sqlExec $sqlDetail
-     */
-    public function __construct($tableName, $sqlDetail)
+	/**
+	 * sqlBase constructor.
+	 * @param $tableName
+	 * @param $sqlDetail
+	 */
+	public function __construct($tableName, $sqlDetail)
     {
         if (!class_exists("PDO") || !in_array("mysql", PDO::getAvailableDrivers(), true)) {
             Error::err('Database Err: PDO or PDO_MYSQL doesn\'t exist!');
@@ -47,33 +58,53 @@ class sqlBase
         $this->sql = $sqlDetail;
     }
 
-    protected function getOpt($head, $opt)
+	/**
+	 * +----------------------------------------------------------
+	 * 获取存储的数据选项
+	 * +----------------------------------------------------------
+	 * @param $head
+	 * @param $opt
+	 * +----------------------------------------------------------
+	 * @return string
+	 * +----------------------------------------------------------
+	 */
+	protected function getOpt($head, $opt)
     {
         if (isset($this->opt[$opt])) return ' ' . $head . ' ' . $this->opt[$opt] . ' ';
         return ' ';
     }
 
-    /**
-     * @param string $tableName
-     *
-     * @return sqlBase
-     */
-    protected function table($tableName)
+
+	/**
+	 * +----------------------------------------------------------
+	 * 设置表名
+	 * +----------------------------------------------------------
+	 * @param $tableName
+	 * +----------------------------------------------------------
+	 * @return $this
+	 * +----------------------------------------------------------
+	 */
+	protected function table($tableName)
     {
         $this->opt['tableName'] = $tableName;
         return $this;
     }
 
-    /**
-     * @param array $conditions 查询条件，支持后面几种格式
-     *
-     * @return sqlExec|sqlBase
-     */
-    protected function where($conditions)
+
+	/**
+	 * +----------------------------------------------------------
+	 * 设置查询条件
+	 * +----------------------------------------------------------
+	 * @param $conditions
+	 * +----------------------------------------------------------
+	 * @return $this
+	 * +----------------------------------------------------------
+	 */
+	protected function where($conditions)
     {
         if (is_array($conditions) && !empty($conditions)) {
             $sql = null;
-            $join = array();
+            $join = [];
             reset($conditions);
 
             foreach ($conditions as $key => $condition) {

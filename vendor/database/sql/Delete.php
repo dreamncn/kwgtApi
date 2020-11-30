@@ -15,41 +15,88 @@
 namespace app\vendor\database\sql;
 
 
+/**
+ * +----------------------------------------------------------
+ * Class Delete
+ * +----------------------------------------------------------
+ * @package app\vendor\database\sql
+ * +----------------------------------------------------------
+ * Date: 2020/11/22 10:51 下午
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption:删除封装
+ * +----------------------------------------------------------
+ */
 class Delete extends sqlBase
 {
-    public function delete()
+	/**
+	 * +----------------------------------------------------------
+	 * 初始化
+	 * +----------------------------------------------------------
+	 * @return $this
+	 * +----------------------------------------------------------
+	 */
+	public function delete()
     {
         $this->opt = [];
         $this->opt['tableName'] = $this->tableName;
         $this->opt['type'] = 'delete';
         $this->bindParam = [];
-        // $this->setType($sqlIndex);
-
         return $this;
     }
 
-    public function table($table_name)
+	/**
+	 * +----------------------------------------------------------
+	 * 设置表
+	 * +----------------------------------------------------------
+	 * @param $table_name
+	 * +----------------------------------------------------------
+	 * @return Delete
+	 * +----------------------------------------------------------
+	 */
+	public function table($table_name)
     {
         return parent::table($table_name);
     }
 
-    public function where($conditions)
+	/**
+	 * +----------------------------------------------------------
+	 * 设置条件
+	 * +----------------------------------------------------------
+	 * @param $conditions
+	 * +----------------------------------------------------------
+	 * @return Delete
+	 * +----------------------------------------------------------
+	 */
+	public function where($conditions)
     {
         return parent::where($conditions);
     }
 
-    private function translateSql()
+	/**
+	 * +----------------------------------------------------------
+	 * 提交
+	 * +----------------------------------------------------------
+	 * @return mixed
+	 * +----------------------------------------------------------
+	 */
+	public function commit()
+    {
+        $this->translateSql();
+        return $this->sql->execute($this->traSql, $this->bindParam, false);
+    }
+
+	/**
+	 * +----------------------------------------------------------
+	 * 编译
+	 * +----------------------------------------------------------
+	 */
+	private function translateSql()
     {
         $sql = '';
         $sql .= $this->getOpt('DELETE FROM', 'tableName');
         $sql .= $this->getOpt('WHERE', 'where');
         $this->traSql = $sql . ";";
 
-    }
-
-    public function commit()
-    {
-        $this->translateSql();
-        return $this->sql->execute($this->traSql, $this->bindParam, false);
     }
 }
