@@ -11,6 +11,6 @@ define('DS', DIRECTORY_SEPARATOR);
 //定义程序的核心目录
 define('APP_CORE', APP_DIR . DS . 'vendor' . DS);
 //载入基础函数
-require_once(APP_CORE . "core" . DS . "base.php");
+require_once(APP_CORE."core".DS."base.php");
 //框架启动
 Clean::Run();

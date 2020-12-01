@@ -1,4 +1,8 @@
 <?php
+/*******************************************************************************
+ * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ ******************************************************************************/
+
 /**
  * Sync.php
  * Created By Dreamn.
@@ -20,14 +24,16 @@ class Sync
 
     /**
      * 发起异步请求，就是后台服务请求
-     * @param $url  string 完整的URL
-     * @param string $method 调用的方法
-     * @param array $data 传递的数据
-     * @param array $cookie cookie数组
+     *
+     * @param        $url      string 完整的URL
+     * @param string $method   调用的方法
+     * @param array  $data     传递的数据
+     * @param array  $cookie   cookie数组
      * @param string $identify 唯一标识符
+     *
      * @return bool
      */
-    public static function request($url, $method = 'GET', $data = array('i' => 0), $cookie = array(), $identify = 'clear')
+    public static function request($url, $method = 'GET', $data = ['i' => 0], $cookie = [], $identify = 'clear')
     {
 
         $url_array = parse_url($url); //获取URL信息，以便平凑HTTP HEADER
@@ -49,13 +55,13 @@ class Sync
         $header .= " HTTP/1.1" . PHP_EOL;
         $header .= "Host: " . $url_array['host'] . "" . PHP_EOL; //HTTP 1.1 Host域不能省略
         $token = getRandom(128);
-        file_put_contents(APP_TRASH . md5(md5($token . $identify)), json_encode(array('token' => $token, 'timeout' => time() + 60)));
+        file_put_contents(APP_TRASH . md5(md5($token . $identify)), json_encode(['token' => $token, 'timeout' => time() + 60]));
         $header .= "Token: " . md5($token) . "" . PHP_EOL;
         $header .= "Identify: " . md5($token . $identify) . "" . PHP_EOL;
         $header .= "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13 " . PHP_EOL;
         $header .= "Connection:Close" . PHP_EOL;
         if (!empty($cookie)) {
-            $_cookie = strval(NULL);
+            $_cookie = strval(null);
             foreach ($cookie as $k => $v) {
                 $_cookie .= $k . "=" . $v . "; ";
             }
@@ -77,6 +83,7 @@ class Sync
 
     /**
      * 响应后台异步请求
+     *
      * @param int $time 最大运行时间
      */
     public static function response($time = 0)
