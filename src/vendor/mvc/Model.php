@@ -8,6 +8,18 @@ namespace app\vendor\mvc;
 
 use app\vendor\database\Sql;
 
+/**
+ * +----------------------------------------------------------
+ * Class Model
+ * +----------------------------------------------------------
+ * @package app\vendor\mvc
+ * +----------------------------------------------------------
+ * Date: 2020/12/3 12:21 上午
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption: 模型类
+ * +----------------------------------------------------------
+ */
 class Model extends Sql
 {
 
@@ -18,15 +30,23 @@ class Model extends Sql
      */
     public function __construct($table_name = null)
     {
-        // if ($table_name) $this->table_name = $table_name;
         parent::__construct($table_name);
     }
 
 
-    /*
-     * 单个设置
-     * */
-    public function setOption($idName, $id, $opt, $val)
+	/**
+	 * +----------------------------------------------------------
+	 * 设置选项
+	 * +----------------------------------------------------------
+	 * @param $idName
+	 * @param $id
+	 * @param $opt
+	 * @param $val
+	 * +----------------------------------------------------------
+	 * @return mixed
+	 * +----------------------------------------------------------
+	 */
+	public function setOption($idName, $id, $opt, $val)
     {
         return $this->update()->where([$idName => $id])->set([$opt => $val])->commit();
     }

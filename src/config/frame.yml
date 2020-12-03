@@ -14,5 +14,6 @@ verName : 1.0.0b1
 # 日志有效期(天)
 logValidTime : 30
 # 安装程序模块名
-install : install
+install :
+
 

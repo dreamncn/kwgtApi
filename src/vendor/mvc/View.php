@@ -56,7 +56,7 @@ class View
 	public function render($tempalte_name)
     {
         $complied_file = $this->compile($tempalte_name);
-        Log::debug('View', 'Compile time-consuming: ' . strval((microtime(true) - $GLOBALS['display_start']) * 1000) . 'ms');
+        Log::debug('view', '编译耗时: ' . strval((microtime(true) - $GLOBALS['display_start']) * 1000) . 'ms');
         ob_start();
         extract($this->template_vals, EXTR_SKIP);
         include $complied_file;
@@ -80,12 +80,11 @@ class View
         //自动化模板名字
         $file = $this->template_dir . DS . $template_name;
         if (!file_exists($file))
-            Error::err('Err: "' . $file . '" is not exists!');
-        if (!is_writable($this->compile_dir) || !is_readable($this->compile_dir))
-            Error::err('Err: Directory "' . $this->compile_dir . '" is not writable or readable');
+            Error::err('错误: 文件"' . $file . '" 不存在!');
+
         $complied_file = $this->compile_dir . DS . md5(realpath($file)) . '.' . filemtime($file) . '.' . basename($template_name) . '.php';
         if (file_exists($complied_file)) {
-            Log::debug('View', 'Find cache file "' . $template_name . '"');
+            Log::debug('view', '发现缓存文件 "' . $template_name . '"');
             return $complied_file;
         }
 
@@ -94,30 +93,28 @@ class View
         $template_data = $this->_compile_struct($template_data);
 
         $template_data = $this->_compile_function($template_data);
-        $template_data = '<?php use app\vendor\mvc; if(!class_exists("app\\\\vendor\\\\mvc\\\\View", false)) exit("no direct access allowed");?>' . $template_data;
+        $template_data = '<?php use app\vendor\mvc; if(!class_exists("app\\\\vendor\\\\mvc\\\\View", false)) exit("模板文件禁止被直接访问.");?>' . $template_data;
         $template_data = $this->_complie_script_get($template_data);
         $template_data = $this->_complie_script_put($template_data);
         $this->_clear_compliedfile($template_name);
 
         $tmp_file = $complied_file . uniqid('_tpl', true);
         if (!file_put_contents($tmp_file, $template_data))
-            Error::err('Err: File "' . $tmp_file . '" can not be generated.');
+            Error::err('错误: 写入 "' . $tmp_file . '" 文件失败.');
 
         $success = @rename($tmp_file, $complied_file);
         if (!$success) {
             if (is_file($complied_file)) @unlink($complied_file);
             $success = @rename($tmp_file, $complied_file);
         }
-        if (!$success) Error::err('Err: File "' . $complied_file . '" can not be generated.');
-        if (isDebug()) {
-            Log::debug('View', 'Complied  file "' . $template_name . '" successful!');
-        }
+        if (!$success) Error::err('错误: 写入 "' . $complied_file . '" 文件失败.');
+	    Log::debug('view', '编译文件"' . $template_name . '" 成功!');
         return $complied_file;
     }
 
 	/**
 	 * +----------------------------------------------------------
-	 *
+	 * 翻译模板语法
 	 * +----------------------------------------------------------
 	 * @param $template_data
 	 * +----------------------------------------------------------
@@ -148,8 +145,7 @@ class View
             '<{include\s*file=(.+?)}>' => '<?php include $_view_obj->compile($1); ?>',
         ];
 
-        $pattern = $replacement = [];
-        foreach ($pattern_map as $p => $r) {
+	    foreach ($pattern_map as $p => $r) {
             $pattern = '/' . str_replace(["<{", "}>"], [$this->left_delimiter . '\s*', '\s*' . $this->right_delimiter], $p) . '/i';
             $count = 1;
             while ($count != 0) {
@@ -161,7 +157,7 @@ class View
 
 	/**
 	 * +----------------------------------------------------------
-	 *
+	 * 函数编译
 	 * +----------------------------------------------------------
 	 * @param $template_data
 	 * +----------------------------------------------------------
@@ -176,7 +172,7 @@ class View
 
 	/**
 	 * +----------------------------------------------------------
-	 *
+	 * js脚本位置重定位
 	 * +----------------------------------------------------------
 	 * @param $template_data
 	 * +----------------------------------------------------------
@@ -195,7 +191,7 @@ class View
 
 	/**
 	 * +----------------------------------------------------------
-	 *
+	 * js脚本位置重定位
 	 * +----------------------------------------------------------
 	 * @param $template_data
 	 * +----------------------------------------------------------
@@ -211,7 +207,7 @@ class View
 
 	/**
 	 * +----------------------------------------------------------
-	 *
+	 * 清除过期的文件
 	 * +----------------------------------------------------------
 	 * @param $tempalte_name
 	 * +----------------------------------------------------------
@@ -232,7 +228,7 @@ class View
 
 	/**
 	 * +----------------------------------------------------------
-	 *
+	 * 变量赋值
 	 * +----------------------------------------------------------
 	 * @param          $mixed
 	 * @param  string  $val
@@ -251,7 +247,7 @@ class View
 
 	/**
 	 * +----------------------------------------------------------
-	 *
+	 * 函数回调
 	 * +----------------------------------------------------------
 	 * @param $matches
 	 * +----------------------------------------------------------
@@ -272,7 +268,7 @@ class View
             foreach ($matches_inner as $m) $params .= '\'' . $m[1] . "'=>" . $m[2] . ", ";
             $params .= ")";
         } else {
-            Error::err('Err: Parameters of \'' . $matches[1] . '\' is incorrect!');
+            Error::err('错误:\'' . $matches[1] . '\' 函数的参数不正确!');
         }
         return '<?php echo ' . $matches[1] . '(' . $params . ');?>';
     }

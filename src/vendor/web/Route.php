@@ -103,7 +103,10 @@ class Route
 	public static function rewrite()
     {
 	    Log::debug('clean', '[Clean]响应URL: ' . Response::getNowAddress());
-        //不允许的参数
+
+
+
+	    //不允许的参数
         if (isset($_REQUEST['m']) || isset($_REQUEST['a']) || isset($_REQUEST['c'])) {
             Error::_err_router("以下参数名不允许：m,a,c!");
         }
@@ -130,6 +133,7 @@ class Route
             if (!isset($route_arr['m']) || !isset($route_arr['a']) || !isset($route_arr['c'])) {
                 Error::_err_router("错误的路由! 我们需要至少三个参数.");
             }
+
 
             $route_arr = array_merge($_GET, $route_arr);//get中的参数直接覆盖
 
@@ -169,6 +173,8 @@ class Route
         $__module = $_REQUEST['m'];
         $__controller = $_REQUEST['c'];
         $__action = $_REQUEST['a'];
+
+        self::isInstall();
 
         EventManager::fire("afterRoute", [$__module, $__controller, $__action]);
     }
@@ -217,6 +223,23 @@ class Route
         }
 
         return $route_arr;
+    }
+
+
+	/**
+	 * +----------------------------------------------------------
+	 *  判断是否有安装程序，有就跳转
+	 * +----------------------------------------------------------
+	 */
+	private static function isInstall(){
+		//dump($GLOBALS["frame"],true);
+		if($GLOBALS["frame"]["install"]!==""&&!is_file(APP_CONF.'install.lock')){
+			global $__module;
+
+			if($__module===$GLOBALS["frame"]["install"])return;
+			//没有锁
+			Response::location(self::url($GLOBALS["frame"]["install"], "main", "index"));
+		}
     }
 }
 

@@ -112,5 +112,8 @@ class Response
 	public static function location($url)
     {
         header("Location:{$url}");
+	    Log::debug('Clean', '发生强制跳转： '.$url );
+	    Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
+	    exit;
     }
 }
