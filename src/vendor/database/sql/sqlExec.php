@@ -200,8 +200,8 @@ class sqlExec
 
         $dsn = [
             "mysql" => "mysql:dbname={$db_config['db']};host={$db_config['host']};port={$db_config['port']}",
-            "sqlite3" => "sqlite:{$db_config['host']}",
-            "sqlite2" => "sqlite:{$db_config['host']}",
+            "sqlite3" => "sqlite:".APP_DIR.$db_config['host'],
+            "sqlite2" => "sqlite:".APP_DIR.$db_config['host'],
             "sqlserver" => "odbc:Driver={SQL Server};Server={$db_config['host']};Database={$db_config['db']}",
         ];
         $connectData = "";

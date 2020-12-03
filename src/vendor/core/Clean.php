@@ -107,7 +107,7 @@ class Clean
 
         $auto_tpl_name = $__controller . '_' . $__action;
 
-        $auto_tpl_file_exists = file_exists(APP_VIEW . $__module . DS . $auto_tpl_name . '.html');
+        $auto_tpl_file_exists = file_exists(APP_VIEW . $__module . DS . $auto_tpl_name . '.tpl');
 
         $controller_class_exists = class_exists($controller_name, true);
 
@@ -125,11 +125,19 @@ class Clean
             $controller_obj = new $controller_name();
             $controller_obj->$action_name();
             if ($controller_obj->_auto_display) {
-                if ($auto_tpl_file_exists) $controller_obj->display($auto_tpl_name);
+
+                if ($auto_tpl_file_exists) {
+	                Log::debug('clean', '自动输出模板 '.$auto_tpl_name);
+	                $controller_obj->display($auto_tpl_name);
+                }
             }
         } else {
             $controller_obj = new Controller();
-            if ($auto_tpl_file_exists) $controller_obj->display($auto_tpl_name);
+            if ($auto_tpl_file_exists) {
+	            Log::debug('clean', '无方法输出模板 '.$auto_tpl_name);
+	            $controller_obj->display($auto_tpl_name);
+            }
+
         }
         Log::debug('Clean', '框架运行完成，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
 

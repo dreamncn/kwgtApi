@@ -76,7 +76,7 @@ class View
 	public function compile($template_name)
     {
         global $__module;
-        $template_name = ($__module == '' ? '' : $__module . DS) . $template_name . '.html';
+        $template_name = ($__module == '' ? '' : $__module . DS) . $template_name . '.tpl';
         //自动化模板名字
         $file = $this->template_dir . DS . $template_name;
         if (!file_exists($file))
