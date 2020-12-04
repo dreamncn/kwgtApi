@@ -44,6 +44,7 @@ class sqlExec
 	private $name = null;
 	private $dbData = null;
 
+	private static $instance=null;
 
 	/**
 	 * +----------------------------------------------------------
@@ -210,7 +211,8 @@ class sqlExec
             if (!isset($dsn[$this->sqlType]))
                 Error::err("数据库错误: 我们不支持该类型数据库.({$this->sqlType})");
             $connectData = $dsn[$this->sqlType];
-            return new PDO(
+            if(self::$instance!==null)return self::$instance;
+            self::$instance=new PDO(
                 $dsn[$this->sqlType],
                 $db_config['username'],
                 $db_config['password'],
@@ -218,6 +220,7 @@ class sqlExec
                     PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $db_config['charset'] . '\'',
                     PDO::ATTR_PERSISTENT => true,
                 ]);
+	        return self::$instance;
         } catch (PDOException $e) {
             Error::err('数据库错误: ' . $e->getMessage() . ". 数据库信息：  {$connectData}");
         }

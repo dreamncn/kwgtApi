@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="1" uuid="892b9e4e-d719-49a8-b29d-7669dcb70f29">
+    <data-source source="LOCAL" name="data.db" uuid="7dee4678-a6e6-4429-85ea-65465dcc69a5">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/storage/sql/1.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/src/extend/net_ankio_cc_defense/anti_ddos/data.db</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="1 [2]" uuid="5334c57b-1289-4aae-abfa-022a238c3991">
+    <data-source source="LOCAL" name="1" uuid="a15b5bd4-7e06-44a1-84bd-4d135b55d1ea">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>

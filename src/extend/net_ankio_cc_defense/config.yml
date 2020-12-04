@@ -1,14 +1,10 @@
 ---
-# 拓展信息
-# 拓展名
-name : cc_defense
-# 拓展描述
-desc : CC攻击防御拓展，可以一定程度上抵御CC攻击。
-# 版本
-verName : 1.0
-# 版本迭代次数
-verNum : 1
-# 作者信息
-author : ankio
-# 作者链接
-url : http://ankio.net
+
+action: ban
+# 检测cc攻击后的操作：ban 封禁IP / code 验证码 / code > 3 验证码触发次数大于3封禁
+expire: 3600
+# ip封禁时长+
+
+
+
+
