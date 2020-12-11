@@ -33,16 +33,17 @@ class Db
 
 	}
 	public static function getInstance(){
-		return self::$instance==null?new Db():self::$instance;
+		return self::$instance==null?self::$instance=new Db():self::$instance;
 	}
 	public function add($time){
 		$this->sql->beginTransaction();
 		try {
-			$this->sql->insert(SQL_INSERT_IGNORE)->keyValue(["ip"=>Request::getClientIP(),"expire"=>$time])->commit();
+			$this->sql->insert(SQL_INSERT_NORMAL)->keyValue(["ip"=>Request::getClientIP(),"expire"=>$time])->commit();
 			$this->sql->commit();
 		}catch (\Exception $e){
 			$this->sql->rollBack();
 		}
+
 		$this->clear();
 	}
 	public function clear(){

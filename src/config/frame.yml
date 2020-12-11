@@ -1,8 +1,7 @@
 ---
 host :
   # 绑定域名
-  - "localhost:8080"
-  - "localhost"
+  - "a.com"
 #是否为调试模式,发布前请关闭调试模式
 debug : true
 # 项目名

@@ -35,7 +35,7 @@ class Loader
         $data = scandir(APP_LIB);
         foreach ($data as $value) {
             if ($value != '.' && $value != '..') {
-                $file = APP_LIB . DS . $value . DS . 'autoload.php';
+                $file = APP_LIB .  $value . DS . 'autoload.php';
                 if (file_exists($file)) include $file;
             }
         }
