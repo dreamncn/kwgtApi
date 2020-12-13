@@ -6,6 +6,7 @@
 namespace app\vendor\debug;
 
 
+use app\vendor\mvc\Controller;
 use app\vendor\web\Response;
 use Exception;
 
@@ -413,5 +414,29 @@ EOF;
 		exit();
 	}
 
+    /**
+     * +----------------------------------------------------------
+     * 退出框架运行
+     * +----------------------------------------------------------
+     * @param $msg
+     * @param null $tpl 退出模板文件名
+     * @param string $path 模板文件路径
+     * @param array $data 模板文件所需变量
+     * +----------------------------------------------------------\
+     */
+    public static function exitApp($msg,$tpl=null,$path='',$data=[])
+    {
+        if($tpl!==null){
+            $obj = new Controller();
+            $obj->setArray($data);
+            $obj->setAutoPathDir($path);
+            if (file_exists($path . $tpl . '.tpl'))
+                $obj->display($tpl);
+        }
+
+        Log::debug('Clean', '程序调用退出: ' . $msg);
+        Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
+        exit();
+    }
 }
 

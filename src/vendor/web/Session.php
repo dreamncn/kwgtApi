@@ -29,7 +29,7 @@ class Session
 	 * +----------------------------------------------------------
 	 * @param  array  $options
 	 * +----------------------------------------------------------
-	 * @return mixed|null
+	 * @return Session
 	 * +----------------------------------------------------------
 	 */
 	public static function getInstance(array $options = [])
@@ -44,7 +44,9 @@ class Session
 
 	public function start()
 	{
-		session_start();
+        if (session_status() !==PHP_SESSION_ACTIVE) {
+            session_start();
+        }
 	}
 
 	/**

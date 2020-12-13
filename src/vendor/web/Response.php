@@ -93,7 +93,7 @@ class Response
         $obj = new Controller();
         $obj->setArray($data);
         $obj->setAutoPathDir(APP_INNER . DS . "tip");
-        if (file_exists(APP_INNER . DS . "tip" . $code . '.html'))
+        if (file_exists(APP_INNER . DS . "tip" . $code . '.tpl'))
             $obj->display($code);
         else
             $obj->display('common');
