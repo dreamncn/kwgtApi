@@ -103,6 +103,8 @@ class Route
 	public static function rewrite()
     {
 	    Log::debug('clean', '[Clean]响应URL: ' . Response::getNowAddress());
+        $GLOBALS['route_start']=microtime(true);
+        Log::debug('clean', '[Route]路由启动时间戳: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
 
 
 
@@ -118,14 +120,20 @@ class Route
             //初始化路由缓存，不区分大小写
             $data = Cache::get($url);
         }
+        //Log::debug('clean', '[Route]读取缓存耗时: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
+
         Log::debug("route", "--------------------------------");
         if ($data !== null && isset($data['real']) && isset($data['route'])) {
             Log::debug('route', '发现路由缓存: ' . $url . ' => ' . $data['real']);
             $route_arr_cp = $data['route'];
+            Log::debug('clean', '[Route]读取缓存耗时: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
 
         } else {
+            Log::debug('clean', '[Route]未发现路由缓存: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
+
             Log::debug('route', '未发现路由缓存: ' . $url);
             $route_arr = self::convertUrl();
+            Log::debug('clean', '[Route]路由耗时: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
 
             Log::debug("route", "-> 匹配规则:" . print_r($route_arr, true));
 
