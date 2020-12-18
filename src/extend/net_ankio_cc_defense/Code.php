@@ -49,7 +49,6 @@ class Code
     public static function check(){
         $code=strval(arg("code"));
         $session_code=Session::getInstance()->get("code");
-        Log::debug("clean","验证码验证$code==$session_code");
         Session::getInstance()->delete("code");
         return $code===$session_code;
     }

@@ -19,6 +19,7 @@
 namespace app\extend\net_ankio_cc_defense;
 
 use app\vendor\database\Sql;
+use app\vendor\web\Response;
 
 class Record
 {
@@ -37,6 +38,7 @@ class Record
                     count integer,
                     times integer,
                     check_in integer,
+                    url text,
                     last_time varchar(200)
                     )"
         );
@@ -57,7 +59,8 @@ class Record
      * +----------------------------------------------------------
      * 添加一条记录
      * +----------------------------------------------------------
-     * * @param $id
+     * *
+     * @param $id
      * @param $count
      * @param $times
      * @param $last_time
@@ -70,7 +73,7 @@ class Record
         $this->sql
             ->insert(SQL_INSERT_NORMAL)
             ->keyValue(
-                ["session"=>$id,"count"=>$count,"times"=>$times,"last_time"=>$last_time]
+                ["session"=>$id,"count"=>$count,"times"=>$times,"last_time"=>$last_time,"url"=>Response::getNowAddress()]
             )->commit();
 
 		$this->clear();

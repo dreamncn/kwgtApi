@@ -50,6 +50,7 @@ class Ddos
             $query=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE)->getOne("query");
             //如果仍在违规的阶段
             if(intval($data["times"])>=$query){
+                $record->update($session->Id(),["url"=>Response::getNowAddress()]);
                 $this->security($data);
             }
 
@@ -58,8 +59,13 @@ class Ddos
                 $record->update($session->Id(),["times = times + 1"]);
                 if(intval($data["times"])+1>=$query){
                     //违规次数+1
-                    $record->update($session->Id(),["count = count + 1"]);
-                    $record->update($session->Id(),["check_in"=>1]);
+                    $record->update($session->Id(),
+                        [
+                            "count = count + 1",
+                            "check_in"=>1,
+                            "url"=>Response::getNowAddress()
+                        ]);
+
                     $data["count"]=intval($data["count"])+1;
                     $data["check_in"]=1;
                     $this->security($data);
@@ -67,7 +73,6 @@ class Ddos
                 }
             }
             $record->update($session->Id(),["last_time"=>time()]);
-           dump($sec,true);
         }
     }
 
@@ -115,7 +120,7 @@ class Ddos
             //封禁期已过
             Record::getInstance()->update(Session::getInstance()->Id(),["times"=>0]);
             $timeout=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE)->getOne("jump");
-            Response::location(Response::getNowAddress(),$timeout,false);
+            Response::location($data["url"],$timeout,false);
             exitApp("cc攻击封禁IP解封...","start",EXTEND_CC_DEFENSE."views",["time"=>$timeout]);
         }elseif(intval($data["check_in"])===1){
             Log::debug("clean","Ip封禁：".Request::getClientIP());
@@ -153,7 +158,7 @@ class Ddos
                 //检查通过
                 Record::getInstance()->update(Session::getInstance()->Id(),["times = 0"]);
                 $timeout=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE)->getOne("jump");
-                Response::location(Response::getAddress(),$timeout,false);
+                Response::location($data["url"],$timeout,false);
                 exitApp("cc攻击封禁IP解封...","start",EXTEND_CC_DEFENSE."views",["time"=>$timeout]);
             }else{
                 Record::getInstance()->update(Session::getInstance()->Id(),["count = count + 1"]);
