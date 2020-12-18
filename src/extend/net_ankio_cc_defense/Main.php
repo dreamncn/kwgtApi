@@ -6,19 +6,13 @@
 namespace app\extend\net_ankio_cc_defense;
 
 use app\vendor\event\EventListener;
+define("EXTEND_CC_DEFENSE",APP_EXTEND."net_ankio_cc_defense".DS);
 
-/**
- * Class Main
- *
- * @package app\extend\net_ankio_cc_defense
- */
 class Main implements EventListener
 {
-    /**
-     * @param $msg
-     */
     public function handleEvent($msg)
     {
 
+        (new Ddos())->start();
     }
 }

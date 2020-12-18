@@ -3,7 +3,6 @@
  * Copyright (c) 2020. CleanPHP. All Rights Reserved.
  ******************************************************************************/
 
-use app\vendor\debug\codeCheck;
 
 
 function help()
@@ -36,7 +35,7 @@ function release()
 
 function check()
 {
-    codeCheck::run();
+    echo date("is");
 }
 
 if (!isset($argv[1]))

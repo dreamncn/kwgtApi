@@ -5,6 +5,7 @@
 
 use app\vendor\debug\Dump;
 use app\vendor\debug\Log;
+use app\vendor\mvc\Controller;
 use app\vendor\web\Route;
 
 
@@ -125,6 +126,32 @@ function isConsole()
 	return isset($_SERVER['CLEAN_CONSOLE']) && $_SERVER['CLEAN_CONSOLE'];
 }
 
+/**
+ * +----------------------------------------------------------
+ * 退出框架运行
+ * +----------------------------------------------------------
+ * @param $msg
+ * @param null $tpl 退出模板文件名
+ * @param string $path 模板文件路径
+ * @param array $data 模板文件所需变量
+ * +----------------------------------------------------------\
+ */
+function exitApp($msg,$tpl=null,$path='',$data=[])
+{
+    if($tpl!==null){
+        $obj = new Controller();
+        $obj->setArray($data);
+        $obj->setAutoPathDir($path);
+        Log::debug('Clean', '退出展示模板: ' . $path.DS . $tpl . '.tpl');
+        if (file_exists($path.DS . $tpl . '.tpl'))
+            $obj->display($tpl);
+    }
+
+    Log::debug('Clean', '程序调用退出: ' . $msg);
+    Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
+    exit();
+}
+
 
 /**
  * +----------------------------------------------------------
@@ -180,4 +207,5 @@ function chkCode($string)
 	$encode = mb_detect_encoding($string, array("ASCII", 'UTF-8', "GB2312", "GBK", 'BIG5'));
 	return mb_convert_encoding($string, 'UTF-8', $encode);
 }
+
 

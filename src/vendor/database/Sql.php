@@ -49,7 +49,10 @@ class Sql
         $this->sql = new sqlExec();
         $this->tableName = $tableName;
     }
-
+    public function table($tableName){
+        $this->tableName = $tableName;
+        return $this;
+    }
 
 	/**
 	 * +----------------------------------------------------------
@@ -218,15 +221,15 @@ class Sql
 	 * +----------------------------------------------------------
 	 * 设置数据库配置文件中的配置选择
 	 * +----------------------------------------------------------
-	 * @param $sqlType string 配置文件名
+	 * @param $dbName string 配置文件名
 	 * +----------------------------------------------------------
 	 * @return $this
 	 * +----------------------------------------------------------
 	 */
-	public function setDatabase($sqlType)
+	public function setDatabase($dbName)
     {
-        $this->sql->setDatabase($sqlType);
-        $this->sqlIndex = $sqlType;
+        $this->sql->setDatabase($dbName);
+        $this->sqlIndex = $dbName;
         return $this;
     }
 
@@ -234,11 +237,11 @@ class Sql
 	 * +----------------------------------------------------------
 	 * 清空数据表
 	 * +----------------------------------------------------------
-	 * @param $table string 预清空的数据表
+	 * @param $table_name string 预清空的数据表
 	 * +----------------------------------------------------------
 	 */
-	public function emptyTable($table)
+	public function emptyTable($table_name)
     {
-        $this->sqlInstance()->emptyTable($table);
+        $this->sqlInstance()->emptyTable($table_name);
     }
 }

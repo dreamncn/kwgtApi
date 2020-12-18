@@ -133,17 +133,18 @@ class sqlExec
     }
 
 
-	/**
-	 * +----------------------------------------------------------
-	 * 数据库执行
-	 * +----------------------------------------------------------
-	 * @param         $sql
-	 * @param  array  $params
-	 * @param  false  $readonly
-	 * +----------------------------------------------------------
-	 * @return array|false|int
-	 * +----------------------------------------------------------
-	 */
+    /**
+     * +----------------------------------------------------------
+     * 数据库执行
+     * +----------------------------------------------------------
+     * @param         $sql
+     * @param array $params
+     * @param false $readonly
+     * +----------------------------------------------------------
+     * @return array|false|int
+     * +----------------------------------------------------------
+     * @throws \Exception
+     */
 	public function execute($sql, $params = [], $readonly = false)
     {
 
@@ -154,7 +155,7 @@ class sqlExec
 
         $sth = $this->dbInstance($this->getDbData()[$this->sqlIndex])->prepare($sql);
         if ($sth == false)
-            Error::err('SQL语句错误: "' . $sql . '", 无法进行预编译! ');
+            throw new \Exception('SQL语句错误: "' . $sql . '", 无法进行预编译! ');
         if (is_array($params) && !empty($params)) foreach ($params as $k => $v) {
             if (is_int($v)) {
                 $data_type = PDO::PARAM_INT;
@@ -166,7 +167,7 @@ class sqlExec
                 $data_type = PDO::PARAM_STR;
             }
 
-            $sth->bindParam($k, $v, $data_type);
+            $sth->bindValue($k, $v, $data_type);
         }
         if ($sth->execute()) {
             $end = microtime(true) - $start;
@@ -176,6 +177,8 @@ class sqlExec
                 foreach ($params as $k => $v) {
                     $sqlDefault = str_replace($k, "\"$v\"", $sqlDefault);
                 }
+                Log::debug('sqlTranslate', $sqlDefault);
+                Log::debug('sqlTranslate', strval($end * 1000) . "ms");
                 $this->sqlList[] = [$sql, $sqlDefault, strval($end * 1000) . "ms"];
             }
 
@@ -183,19 +186,21 @@ class sqlExec
 
         }
         $err = $sth->errorInfo();
-        Error::err('SQL语句错误: "' . $sql . '", 错误信息: ' . $err[2]);
-        return false;
+        Log::debug("sqlErr",'SQL语句错误: "' . $sql . '", 错误信息: ' . $err[2]);
+        throw new \Exception('SQL语句错误: "' . $sql . '", 错误信息: ' . $err[2]);
+
     }
 
-	/**
-	 * +----------------------------------------------------------
-	 * 获取数据库对象
-	 * +----------------------------------------------------------
-	 * @param $db_config
-	 * +----------------------------------------------------------
-	 * @return PDO|null
-	 * +----------------------------------------------------------
-	 */
+    /**
+     * +----------------------------------------------------------
+     * 获取数据库对象
+     * +----------------------------------------------------------
+     * @param $db_config
+     * +----------------------------------------------------------
+     * @return PDO|null
+     * +----------------------------------------------------------
+     * @throws \Exception
+     */
 	public function dbInstance($db_config)
     {
 
@@ -206,11 +211,12 @@ class sqlExec
             "sqlserver" => "odbc:Driver={SQL Server};Server={$db_config['host']};Database={$db_config['db']}",
         ];
         $connectData = "";
-        try {
 
+        try {
             if (!isset($dsn[$this->sqlType]))
-                Error::err("数据库错误: 我们不支持该类型数据库.({$this->sqlType})");
+                throw new \Exception("数据库错误: 我们不支持该类型数据库.({$this->sqlType})");
             $connectData = $dsn[$this->sqlType];
+            Log::debug("clean",". 当前数据库信息：  {$connectData}");
             if(self::$instance!==null)return self::$instance;
             self::$instance=new PDO(
                 $dsn[$this->sqlType],
@@ -222,9 +228,8 @@ class sqlExec
                 ]);
 	        return self::$instance;
         } catch (PDOException $e) {
-            Error::err('数据库错误: ' . $e->getMessage() . ". 数据库信息：  {$connectData}");
+            throw new \Exception('数据库错误: ' . $e->getMessage() . ". 数据库信息：  {$connectData}");
         }
-        return null;
     }
 
 	/**

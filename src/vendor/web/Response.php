@@ -102,18 +102,27 @@ class Response
 	    exit;
     }
 
-	/**
-	 * +----------------------------------------------------------
-	 * 直接跳转
-	 * +----------------------------------------------------------
-	 * @param $url
-	 * +----------------------------------------------------------
-	 */
-	public static function location($url)
+    /**
+     * +----------------------------------------------------------
+     * 直接跳转
+     * +----------------------------------------------------------
+     * @param $url
+     * @param int $timeout 延时跳转
+     * @param bool $exit 发生跳转是否直接退出
+     * +----------------------------------------------------------
+     */
+	public static function location($url,$timeout=0,$exit=true)
     {
-        header("Location:{$url}");
-	    Log::debug('Clean', '发生强制跳转： '.$url );
-	    Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
-	    exit;
+        if($timeout!==0){
+            header("refresh:$timeout,".$url);
+        }else{
+            header("Location:{$url}");
+        }
+        Log::debug('Clean', '发生强制跳转： '.$url );
+        if($exit){
+            Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
+            exit;
+        }
+
     }
 }

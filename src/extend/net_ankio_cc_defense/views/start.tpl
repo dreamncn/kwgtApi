@@ -10,7 +10,7 @@
     <style type="text/css">
         .loading {display: flex; flex-direction: column; align-items: center; }
         .loading__msg {
-            font-family: Roboto, serif; font-size: 16px; }
+            font-family: SansSerif, serif; font-size: 16px; }
         .loading__dots {display: flex; flex-direction: row; width: 100%; justify-content: center; margin: 100px 0 30px 0; }
         .loading__dots__dot {background-color: #44BBA4; width: 20px; height: 20px; border-radius: 50%; margin: 0 5px; color: #587B7F; }
         .loading__dots__dot:nth-child(1) {animation: bounce 1s 1s infinite; }
@@ -30,11 +30,20 @@
     <div class="loading__msg">
         <div style="text-align: center;">
             <b style="font-size: 22px;">
-                <span style="color: black;">浏览器安全检查中...</span>
+                <span style="color: black;">浏览器安全检查中,<span id="jump_box"></span></span>
+
+
             </b>
         </div></div>
 </div>
 
 
 </body>
+<script>
+    let wait = "<{$time}>";
+    document.getElementById('jump_box').innerHTML = "还有<span id='jump'><{$time}></span>秒..."
+    setInterval(function () {
+        document.getElementById("jump").innerText = --wait;
+    }, 1000);
+</script>
 </html>

@@ -57,11 +57,11 @@ Error::register();
 // 事件模型注册
 EventManager::register();
 
-//事件触发：beforeRunFrame
-EventManager::fire("beforeRunFrame", null);
-
 //框架加载的开始时间
 $GLOBALS['frame_start'] = microtime(true);
+
+
+EventManager::fire("beforeRunFrame", null);
 
 Log::debug("clean",
 	'----------------------------------------------------------------------------------------------');

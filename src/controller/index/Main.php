@@ -31,6 +31,7 @@ class Main extends BaseController
 	{
 		$sql = new Model("log");
 		$sql->setDatabase("sqlite");
+
 		$sql->execute(
 			"CREATE TABLE  IF NOT EXISTS log(
                     id integer PRIMARY KEY autoincrement,
@@ -80,6 +81,60 @@ class Main extends BaseController
 		dump($sql->select()->commit());
 	}
 
+    public function sqlinit2()
+    {
+        $sql = new Model("session_record");
+        $sql->setDbLocation(APP_EXTEND."net_ankio_cc_defense".DS, "db");
+        $sql->setDatabase("sqlite");
+        $sql->execute(
+            "CREATE TABLE  IF NOT EXISTS session_record(
+                    id integer PRIMARY KEY autoincrement,
+                    session varchar(200),
+                    count integer
+                    )"
+        );
+        $sql->emptyTable("session_record");
+        $data = $sql->select()->commit();
+        dump($data);
+        $sql->insert(SQL_INSERT_NORMAL)->keyValue([
+            'session' => '0000000', 'count' => 1,
+        ])->commit();
+        $sql->insert(SQL_INSERT_NORMAL)->keyValue([
+            'session' => '14227272', 'count' => 1,
+        ])->commit();
+
+        $data = $sql->select()->commit();
+        dump($data);
+        $sql->delete()->where(['id' => 1])->commit();
+        $data = $sql->select()->commit();
+        dump($data);
+        $sql->update()->where(['id' => 2])->set(["session" => "0212100"])
+            ->commit();
+        $data = $sql->select()->commit();
+        dump($data);
+
+        dump($sql->dumpSql());
+
+
+        dump("transaction");
+        $sql->beginTransaction();
+        $sql->insert(SQL_INSERT_NORMAL)->keyValue(['session' => "你是个大傻逼啊啊啊啊"])
+            ->commit();
+        dump($sql->select()->commit());
+        dump($sql->dumpSql());
+
+        $sql->commit();
+        dump("commit");
+        dump("transaction");
+        $sql->beginTransaction();
+        $sql->insert(SQL_INSERT_NORMAL)->keyValue(['session' => "傻逼号"])->commit();
+        $sql->update()->set(["id" => 1])->where(['session' => "傻逼号"])
+            ->commit();
+        dump($sql->select()->commit());
+        $sql->rollBack();
+        dump("rollBack");
+        dump($sql->select()->commit());
+    }
 	public function config()
 	{
 		$data = Config::getInstance("db")->get();

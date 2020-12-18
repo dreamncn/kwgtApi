@@ -23,16 +23,14 @@ class Session
 	private static $instance = null;
 
 
-	/**
-	 * +----------------------------------------------------------
-	 * 获取实例
-	 * +----------------------------------------------------------
-	 * @param  array  $options
-	 * +----------------------------------------------------------
-	 * @return Session
-	 * +----------------------------------------------------------
-	 */
-	public static function getInstance(array $options = [])
+    /**
+     * +----------------------------------------------------------
+     * 获取实例
+     * +----------------------------------------------------------
+     * @return Session
+     * +----------------------------------------------------------
+     */
+	public static function getInstance()
 	{
 		if (is_null(self::$instance)) {
 			$class          = __CLASS__;
@@ -42,12 +40,30 @@ class Session
 		return self::$instance;
 	}
 
+    /**
+     * +----------------------------------------------------------
+     * 启动session
+     * +----------------------------------------------------------
+     * @return void
+     * +----------------------------------------------------------
+     */
 	public function start()
 	{
         if (session_status() !==PHP_SESSION_ACTIVE) {
             session_start();
         }
 	}
+
+    /**
+     * +----------------------------------------------------------
+     * 获取sessionId
+     * +----------------------------------------------------------
+     * @return string
+     * +----------------------------------------------------------
+     */
+	public function Id(){
+	    return session_id();
+    }
 
 	/**
 	 * +----------------------------------------------------------
@@ -56,7 +72,7 @@ class Session
 	 * @param         $name
 	 * @param         $value
 	 * @param  int    $expire  过期时间,单位秒
-	 *                         +----------------------------------------------------------
+	 * +----------------------------------------------------------
 	 */
 	public function set($name, $value, $expire = 0)
 	{
@@ -65,9 +81,10 @@ class Session
 		}
 		if ($expire != 0) {
 			$expire = time() + $expire;
+
 		}
 		$_SESSION[$name]           = $value;
-		$_SESSION[$name."_expire"] = $expire;
+        $_SESSION[$name."_expire"] = $expire;
 	}
 
 
@@ -87,10 +104,13 @@ class Session
 		}
 		$value = $_SESSION[$name];
 		if ( ! isset($_SESSION[$name."_expire"])) {
+
+
 			return $value;
 		}
 		$expire = $_SESSION[$name."_expire"];
-		if ($expire !== 0 && $expire > time()) {
+
+		if ($expire == 0 || $expire > time()) {
 			return $value;
 		}
 		return null;
