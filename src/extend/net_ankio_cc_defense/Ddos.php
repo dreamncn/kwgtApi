@@ -118,7 +118,7 @@ class Ddos
         $ipData=BanIP::getInstance()->get();
         if($ipData==null&&intval($data["check_in"])===0){
             //封禁期已过
-            Record::getInstance()->update(Session::getInstance()->Id(),["times"=>0]);
+            Record::getInstance()->update(Session::getInstance()->Id(),["times=0","count = 0"]);
             $timeout=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE)->getOne("jump");
             Response::location($data["url"],$timeout,false);
             exitApp("cc攻击封禁IP解封...","start",EXTEND_CC_DEFENSE."views",["time"=>$timeout]);
@@ -156,7 +156,7 @@ class Ddos
         }elseif($_SERVER['REQUEST_URI']==="/check"){
             if(Code::check()){
                 //检查通过
-                Record::getInstance()->update(Session::getInstance()->Id(),["times = 0"]);
+                Record::getInstance()->update(Session::getInstance()->Id(),["times = 0","count = 0"]);
                 $timeout=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE)->getOne("jump");
                 Response::location($data["url"],$timeout,false);
                 exitApp("cc攻击封禁IP解封...","start",EXTEND_CC_DEFENSE."views",["time"=>$timeout]);
