@@ -3,17 +3,22 @@
  * Copyright (c) 2020. CleanPHP. All Rights Reserved.
  ******************************************************************************/
 
+namespace app\extend\net_ankio_tasker;
+use app\vendor\debug\Log;
+
 /**
- * Sync.php
- * Created By Dreamn.
- * Date : 2020/5/17
- * Time : 7:54 下午
- * Description :异步请求处理
+ * +----------------------------------------------------------
+ * Class Async
+ * +----------------------------------------------------------
+ * @package app\extend\net_ankio_tasker
+ * +----------------------------------------------------------
+ * Date: 2020/12/20 23:04
+ * Author: ankio
+ * +----------------------------------------------------------
+ * Desciption:异步处理，多用于后台与多线程
+ * +----------------------------------------------------------
  */
-
-namespace app\vendor\web;
-
-class Sync
+class Async
 {
     static private $err = '';
 
@@ -33,7 +38,7 @@ class Sync
      *
      * @return bool
      */
-    public static function request($url, $method = 'GET', $data = ['i' => 0], $cookie = [], $identify = 'clear')
+    public static function request($url, $method = 'GET', $data = [], $cookie = [], $identify = 'clean')
     {
 
         $url_array = parse_url($url); //获取URL信息，以便平凑HTTP HEADER
@@ -42,7 +47,7 @@ class Sync
         if (!$fp) {
             self::$err = '无法向该URL发起请求' . $errstr;
             if (isDebug()) {
-                Log::warn('Sync', '异步发起失败，原因：' . self::$err);
+                Log::warn('Async', '异步发起失败，原因：' . self::$err);
             }
             return false;
         }
@@ -55,7 +60,9 @@ class Sync
         $header .= " HTTP/1.1" . PHP_EOL;
         $header .= "Host: " . $url_array['host'] . "" . PHP_EOL; //HTTP 1.1 Host域不能省略
         $token = getRandom(128);
+
         file_put_contents(APP_TRASH . md5(md5($token . $identify)), json_encode(['token' => $token, 'timeout' => time() + 60]));
+
         $header .= "Token: " . md5($token) . "" . PHP_EOL;
         $header .= "Identify: " . md5($token . $identify) . "" . PHP_EOL;
         $header .= "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13 " . PHP_EOL;

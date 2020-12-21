@@ -16,7 +16,7 @@
  * +----------------------------------------------------------
  */
 
-namespace app\extend\net_ankio_cc_defense;
+namespace app\extend\net_ankio_cc_defense\core;
 
 use app\vendor\database\Sql;
 use app\vendor\web\Request;
@@ -44,7 +44,7 @@ class BanIP
      */
 	public function __construct() {
 		$this->sql=new Sql("ban_ip");
-		$this->sql->setDbLocation(EXTEND_CC_DEFENSE, "db");
+		$this->sql->setDbLocation(EXTEND_CC_DEFENSE."data".DS, "db");
         $this->sql->setDatabase("sqlite");
         $this->sql->execute(
             "CREATE TABLE  IF NOT EXISTS ban_ip(

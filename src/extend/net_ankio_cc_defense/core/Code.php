@@ -3,7 +3,7 @@
  * Copyright (c) 2020. CleanPHP. All Rights Reserved.
  ******************************************************************************/
 
-namespace app\extend\net_ankio_cc_defense;
+namespace app\extend\net_ankio_cc_defense\core;
 
 
 use app\vendor\debug\Log;

@@ -4,8 +4,9 @@
 
 # 文件说明
    
-   - config.yml 拓展的一些配置
-   - db.yml 拓展所需的数据库信息，默认使用的sqlite3，可以自行修改配置文件使用mysql之类的
+   - data/config.yml 拓展的一些配置
+   - data/db.yml 拓展所需的数据库信息，默认使用的sqlite3，可以自行修改配置文件使用mysql之类的
+   - data/data.db sqlite3数据库文件
    - views/start.tpl 防御检测页面
    - views/code.tpl 验证码输入页面
    

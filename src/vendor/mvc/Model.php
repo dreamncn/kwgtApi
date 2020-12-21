@@ -31,6 +31,8 @@ class Model extends Sql
     public function __construct($table_name = null)
     {
         parent::__construct($table_name);
+        //手动设置默认数据库位置
+        $this->setDbLocation(APP_CONF,"db");
     }
 
 

@@ -16,7 +16,7 @@
  * +----------------------------------------------------------
  */
 
-namespace app\extend\net_ankio_cc_defense;
+namespace app\extend\net_ankio_cc_defense\core;
 
 use app\vendor\database\Sql;
 use app\vendor\web\Response;
@@ -29,7 +29,7 @@ class Record
 
 	public function __construct() {
 		$this->sql=new Sql("session_record");
-		$this->sql->setDbLocation(EXTEND_CC_DEFENSE, "db");
+		$this->sql->setDbLocation(EXTEND_CC_DEFENSE."data".DS, "db");
 		$this->sql->setDatabase("sqlite");
         $this->sql->execute(
             "CREATE TABLE  IF NOT EXISTS session_record(

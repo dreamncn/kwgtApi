@@ -85,7 +85,7 @@ class EventManager
             //匹配监听列表
             if ($eventName == $attachEventName) {
                 foreach ($listenerList as $eventListener) {
-                    (new $eventListener())->handleEvent($data);
+                    (new $eventListener())->handleEvent($eventName,$data);
                 }
             }
         }

@@ -2,7 +2,7 @@
 /*******************************************************************************
  * Copyright (c) 2020. CleanPHP. All Rights Reserved.
  ******************************************************************************/
-namespace app\extend\net_ankio_cc_defense;
+namespace app\extend\net_ankio_cc_defense\core;
 use app\vendor\config\Config;
 use app\vendor\debug\Log;
 use app\vendor\web\Request;
@@ -11,6 +11,12 @@ use app\vendor\web\Session;
 
 class Ddos
 {
+    private $config;
+    public function __construct()
+    {
+        $this->config=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE."data".DS);
+    }
+
     /**
      * +----------------------------------------------------------
      * 启动检查
@@ -37,7 +43,7 @@ class Ddos
         if($session->get("ddos_standby")===null){
             $session->set("ddos_standby",1);
             $record->add($session->Id(),0,0,time());
-            $timeout=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE)->getOne("jump");
+            $timeout=$this->config->getOne("jump");
             Response::location(Response::getNowAddress(),$timeout,false);
             exitApp("cc攻击检查中...","start",EXTEND_CC_DEFENSE."views",["time"=>$timeout]);
         }else{
@@ -47,7 +53,7 @@ class Ddos
                 $session->delete("ddos_standby");
                 exitApp("cc攻击检查未通过...");
             }
-            $query=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE)->getOne("query");
+            $query=$this->config->getOne("query");
             //如果仍在违规的阶段
             if(intval($data["times"])>=$query){
                 $record->update($session->Id(),["url"=>Response::getNowAddress()]);
@@ -88,7 +94,7 @@ class Ddos
     private function security($data){
         //dump($data,true);
         //进入违规检查
-        $action=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE)->getOne("action");
+        $action=$this->config->getOne("action");
         switch ($action){
             case "ban":$this->banIp($data);break;
             case "code":$this->code($data);break;
@@ -119,14 +125,14 @@ class Ddos
         if($ipData==null&&intval($data["check_in"])===0){
             //封禁期已过
             Record::getInstance()->update(Session::getInstance()->Id(),["times=0","count = 0"]);
-            $timeout=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE)->getOne("jump");
+            $timeout=$this->config->getOne("jump");
             Response::location($data["url"],$timeout,false);
             exitApp("cc攻击封禁IP解封...","start",EXTEND_CC_DEFENSE."views",["time"=>$timeout]);
         }elseif(intval($data["check_in"])===1){
             Log::debug("clean","Ip封禁：".Request::getClientIP());
             //进行封禁
             Record::getInstance()->update(Session::getInstance()->Id(),["check_in"=>0]);
-            $timeout=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE)->getOne("expire");
+            $timeout=$this->config->getOne("expire");
             $count=intval($data["count"])==0?1:$data["count"];
             BanIP::getInstance()->add($timeout*$count);
             //仍然封禁
@@ -157,7 +163,7 @@ class Ddos
             if(Code::check()){
                 //检查通过
                 Record::getInstance()->update(Session::getInstance()->Id(),["times = 0","count = 0"]);
-                $timeout=Config::getInstance("config")->setLocation(EXTEND_CC_DEFENSE)->getOne("jump");
+                $timeout=$this->config->getOne("jump");
                 Response::location($data["url"],$timeout,false);
                 exitApp("cc攻击封禁IP解封...","start",EXTEND_CC_DEFENSE."views",["time"=>$timeout]);
             }else{
