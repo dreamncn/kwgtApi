@@ -281,7 +281,7 @@ EOF;
 	public static function _err_getsource($file, $line)
 	{
 		if ( ! (file_exists($file) && is_file($file))) {
-			return $GLOBALS['error'];
+			return '';
 		}
 		$data  = file($file);
 		$count = count($data) - 1;

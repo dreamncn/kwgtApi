@@ -6,6 +6,7 @@
 namespace app\vendor\web;
 
 use app\vendor\cache\Cache;
+use app\vendor\config\Config;
 use app\vendor\debug\Error;
 use app\vendor\debug\Log;
 use app\vendor\event\EventManager;
@@ -41,6 +42,15 @@ class Route
 	 */
 	public static function url($m, $c, $a, $params = [])
     {
+        $isRewrite=Config::getInstance("frame")->setLocation(APP_CONF)->getOne("rewrite");
+        if(!$isRewrite){
+            $params["m"]=$m;
+            $params["c"]=$c;
+            $params["a"]=$a;
+
+            return Response::getAddress() . "/".(empty($params) ? '' : '?' ). http_build_query($params);
+        }
+
         $paramsStr = empty($params) ? '' : '?' . http_build_query($params);
         $route = "$m/$c/$a";
         $url = Response::getAddress() . "/";
@@ -107,72 +117,79 @@ class Route
         Log::debug('clean', '[Route]路由启动时间戳: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
 
 
-
-	    //不允许的参数
-        if (isset($_REQUEST['m']) || isset($_REQUEST['a']) || isset($_REQUEST['c'])) {
-            Error::_err_router("以下参数名不允许：m,a,c!");
-        }
-
-        $url = strtolower(urldecode($_SERVER['REQUEST_URI']));
-        $data = null;
-        if (!isDebug()) {//非调试状态从缓存读取
-            Cache::init(365 * 24 * 60 * 60, APP_ROUTE);
-            //初始化路由缓存，不区分大小写
-            $data = Cache::get($url);
-        }
-        //Log::debug('clean', '[Route]读取缓存耗时: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
-
-        Log::debug("route", "--------------------------------");
-        if ($data !== null && isset($data['real']) && isset($data['route'])) {
-            Log::debug('route', '发现路由缓存: ' . $url . ' => ' . $data['real']);
-            $route_arr_cp = $data['route'];
-            Log::debug('clean', '[Route]读取缓存耗时: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
-
-        } else {
-            Log::debug('clean', '[Route]未发现路由缓存: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
-
-            Log::debug('route', '未发现路由缓存: ' . $url);
-            $route_arr = self::convertUrl();
-            Log::debug('clean', '[Route]路由耗时: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
-
-            Log::debug("route", "-> 匹配规则:" . print_r($route_arr, true));
+        $isRewrite=Config::getInstance("frame")->setLocation(APP_CONF)->getOne("rewrite");
 
 
-            if (!isset($route_arr['m']) || !isset($route_arr['a']) || !isset($route_arr['c'])) {
-                Error::_err_router("错误的路由! 我们需要至少三个参数.");
+        if($isRewrite){
+            //不允许的参数
+            if (isset($_REQUEST['m']) || isset($_REQUEST['a']) || isset($_REQUEST['c'])) {
+                Error::_err_router("以下参数名不允许：m,a,c!");
             }
-
-
-            $route_arr = array_merge($_GET, $route_arr);//get中的参数直接覆盖
-
-            $route_arr_cp = $route_arr;
-
-            //重写缓存表
-            $__module = ($route_arr['m']);
-            unset($route_arr['m']);
-
-            $__controller = ($route_arr['c']);
-            unset($route_arr['c']);
-
-            $__action = ($route_arr['a']);
-            unset($route_arr['a']);
-
-            if (url($__module, $__controller, $__action, $route_arr) !== Response::getNowAddress()) {
-                Error::_err_router("错误的路由，该路由已被定义，请使用定义路由访问.\n当前地址:" . Response::getNowAddress() . '  定义的路由为:' . url($__module, $__controller, $__action, $route_arr));
+            $url = strtolower(urldecode($_SERVER['REQUEST_URI']));
+            $data = null;
+            if (!isDebug()) {//非调试状态从缓存读取
+                Cache::init(365 * 24 * 60 * 60, APP_ROUTE);
+                //初始化路由缓存，不区分大小写
+                $data = Cache::get($url);
             }
+            //Log::debug('clean', '[Route]读取缓存耗时: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
+            Log::debug("route", "--------------------------------");
+            if ($data !== null && isset($data['real']) && isset($data['route'])) {
+                Log::debug('route', '发现路由缓存: ' . $url . ' => ' . $data['real']);
+                $route_arr_cp = $data['route'];
+                Log::debug('clean', '[Route]读取缓存耗时: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
 
-            $real = "$__module/$__controller/$__action";
-            if (sizeof($route_arr)) {
-                $real .= '?' . http_build_query($route_arr);
+            } else {
+                Log::debug('clean', '[Route]未发现路由缓存: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
+
+                Log::debug('route', '未发现路由缓存: ' . $url);
+                $route_arr = self::convertUrl();
+                Log::debug('clean', '[Route]路由耗时: ' . strval((microtime(true) - $GLOBALS['route_start']) * 1000) . 'ms');
+
+                Log::debug("route", "-> 匹配规则:" . print_r($route_arr, true));
+
+
+                if (!isset($route_arr['m']) || !isset($route_arr['a']) || !isset($route_arr['c'])) {
+                    Error::_err_router("错误的路由! 我们需要至少三个参数.");
+                }
+
+
+                $route_arr = array_merge($_GET, $route_arr);//get中的参数直接覆盖
+
+                $route_arr_cp = $route_arr;
+
+                //重写缓存表
+                $__module = ($route_arr['m']);
+                unset($route_arr['m']);
+
+                $__controller = ($route_arr['c']);
+                unset($route_arr['c']);
+
+                $__action = ($route_arr['a']);
+                unset($route_arr['a']);
+
+                if (url($__module, $__controller, $__action, $route_arr) !== Response::getNowAddress()) {
+                    Error::_err_router("错误的路由，该路由已被定义，请使用定义路由访问.\n当前地址:" . Response::getNowAddress() . '  定义的路由为:' . url($__module, $__controller, $__action, $route_arr));
+                }
+
+                $real = "$__module/$__controller/$__action";
+                if (sizeof($route_arr)) {
+                    $real .= '?' . http_build_query($route_arr);
+                }
+                $arr = [
+                    'real' => $real,
+                    'route' => $route_arr_cp,
+                ];
+                if (!isDebug())
+                    Cache::set($url, $arr);
+                Log::debug('route', '路由路径: ' . $real);
+                Log::debug('clean', '[Route]路由路径: ' . $real);
             }
-            $arr = [
-                'real' => $real,
-                'route' => $route_arr_cp,
-            ];
-            if (!isDebug())
-                Cache::set($url, $arr);
-            Log::debug('route', '路由路径: ' . $real);
-	        Log::debug('clean', '[Route]路由路径: ' . $real);
+        }else{
+            if(!isset($_REQUEST['m']))$_GET["m"]="index";
+            if(!isset($_REQUEST['a']))$_GET["a"]="index";
+            if(!isset($_REQUEST['c']))$_GET["c"]="main";
+            $route_arr_cp=[];
         }
 
         $_REQUEST = array_merge($_GET, $_POST, $route_arr_cp);
@@ -232,8 +249,6 @@ class Route
 
         return $route_arr;
     }
-
-
 	/**
 	 * +----------------------------------------------------------
 	 *  判断是否有安装程序，有就跳转

@@ -34,7 +34,7 @@ class Config
 	static public function register()
 	{
 		$GLOBALS          = [];
-		$conf             = self::getInstance("frame")->get();
+		$conf             = self::getInstance("frame")->setLocation(APP_CONF)->get();
 		$GLOBALS["frame"] = $conf;
 		if ( ! in_array($_SERVER["HTTP_HOST"], $conf['host'])) {
 			if (isDebug()) {
@@ -42,7 +42,7 @@ class Config
 			}
 			exit('网站出现错误，请联系网站管理员。');
 		}
-		$GLOBALS["route"] = self::getInstance("route")->get();
+		$GLOBALS["route"] = self::getInstance("route")->setLocation(APP_CONF)->get();
 	}
 
 	/**

@@ -4,6 +4,8 @@ host :
   - "a.com"
 #是否为调试模式,发布前请关闭调试模式
 debug : true
+# 使用伪静态
+rewrite: true
 # 项目名
 app : cleanPHP
 # 项目升级次数
