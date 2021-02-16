@@ -5,7 +5,9 @@
 
 namespace app\controller\index;
 
+use app\extend\net_ankio_tasker\core\Tasker;
 use app\vendor\config\Config;
+use app\vendor\debug\Log;
 use app\vendor\mvc\Model;
 use app\vendor\web\Response;
 
@@ -26,6 +28,15 @@ class Main extends BaseController
 	{
 		Response::msg(true, 403, "你知道什么叫伪静态吗", "You Know?", 10, '/', '回到首页');
 	}
+
+	public function tasker(){
+	    $tasker=Tasker::getInstance();
+	    $tasker->add($tasker->cycleNMinute(0),url('index','tasker','tasker_start_1'),"write_0_2",2);
+        $tasker->add($tasker->cycleNMinute(1),url('index','tasker','tasker_start_2'),"write_1_-1");
+        $tasker->add($tasker->cycleNMinute(2),url('index','tasker','tasker_start_3'),"write_2_3",3);
+    }
+
+
 
 	public function sqlinit()
 	{

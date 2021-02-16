@@ -47,9 +47,10 @@ class Sql
 	public function __construct($tableName = '')
     {
         $this->sql = new sqlExec();
-        $this->tableName = $tableName;
+        if($tableName!=="")
+            $this->tableName = $tableName;
     }
-    public function table($tableName){
+    protected function table($tableName){
         $this->tableName = $tableName;
         return $this;
     }

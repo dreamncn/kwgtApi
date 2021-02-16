@@ -148,4 +148,17 @@ class Cookie
 	}
 
 
+    /**
+     * +----------------------------------------------------------
+     * cookie续期
+     * +----------------------------------------------------------
+     * @param int $time
+     * +----------------------------------------------------------
+     */
+	public function addTime($time=5){
+	    foreach ($_COOKIE as $name=>$value){
+            setcookie($name, $value, time() + $time*60, $this->path, $this->domain,
+                $this->secure, $this->httponly);
+        }
+    }
 }

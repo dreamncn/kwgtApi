@@ -50,6 +50,14 @@ class Request
     }
 
 
+    public static function getHeaderValue($headName){
+	    $headers=self::getHeader();
+	    if(isset($headers[$headName])){
+	        return $headers[$headName];
+        }
+	    return null;
+    }
+
 	/**
 	 * +----------------------------------------------------------
 	 * 获取浏览器信息

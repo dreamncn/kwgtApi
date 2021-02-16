@@ -45,16 +45,59 @@ class Db extends Sql
         return self::$instance===null?(self::$instance=new Db()):self::$instance;
     }
 
-    public static function InitAsync(){
-        self::$instance->execute(
-            "CREATE TABLE  IF NOT EXISTS session_record(
+    /**
+     * +----------------------------------------------------------
+     * 初始化异步服务存储库
+     * +----------------------------------------------------------
+     * @return void
+     * +----------------------------------------------------------
+     */
+    public static function initAsync(){
+        self::getInstance()->execute(
+            "CREATE TABLE  IF NOT EXISTS extend_async(
                     id integer PRIMARY KEY autoincrement,
-                    session varchar(200),
-                    count integer,
-                    times integer,
-                    check_in integer,
+                    identify varchar(200),
+                    timeout varchar(200),
+                    token varchar(200)
+                    )"
+        );
+    }
+
+    /**
+     * +----------------------------------------------------------
+     *  初始化定时任务库
+     * +----------------------------------------------------------
+     * @return void
+     * +----------------------------------------------------------
+     */
+    public static function initTasker(){
+        self::getInstance()->execute(
+            "CREATE TABLE  IF NOT EXISTS extend_tasker(
+                    id integer PRIMARY KEY autoincrement,
                     url text,
-                    last_time varchar(200)
+                    identify varchar(200),
+                    minute varchar(200),
+                    hour varchar(200),
+                    day varchar(200),
+                    month varchar(200),
+                    week varchar(200),
+                    next varchar(200),
+                    times integer
+                    )"
+        );
+    }
+
+    /**
+     * +----------------------------------------------------------
+     * 初始化Lock
+     * +----------------------------------------------------------
+     * @return void
+     * +----------------------------------------------------------
+     */
+    public static function initLock(){
+        self::getInstance()->execute(
+            "CREATE TABLE  IF NOT EXISTS extend_lock(
+                    lock_time varchar(200)
                     )"
         );
     }
