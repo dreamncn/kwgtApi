@@ -94,12 +94,13 @@ class Response
         $obj->setArray($data);
         $obj->setAutoPathDir(APP_INNER . DS . "tip");
         if (file_exists(APP_INNER . DS . "tip" . $code . '.tpl'))
-            $obj->display($code);
-        else
-            $obj->display('common');
-	    Log::debug('Clean', '出现重定向或不可访问的页面。响应代码：'.$code );
-	    Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
-	    exit;
+           echo $obj->display($code);
+        else {
+
+            Log::debug('Clean', '出现重定向或不可访问的页面。响应代码：' . $code);
+            Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
+            echo $obj->display('common');
+        }
     }
 
     /**

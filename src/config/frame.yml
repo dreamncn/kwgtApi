@@ -8,15 +8,19 @@ host :
 debug : true
 # 使用伪静态
 rewrite: true
+# 程序完整性检查，会损失一些性能
+check: false
 # 项目名
 app : cleanPHP
 # 项目升级次数
 verCode : 1
 # 项目版本名称
-verName : 1.0.0b1
+verName : 1.0.0
 # 日志有效期(天)
 logValidTime : 30
 # 安装程序模块名
 install :
+# MD5
+md5:
 
 

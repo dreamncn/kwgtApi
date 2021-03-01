@@ -29,5 +29,4 @@ class BaseController extends Controller
     }
 
     //public static function err404(){}
-    //public static function err500(){}
 }

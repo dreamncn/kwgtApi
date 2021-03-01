@@ -20,22 +20,27 @@ EOF;
 
 function run($argv)
 {
-    if (!isset($argv[2])) return help();
+
+    if (!isset($argv[2])||($argv!="clean_check"&&$argv!="clean_release")) return help();
     $_SERVER['CLEAN_CONSOLE'] = true;
     $_SERVER["HTTP_HOST"] = "localhost";
-    $_SERVER["REQUEST_URI"] = "/" . $argv[2];
+    if(is_array($argv))
+        $_SERVER["REQUEST_URI"] = "/" . $argv[2];
+    else
+        $_SERVER["REQUEST_URI"] = $argv;
+
     include './public/index.php';
     return null;
 }
 
 function release()
 {
-
+    run("clean_release");
 }
 
 function check()
 {
-    echo date("is");
+    run("clean_check");
 }
 
 if (!isset($argv[1]))

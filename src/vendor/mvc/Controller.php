@@ -106,12 +106,11 @@ class Controller
 	 * 渲染模板
 	 * +----------------------------------------------------------
 	 * @param         $tpl_name
-	 * @param  false  $return
 	 * +----------------------------------------------------------
 	 * @return false|string
 	 * +----------------------------------------------------------
 	 */
-	public function display($tpl_name, $return = false)
+	public function display($tpl_name)
     {
         $GLOBALS['display_start'] = microtime(true);
         Log::debug('view', '尝试编译模板文件 "' . $tpl_name . '"');
@@ -130,11 +129,6 @@ class Controller
         }
         $this->_auto_display = false;
 
-        if ($return) {
-            return $this->_v->render($tpl_name);
-        } else {
-            echo $this->_v->render($tpl_name);
-            return '';
-        }
+        return $this->_v->render($tpl_name);
     }
 }

@@ -400,8 +400,7 @@ EOF;
 			if (method_exists($nameBase, 'err404')) {
 				$nameBase::err404($__module, $__controller, $__action, $msg);
 			} else {
-				Response::msg(true, 404, '404 Not Found', '无法找到该页面.', 3, '/',
-					'立即跳转');
+				Response::msg(true, 404, '404 Not Found', '无法找到该页面.', 3, '/','立即跳转');
 			}
 			Log::warn('route', $msg);
 		} else {

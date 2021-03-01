@@ -11,7 +11,9 @@ class Main extends BaseController
 {
     public function index()
     {
-        echo 'Hi,Admin';
+        echo "666";
+       echo("333");
+        return 'Hi,Admin';
     }
 
     public function admin()

@@ -5,10 +5,12 @@
 
 namespace app\vendor\core;
 
+use app\vendor\config\Config;
 use app\vendor\debug\Error;
 use app\vendor\debug\Log;
 use app\vendor\event\EventManager;
 use app\vendor\mvc\Controller;
+use app\vendor\release\FileCheck;
 use app\vendor\web\Route;
 
 
@@ -70,6 +72,14 @@ class Clean
 
         EventManager::fire("afterFrameInit", null);
 
+        //完整性校验
+        if(!isDebug()&&Config::getInstance("frame")->setLocation(APP_CONF)->getOne("check")){
+
+            if(!FileCheck::checkMd5(APP_DIR,Config::getInstance("frame")->setLocation(APP_CONF)->getOne("md5"))){
+                exitApp("应用程序完整性检查校验未通过。");
+            }
+        }
+
     }
 
 	/**
@@ -120,25 +130,27 @@ class Clean
         if (!$controller_method_exists && !$auto_tpl_file_exists) {
             Error::_err_router("错误: 控制器 '$controller_name' 中的方法 '$action_name' 不存在!");
         }
-
+        $result = null;
         if ($controller_class_exists && $controller_method_exists) {
             $controller_obj = new $controller_name();
-            $controller_obj->$action_name();
+           $result = $controller_obj->$action_name();
             if ($controller_obj->_auto_display) {
 
                 if ($auto_tpl_file_exists) {
 	                Log::debug('clean', '自动输出模板 '.$auto_tpl_name);
-	                $controller_obj->display($auto_tpl_name);
+                    $result =  $controller_obj->display($auto_tpl_name);
                 }
             }
         } else {
             $controller_obj = new Controller();
             if ($auto_tpl_file_exists) {
 	            Log::debug('clean', '无方法输出模板 '.$auto_tpl_name);
-	            $controller_obj->display($auto_tpl_name);
+                $result = $controller_obj->display($auto_tpl_name);
             }
 
         }
+        if($result!=null)echo $result;
+        //输出html
         Log::debug('Clean', '框架运行完成，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
 
     }
