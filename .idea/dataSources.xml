@@ -15,5 +15,11 @@
         </library>
       </libraries>
     </data-source>
+    <data-source source="LOCAL" name="SQLite - data.db" uuid="2a712901-bf10-4bd7-8d4d-f7f93ec60326">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/../../../../hosts/a.com/extend/net_ankio_cc_defense/data/data.db</jdbc-url>
+    </data-source>
   </component>
 </project>

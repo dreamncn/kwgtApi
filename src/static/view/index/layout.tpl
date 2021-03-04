@@ -42,13 +42,11 @@
                         <dd><a href="<{url('index','example','dump')}>">调试输出</a></dd>
                     </dl>
                 </li>
+                <li class="layui-nav-item"><a href="<{url('index','example','input',['id'=>1,'is'=>false,'qq'=>"2324324"])}>">内容输入</a></li>
                 <li class="layui-nav-item">
                     <a href="javascript:">数据库操作</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="<{url('index','sql','add')}>">增加</a></dd>
-                        <dd><a href="<{url('index','sql','del')}>">删除</a></dd>
-                        <dd><a href="<{url('index','sql','upd')}>">修改</a></dd>
-                        <dd><a href="<{url('index','sql','select')}>">查找</a></dd>
+                        <dd><a href="<{url('index','sql','sqlinit')}>">增删改查</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
@@ -60,19 +58,18 @@
                     </dl>
                 </li>
                 <li class="layui-nav-item">
-                    <a href="javascript:;"></a>
+                    <a href="javascript:;">插件列表</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="javascript:;">列表一</a></dd>
-                        <dd><a href="javascript:;">列表二</a></dd>
-                        <dd><a href="">超链接</a></dd>
+                        <dd><a href="<{url('index','plugin','cc')}>">CC攻击防御</a></dd>
+                        <dd><a href="<{url('index','plugin','tasker')}>">定时任务</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
-                    <a href="javascript:;">解决方案</a>
+                    <a href="javascript:;">拓展工具类</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="javascript:;">列表一</a></dd>
-                        <dd><a href="javascript:;">列表二</a></dd>
-                        <dd><a href="">超链接</a></dd>
+                        <dd><a href="<{url('index','lib','rsa')}>">RSA与AES加密解密</a></dd>
+                        <dd><a href="<{url('index','lib','upload')}>">文件上传处理类</a></dd>
+                        <dd><a href="<{url('index','lib','csrf')}>">SSRF与CSRF防御</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">

@@ -159,7 +159,7 @@ function exitApp($msg,$tpl=null,$path='',$data=[])
         $obj->setAutoPathDir($path);
         Log::debug('Clean', '退出展示模板: ' . $path.DS . $tpl . '.tpl');
         if (file_exists($path.DS . $tpl . '.tpl'))
-            $obj->display($tpl);
+          echo  $obj->display($tpl);
     }
 
     Log::debug('Clean', '程序调用退出: ' . $msg);
