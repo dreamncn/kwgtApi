@@ -128,51 +128,5 @@ class File {
         }
     }
 
-    public static function zip($fileList,$fileName){
-
-        $zip = new ZipArchive();
-        $zip->open($fileName,ZipArchive::CREATE);   //打开压缩包
-        $result = [];
-        array_walk_recursive($fileList, function($value) use (&$result) {
-            array_push($result, $value);
-        });
-        foreach($result as $file){
-            $zip->addFile($file,basename($file));   //向压缩包中添加文件
-        }
-        $zip->close();  //关闭压缩包
-    }
-    public static function unzip($file,$fileOut){
-        $zip = new ZipArchive();
-        if ($zip->open($file) === true) {
-            //获取索引为0的文件名称
-            var_dump($zip->getNameIndex(0));
-
-            //将压缩包文件解压到test目录下
-            $zip->extractTo($fileOut);
-
-            // 关闭zip文件
-            $zip->close();
-
-        }
-    }
-
-    public static function getFiles($dir)
-    {
-        $files = array();
-        if ($head = opendir($dir)) {
-            while (($entry = readdir($head)) !== false) {
-
-                if ($entry != ".." && $entry != ".") {
-                    if (is_dir($dir . '/' . $entry)) {
-                        $files[] = self::getFiles($dir . '/' . $entry);
-                    } else {
-                        $files[] = $dir . '/' . $entry;
-                    }
-                }
-            }
-        }
-        closedir($head);
-        return $files;
-    }
 
 }

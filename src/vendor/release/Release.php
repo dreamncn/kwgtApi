@@ -109,9 +109,14 @@ class Release
             Config::getInstance("frame")->setLocation($new . "/config/")->set("verName", $verName);
         }
         fclose($fh);
-        $fileList=File::getFiles($new);
+
+        Config::getInstance("frame")->setLocation($new . "/config/")->set("md5",  FileCheck::getMd5($new));
+
+
         $fileName=dirname(APP_DIR) . "/release/".$appName."_".$verName."(".$verCode.").zip";
-        File::zip($fileList,$fileName );
+        //File::zip($new,$new,$fileName );
+        $zip=new Zip();
+        $zip->Zip($new,$fileName);
         echo "\n[项目打包程序]php程序已打包至$fileName";
         File::del($new);
     }

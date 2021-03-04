@@ -80,11 +80,12 @@ EOF;
  * @param  null  $name     参数名
  * @param  null  $default  默认参数值
  * @param  bool  $trim     是否去除空白
+ * @param string $type     类型(str,bool,float,double,int),当返回所有数据时该校验无效。
  * +----------------------------------------------------------
  * @return array|mixed|string|null
  * +----------------------------------------------------------
  */
-function arg($name = null, $default = null, $trim = true)
+function arg($name = null, $default = null, $trim = true,$type="str")
 {
 	if ($name) {
 		if ( ! isset($_REQUEST[$name])) {
@@ -98,8 +99,22 @@ function arg($name = null, $default = null, $trim = true)
 		$arg = $_REQUEST;
 	}
 
+
+	if(!is_array($arg)){
+        switch ($type){
+            case "str":$arg=strval($arg);break;
+            case "int":$arg=intval($arg);break;
+            case "bool":$arg=boolval($arg);break;
+            case "float":$arg=floatval($arg);break;
+            case "double":$arg=doubleval($arg);break;
+            default:break;
+        }
+    }
+
 	return $arg;
 }
+
+
 
 /**
  * +----------------------------------------------------------

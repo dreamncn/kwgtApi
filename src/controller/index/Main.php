@@ -15,19 +15,23 @@ class Main extends BaseController
 {
 	public function index()
 	{
-		$this->setData('a', 'PHPer');
+
 	}
 
 	public function admin()
 	{
-		dump('路由生成');
-		dump(url('admin', 'main', 'index', ['addr' => 'okkk']));
+        Response::msg(true, 200, "混淆视听3", "收到参数 id=".arg("id",null), -1, '/', '回到首页');
 	}
 
 	public function test()
 	{
-		Response::msg(true, 403, "你知道什么叫伪静态吗", "You Know?", 10, '/', '回到首页');
+		Response::msg(true, 200, "混淆视听", "收到参数 file=".arg("file",null), -1, '/', '回到首页');
 	}
+
+    public function api()
+    {
+        Response::msg(true, 200, "混淆视听2", "收到参数 id=".arg("id",null), -1, '/', '回到首页');
+    }
 
 	public function tasker(){
 	    $tasker=Tasker::getInstance();

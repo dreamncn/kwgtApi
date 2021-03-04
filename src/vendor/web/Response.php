@@ -96,11 +96,9 @@ class Response
         if (file_exists(APP_INNER . DS . "tip" . $code . '.tpl'))
            echo $obj->display($code);
         else {
-
-            Log::debug('Clean', '出现重定向或不可访问的页面。响应代码：' . $code);
-            Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
             echo $obj->display('common');
         }
+        exitApp("出现重定向或不可访问的页面。响应代码：  $code");
     }
 
     /**
@@ -121,8 +119,7 @@ class Response
         }
         Log::debug('Clean', '发生强制跳转： '.$url );
         if($exit){
-            Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
-            exit;
+            exitApp("发生强制跳转：  $url");
         }
 
     }

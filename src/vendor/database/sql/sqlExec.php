@@ -216,7 +216,7 @@ class sqlExec
             if (!isset($dsn[$this->sqlType]))
                 throw new \Exception("数据库错误: 我们不支持该类型数据库.({$this->sqlType})");
             $connectData = $dsn[$this->sqlType];
-            Log::debug("clean",". 当前数据库信息：  {$connectData}");
+            //Log::debug("clean",". 当前数据库信息：  {$connectData}");
             if(self::$instance!==null)return self::$instance;
             self::$instance=new PDO(
                 $dsn[$this->sqlType],

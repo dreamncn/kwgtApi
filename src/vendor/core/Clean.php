@@ -118,7 +118,6 @@ class Clean
         $auto_tpl_name = $__controller . '_' . $__action;
 
         $auto_tpl_file_exists = file_exists(APP_VIEW . $__module . DS . $auto_tpl_name . '.tpl');
-
         $controller_class_exists = class_exists($controller_name, true);
 
         $controller_method_exists = method_exists($controller_name, $action_name);
@@ -133,6 +132,7 @@ class Clean
         $result = null;
         if ($controller_class_exists && $controller_method_exists) {
             $controller_obj = new $controller_name();
+
            $result = $controller_obj->$action_name();
             if ($controller_obj->_auto_display) {
 
@@ -141,15 +141,24 @@ class Clean
                     $result =  $controller_obj->display($auto_tpl_name);
                 }
             }
+
         } else {
-            $controller_obj = new Controller();
+            $base='app\\controller\\' . $__module . '\\BaseController';
+            $controller_obj = new $base();
             if ($auto_tpl_file_exists) {
 	            Log::debug('clean', '无方法输出模板 '.$auto_tpl_name);
                 $result = $controller_obj->display($auto_tpl_name);
+
             }
 
         }
-        if($result!=null)echo $result;
+        if($result!=null){
+            if($controller_obj->isEncode()){
+                echo htmlspecialchars($result,ENT_QUOTES,"UTF-8",true);
+            }else{
+                echo $result;
+            }
+        }
         //输出html
         Log::debug('Clean', '框架运行完成，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
 

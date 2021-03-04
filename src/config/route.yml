@@ -4,7 +4,7 @@
 "admin-<id>.html" : "index/main/admin"
 "<file>.php" : "index/main/test"
 # 隐藏模块访问路径
-"dontgo/<c>/<a>" : "admin/<c>/<a>"
+"adminishide/<c>/<a>" : "hide/<c>/<a>"
 # index页面路由
 "" : "index/main/index"
 # 默认路由方案

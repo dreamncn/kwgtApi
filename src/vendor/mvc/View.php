@@ -58,6 +58,7 @@ class View
         $complied_file = $this->compile($tempalte_name);
         Log::debug('view', '编译耗时: ' . strval((microtime(true) - $GLOBALS['display_start']) * 1000) . 'ms');
         ob_start();
+        $_view_obj = &$this;
         extract($this->template_vals, EXTR_SKIP);
         include $complied_file;
         return ob_get_clean();

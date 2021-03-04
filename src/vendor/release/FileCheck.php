@@ -137,13 +137,7 @@ class FileCheck
 
     public static function checkMd5($dir,$md5)
     {
-        self::$no_check[]="/storage";
-        self::$no_check[]="/config/frame.yml";
-        $checked=$md5==self::getMd5($dir);
-
-        unset(self::$no_check[sizeof(self::$no_check)-1]);
-        unset(self::$no_check[sizeof(self::$no_check)-1]);
-        return $checked;
+        return $md5==self::getMd5($dir);
     }
 
 
@@ -151,7 +145,8 @@ class FileCheck
 
     public static  function getMd5($dir)
     {
-
+        self::$no_check[]="/storage";
+        self::$no_check[]="/config/frame.yml";
         if (!is_dir($dir)) {
             return "";
         }
@@ -171,7 +166,7 @@ class FileCheck
                 }
                 if($find)continue;
 
-                if (is_dir($dir . '/' . $entry)&&!in_array(str_replace($dir,APP_DIR,""). '/' .$entry,self::$no_check)) {
+                if (is_dir($dir . '/' . $entry)) {
 
                     $filemd5s[] = self::getMd5($dir . '/' . $entry);
 
@@ -186,7 +181,8 @@ class FileCheck
         }
 
         $d->close();
-
+        unset(self::$no_check[sizeof(self::$no_check)-1]);
+        unset(self::$no_check[sizeof(self::$no_check)-1]);
         return md5(implode('', $filemd5s));
 
     }

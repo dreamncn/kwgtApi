@@ -33,6 +33,7 @@ class Controller
 
 	private $_data = [];//模板参数数组
 
+    private $encode=true;
 
 	/**
 	 * Controller constructor.
@@ -61,6 +62,14 @@ class Controller
 	public function setLayout($file)
     {
         $this->layout = $file;
+    }
+
+    public function setEncode($encode){
+	    $this->encode=$encode;
+    }
+
+    public function isEncode(){
+	    return $this->encode===true;
     }
 
 	/**
@@ -128,7 +137,7 @@ class Controller
             $tpl_name = $this->layout;
         }
         $this->_auto_display = false;
-
+        $this->encode=false;
         return $this->_v->render($tpl_name);
     }
 }
