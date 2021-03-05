@@ -38,13 +38,16 @@ class Release
         File::cleanDir($new . "/storage/trash/");//清空文件夹
         File::cleanDir($new . "/storage/view/");//清空文件夹
         //删除命令行响应代码
-        $rep = 'if(isset($_SERVER[\'CLEAN_CONSOLE\'])&&$_SERVER[\'CLEAN_CONSOLE\']){
+        $rep = ' if(isset($_SERVER[\'CLEAN_CONSOLE\'])&&$_SERVER[\'CLEAN_CONSOLE\']){
             if($_SERVER["REQUEST_URI"]=="clean_check"){
                 FileCheck::run();
 
             }else if($_SERVER["REQUEST_URI"]=="clean_release"){
                 Release::run();
+            }else if($_SERVER["REQUEST_URI"]=="clean_clean"){
+                Release::clean();
             }
+
             exitApp("命令行执行完毕");
         }';
 

@@ -35,7 +35,6 @@ class Zip
     {
         $temp_path = $path;
         $temp_zip_path = $zipName ;
-        $zipDir = $zipName;
         if ($handle = @opendir($path)) {
             while (false !== ($file = readdir($handle))) {
                 if ($file != '.' and $file != '..') {
@@ -49,15 +48,13 @@ class Zip
                         $filePath=$zipName . '/' . $file;
                         $filePath=str_replace($this->base."/","",$filePath);
 
-                        echo "$filePath\n";
+                      //  echo "$filePath\n";
                         $this->addFile($fileValue, $filePath);
                     } else {
                         $this->openFile($path . '/' . $file, $zipName . '/' . $file);
                     }
                 }
             }
-            $zipName = $temp_zip_path;
-            $path = $temp_path;
             closedir($handle);
         }
     }
