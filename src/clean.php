@@ -21,7 +21,7 @@ EOF;
 function run($argv)
 {
 
-    if (!isset($argv[2])||($argv!="clean_check"&&$argv!="clean_release")) return help();
+    if (!isset($argv[2])||($argv!="clean_check"&&$argv!="clean_release"&&$argv!="clean_clean")) return help();
     $_SERVER['CLEAN_CONSOLE'] = true;
     $_SERVER["HTTP_HOST"] = "localhost";
     if(is_array($argv))
@@ -41,6 +41,10 @@ function release()
 function check()
 {
     run("clean_check");
+}
+function clean()
+{
+    run("clean_clean");
 }
 
 if (!isset($argv[1]))

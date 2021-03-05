@@ -19,4 +19,4 @@
     <legend>功能演示</legend>
 </fieldset>
 
-<blockquote class="layui-elem-quote">该插件默认为打开状态，直接访问样例站点即可看到效果，快速刷新也可以看到效果。 </blockquote>
+<blockquote class="layui-elem-quote">该插件默认为打开状态，直接访问样例站点即可看到效果(本地部署无效，加入了内网检测，如果需要本地查看效果，请手动注释该文件第49行extend/net_ankio_cc_defense/core/Ddos.php)，快速刷新也可以看到效果。 </blockquote>

@@ -74,14 +74,13 @@ class Cookie
 	 * +----------------------------------------------------------
 	 * @param  array  $options
 	 * +----------------------------------------------------------
-	 * @return mixed|null
+	 * @return Cookie
 	 * +----------------------------------------------------------
 	 */
 	public static function getInstance(array $options = [])
 	{
 		if (is_null(self::$instance)) {
-			$class          = __CLASS__;
-			self::$instance = new $class($options);
+            self::$instance = new Cookie($options);
 		}
 
 		return self::$instance;

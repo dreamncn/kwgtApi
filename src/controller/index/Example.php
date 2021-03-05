@@ -57,7 +57,9 @@ class Example extends BaseController
          * @var Verity $verity
          */
         $verity=Verity::get($qq);
-        dump("qq校验结果：".$verity->check(8,0));
+        $verity->check(8,0);
+        dump("qq校验结果：".$verity->getErr());
+
 
     }
 

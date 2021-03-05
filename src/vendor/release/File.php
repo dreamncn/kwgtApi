@@ -49,7 +49,7 @@ class File {
                         //子目录中操作删除文件夹和文件
                         self::cleanDir($path . $val . '/');
                         //目录清空后删除空文件夹
-                        //  @rmdir($path.$val.'/');
+                          @rmdir($path.$val.'/');
                     } else {
                         //如果是文件直接删除
                         unlink($path . $val);

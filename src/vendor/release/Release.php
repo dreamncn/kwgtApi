@@ -32,8 +32,11 @@ class Release
         $new = dirname(APP_DIR) . "/release/temp";
         File::copyDir(APP_DIR, $new);
         unlink($new . "/clean.php");
-        File::cleanDir($new . "/storage/");//清空文件夹
-
+        File::cleanDir($new . "/storage/cache");//清空文件夹
+        File::cleanDir($new . "/storage/logs");//清空文件夹
+        File::cleanDir($new . "/storage/route");//清空文件夹
+        File::cleanDir($new . "/storage/trash");//清空文件夹
+        File::cleanDir($new . "/storage/view");//清空文件夹
         //删除命令行响应代码
         $rep = 'if(isset($_SERVER[\'CLEAN_CONSOLE\'])&&$_SERVER[\'CLEAN_CONSOLE\']){
             if($_SERVER["REQUEST_URI"]=="clean_check"){
