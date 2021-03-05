@@ -120,7 +120,10 @@ class Route
 
             }else if($_SERVER["REQUEST_URI"]=="clean_release"){
                 Release::run();
+            }else if($_SERVER["REQUEST_URI"]=="clean_clean"){
+                Release::clean();
             }
+
             exitApp("命令行执行完毕");
         }
 	    Log::debug('clean', '[Clean]响应URL: ' . Response::getNowAddress());

@@ -32,11 +32,11 @@ class Release
         $new = dirname(APP_DIR) . "/release/temp";
         File::copyDir(APP_DIR, $new);
         unlink($new . "/clean.php");
-        File::cleanDir($new . "/storage/cache");//清空文件夹
-        File::cleanDir($new . "/storage/logs");//清空文件夹
-        File::cleanDir($new . "/storage/route");//清空文件夹
-        File::cleanDir($new . "/storage/trash");//清空文件夹
-        File::cleanDir($new . "/storage/view");//清空文件夹
+        File::cleanDir($new . "/storage/cache/");//清空文件夹
+        File::cleanDir($new . "/storage/logs/");//清空文件夹
+        File::cleanDir($new . "/storage/route/");//清空文件夹
+        File::cleanDir($new . "/storage/trash/");//清空文件夹
+        File::cleanDir($new . "/storage/view/");//清空文件夹
         //删除命令行响应代码
         $rep = 'if(isset($_SERVER[\'CLEAN_CONSOLE\'])&&$_SERVER[\'CLEAN_CONSOLE\']){
             if($_SERVER["REQUEST_URI"]=="clean_check"){
@@ -124,6 +124,29 @@ class Release
         File::del($new);
     }
 
+    public static function clean()
+    {
+        $new = dirname(APP_DIR) . "/release/temp";
+        File::copyDir(APP_DIR, $new);
+        File::cleanDir($new . "/extend/");//清空文件夹
+        //mkdir($new . "/extend/");
+        File::cleanDir($new . "/lib/");//清空文件夹
+        //mkdir($new . "/lib/");
+        File::cleanDir($new . "/controller/");//清空文件夹
+        File::cleanDir($new . "/static/view");//清空文件夹
+        //mkdir($new . "/controller/");
+        File::cleanDir($new . "/public/custom/");//清空文件夹
+        File::cleanDir($new . "/public/layui/");//清空文件夹
+        unlink("$new/storage/sql/1.db");//删除
+        Config::getInstance("db")->setLocation($new . "/config/")->setAll(Config::getInstance("db")->setLocation("$new/config/")->getOne("master"));
+        Config::getInstance("route")->setLocation($new . "/config/")->setAll(["<m>/<c>/<a>"=>"<m>/<c>/<a>"]);
+        $fileName=dirname(APP_DIR) . "/release/clean_clean.zip";
+        //File::zip($new,$new,$fileName );
+        $zip=new Zip();
+        $zip->Zip($new,$fileName);
+        echo "\nclean php净化完成，已打包至该路径 $fileName";
+        File::del($new);
+    }
 
 
 }

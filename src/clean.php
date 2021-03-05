@@ -60,6 +60,9 @@ switch ($argv[1]) {
     case "run":
         run($argv);
         break;
+    case "clean":
+        clean();
+        break;
     default:
         help();
 }
