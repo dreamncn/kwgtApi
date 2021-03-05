@@ -3,18 +3,19 @@
  * Copyright (c) 2021. CleanPHP. All Rights Reserved.
  ******************************************************************************/
 namespace app\vendor\web;
-class Verifity{
+class Verity{
     /**
-     * @var Verifity
+     * @var Verity
      */
     private static $instance = null;
     private string $str = "";
     private string $err = "";
     public static function get($str){
         if(self::$instance==null){
-            self::$instance=new Verifity();
+            self::$instance=new verity();
         }
         self::$instance->setStr($str);
+        return self::$instance;
     }
 
     public function setStr($s){

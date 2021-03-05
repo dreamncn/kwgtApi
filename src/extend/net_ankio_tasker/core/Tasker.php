@@ -5,6 +5,8 @@
 
 namespace app\extend\net_ankio_tasker\core;
 
+use app\vendor\debug\Log;
+
 /**
  * +----------------------------------------------------------
  * Class Tasker
@@ -38,6 +40,37 @@ class Tasker
         return self::$instance===null?(self::$instance=new Tasker()):self::$instance;
     }
 
+    public static function getTimes($id){
+        $data=Db::getInstance()->select("times")->table("extend_tasker")->where(["id"=>$id])->limit("1")->commit();
+        if(!empty($data)){
+            return 1 - intval($data[0]["times"]);
+        }
+        return 0;
+    }
+        /**
+     * +----------------------------------------------------------
+     * 清空所有定时任务
+     * +----------------------------------------------------------
+     * @return void
+     * +----------------------------------------------------------
+     */
+    public static function clean(){
+        Db::getInstance()->emptyTable("extend_tasker");
+    }
+
+    /**
+     * +----------------------------------------------------------
+     * 删除指定ID的定时任务
+     * +----------------------------------------------------------
+     * @param $id
+     * +----------------------------------------------------------
+     * @return void
+     * +----------------------------------------------------------
+     */
+    public static function del($id){
+        Db::getInstance()->delete()->table("extend_tasker")->where(["id"=>$id])->commit();
+    }
+
     /**
      * +----------------------------------------------------------
      * 添加一个定时任务，与linux定时任务语法完全一致
@@ -46,7 +79,7 @@ class Tasker
      * @param string $url    执行的URL
      * @param int    $times  执行次数,-1不限制
      * +----------------------------------------------------------
-     * @return int
+     * @return int 返回定时任务ID
      * +----------------------------------------------------------
      */
     public function add($package,$url,$identify,$times=-1){

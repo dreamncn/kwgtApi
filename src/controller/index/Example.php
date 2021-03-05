@@ -6,6 +6,7 @@
 namespace app\controller\index;
 
 use app\vendor\web\Response;
+use app\vendor\web\verity;
 
 class Example extends BaseController
 {
@@ -44,6 +45,20 @@ class Example extends BaseController
 	    //dump函数不受输出转义控制
 	    $array=["hello"=>["hahahah",0,"222"=>["3",0]],"王二",1,"3"=>false];
 	    dump($array,true);
+    }
+
+    public function input(){
+	    $id=arg("id",-1,true,"int");
+	    $bool=arg("is",true,true,"bool");
+        $qq=arg("qq","",true,"str");
+
+        dump("qq $qq is $bool id $id");
+        /**
+         * @var Verity $verity
+         */
+        $verity=Verity::get($qq);
+        dump("qq校验结果：".$verity->check(8,0));
+
     }
 
 }

@@ -42,7 +42,7 @@
                         <dd><a href="<{url('index','example','dump')}>">调试输出</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item"><a href="<{url('index','example','input',['id'=>1,'is'=>false,'qq'=>"2324324"])}>">内容输入</a></li>
+                <li class="layui-nav-item"><a href="<{url('index','example','input',['id'=>1,'is'=>false,'qq'=>"00000000"])}>">内容输入</a></li>
                 <li class="layui-nav-item">
                     <a href="javascript:">数据库操作</a>
                     <dl class="layui-nav-child">

@@ -35,132 +35,16 @@ class Main extends BaseController
 
 	public function tasker(){
 	    $tasker=Tasker::getInstance();
-	    $tasker->add($tasker->cycleNMinute(0),url('index','tasker','tasker_start_1'),"write_0_2",2);
-        $tasker->add($tasker->cycleNMinute(1),url('index','tasker','tasker_start_2'),"write_1_-1");
-        $tasker->add($tasker->cycleNMinute(2),url('index','tasker','tasker_start_3'),"write_2_3",3);
+	    $tasker->clean();
+        dump("定时任务1,立刻执行,执行2次");
+	    $tasker->add($tasker->cycleNMinute(0),url('index','tasker','tasker_start_1',["info"=>"ankio 666"]),"write_0_2",2);
+        dump("定时任务2,每隔1分钟执行,无执行次数限制");
+        $id=$tasker->add($tasker->cycleNMinute(1),url('index','tasker','tasker_start_2',["info"=>"ankio 2333"]),"write_1_-1");
+        dump("定时任务3,每隔2分钟执行,执行3次");
+        $tasker->add($tasker->cycleNMinute(2),url('index','tasker','tasker_start_3',["id"=>$id]),"write_2_3",3);
+
+        dump("定时任务添加完成，请打开日志文件（storage/logs/今天日期/tasker.log）查看定时任务执行情况");
     }
 
 
-
-	public function sqlinit()
-	{
-		$sql = new Model("log");
-		$sql->setDatabase("sqlite");
-
-		$sql->execute(
-			"CREATE TABLE  IF NOT EXISTS log(
-                    id integer PRIMARY KEY autoincrement,
-                    urls varchar(200),
-                    ip varchar(200))"
-		);
-		$sql->emptyTable("log");
-		$data = $sql->select()->commit();
-		dump($data);
-		$sql->insert(SQL_INSERT_NORMAL)->keyValue([
-			'urls' => 'okkkk', 'ip' => "12.041232",
-		])->commit();
-		$sql->insert(SQL_INSERT_NORMAL)->keyValue([
-			'urls' => 'okkkk', 'ip' => "12.041232",
-		])->commit();
-
-		$data = $sql->select()->commit();
-		dump($data);
-		$sql->delete()->where(['id' => 1])->commit();
-		$data = $sql->select()->commit();
-		dump($data);
-		$sql->update()->where(['id' => 2])->set(["urls" => "213131213"])
-			->commit();
-		$data = $sql->select()->commit();
-		dump($data);
-
-		dump($sql->dumpSql());
-
-
-		dump("transaction");
-		$sql->beginTransaction();
-		$sql->insert(SQL_INSERT_NORMAL)->keyValue(['urls' => "你是个大傻逼啊啊啊啊"])
-			->commit();
-		dump($sql->select()->commit());
-		dump($sql->dumpSql());
-
-		$sql->commit();
-		dump("commit");
-		dump("transaction");
-		$sql->beginTransaction();
-		$sql->insert(SQL_INSERT_NORMAL)->keyValue(['urls' => "傻逼号"])->commit();
-		$sql->update()->set(["ip" => 45456])->where(['urls' => "傻逼号"])
-			->commit();
-		dump($sql->select()->commit());
-		$sql->rollBack();
-		dump("rollBack");
-		dump($sql->select()->commit());
-	}
-
-    public function sqlinit2()
-    {
-        $sql = new Model("session_record");
-        $sql->setDbLocation(APP_EXTEND."net_ankio_cc_defense".DS, "db");
-        $sql->setDatabase("sqlite");
-        $sql->execute(
-            "CREATE TABLE  IF NOT EXISTS session_record(
-                    id integer PRIMARY KEY autoincrement,
-                    session varchar(200),
-                    count integer
-                    )"
-        );
-        $sql->emptyTable("session_record");
-        $data = $sql->select()->commit();
-        dump($data);
-        $sql->insert(SQL_INSERT_NORMAL)->keyValue([
-            'session' => '0000000', 'count' => 1,
-        ])->commit();
-        $sql->insert(SQL_INSERT_NORMAL)->keyValue([
-            'session' => '14227272', 'count' => 1,
-        ])->commit();
-
-        $data = $sql->select()->commit();
-        dump($data);
-        $sql->delete()->where(['id' => 1])->commit();
-        $data = $sql->select()->commit();
-        dump($data);
-        $sql->update()->where(['id' => 2])->set(["session" => "0212100"])
-            ->commit();
-        $data = $sql->select()->commit();
-        dump($data);
-
-        dump($sql->dumpSql());
-
-
-        dump("transaction");
-        $sql->beginTransaction();
-        $sql->insert(SQL_INSERT_NORMAL)->keyValue(['session' => "你是个大傻逼啊啊啊啊"])
-            ->commit();
-        dump($sql->select()->commit());
-        dump($sql->dumpSql());
-
-        $sql->commit();
-        dump("commit");
-        dump("transaction");
-        $sql->beginTransaction();
-        $sql->insert(SQL_INSERT_NORMAL)->keyValue(['session' => "傻逼号"])->commit();
-        $sql->update()->set(["id" => 1])->where(['session' => "傻逼号"])
-            ->commit();
-        dump($sql->select()->commit());
-        $sql->rollBack();
-        dump("rollBack");
-        dump($sql->select()->commit());
-    }
-	public function config()
-	{
-		$data = Config::getInstance("db")->get();
-		dump($data);
-		Config::getInstance("config")->setAll([
-			"api_okkk" => 1121211,
-			"set"      => 222,
-		]);
-		dump(Config::getInstance("config")->getOne("api_okkk"));
-		Config::getInstance("config")->set(
-			"api_okkk", ["1" => 233, 'api', "okk" => []]
-		);
-	}
 }

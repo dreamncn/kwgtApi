@@ -123,4 +123,8 @@ class Response
         }
 
     }
+
+    public static function isInner($ip){
+        return preg_match('%^127\.|10\.|192\.168|172\.(1[6-9]|2|3[01])%',$ip);
+    }
 }

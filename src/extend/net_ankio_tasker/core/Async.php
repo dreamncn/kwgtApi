@@ -49,6 +49,11 @@ class Async
         Log::debug("Async","identify：".$identify);
 
         $url_array = parse_url($url); //获取URL信息，以便平凑HTTP HEADER
+
+        if($data==[]&&isset($url_array["query"]))
+            parse_str($url_array["query"], $data);
+
+        Log::debug("Async",print_r($data,true));
         $port = $url_array['scheme'] == 'http' ? 80 : 443;
         $fp = fsockopen(($url_array['scheme'] == 'http' ? "" : 'ssl://') . $url_array['host'], $port, $errno, $errstr, 30);
         if (!$fp) {
@@ -57,7 +62,7 @@ class Async
             return false;
         }
 
-        if ($method == 'GET' && $data!==[])
+       if ($method == 'GET' && $data!==[])
             $getPath = $url_array['path'] . "?" . http_build_query($data);
         else
             $getPath = $url_array['path'];
