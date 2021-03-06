@@ -161,7 +161,7 @@ function exitApp($msg,$tpl=null,$path='',$data=[])
         if (file_exists($path.DS . $tpl . '.tpl'))
           echo  $obj->display($tpl);
     }
-
+    Log::info("Clean",'程序调用退出: ' . $msg);
     Log::debug('Clean', '程序调用退出: ' . $msg);
     Log::debug('Clean', '退出框架，总耗时: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
     exit();

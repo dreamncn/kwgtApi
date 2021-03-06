@@ -137,16 +137,22 @@ class FileCheck
 
     public static function checkMd5($dir,$md5)
     {
-        return $md5==self::getMd5($dir);
+        return $md5==self::getMd5($dir,$dir);
     }
 
 
 
 
-    public static  function getMd5($dir)
+    public static  function getMd5($raw,$dir)
     {
+
         self::$no_check[]="/storage";
+        self::$no_check[]=".storage";
+        self::$no_check[]=".DS_Store";
         self::$no_check[]="/config/frame.yml";
+        self::$no_check[]="/extend/net_ankio_cc_defense/data/data.db";
+        self::$no_check[]="/extend/net_ankio_tasker/data/data.db";
+        self::$no_check[]="/extend/net_ankio_tasker/tasker_server.lock";
         if (!is_dir($dir)) {
             return "";
         }
@@ -156,10 +162,12 @@ class FileCheck
         while (false !== ($entry = $d->read())) {
 
             if ($entry != '.' && $entry != '..' && $entry != '.svn') {
-                $file=str_replace("//","/",str_replace(APP_DIR,"",$dir). '/' .$entry);
+                $file=str_replace("//","/",str_replace($raw,"",$dir). '/' .$entry);
+
                 $find=false;
                 foreach (self::$no_check as $v){
-                    if(StringUtil::get($file)->startsWith($v)){
+
+                    if(StringUtil::get($file)->contains($v)){
                         $find=true;
                         break;
                     }
@@ -168,10 +176,10 @@ class FileCheck
 
                 if (is_dir($dir . '/' . $entry)) {
 
-                    $filemd5s[] = self::getMd5($dir . '/' . $entry);
+                    $filemd5s[] = self::getMd5($raw,$dir . '/' . $entry);
 
                 } else {
-
+                    echo $entry."\n";
                     $filemd5s[] = md5_file($dir . '/' . $entry);
 
                 }
@@ -181,8 +189,7 @@ class FileCheck
         }
 
         $d->close();
-        unset(self::$no_check[sizeof(self::$no_check)-1]);
-        unset(self::$no_check[sizeof(self::$no_check)-1]);
+        self::$no_check=[];
         return md5(implode('', $filemd5s));
 
     }

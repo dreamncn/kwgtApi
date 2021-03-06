@@ -13,6 +13,10 @@ use ZipArchive;
  * @package includes
  */
 class File {
+
+    public static function delFile($fileName){
+        if(is_file($fileName))unlink($fileName);
+    }
     /**
      * 文件夹删除
      * @param $dirname
@@ -127,6 +131,9 @@ class File {
             return false;
         }
     }
+
+
+
 
 
 }

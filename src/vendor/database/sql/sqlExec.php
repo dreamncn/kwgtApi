@@ -44,7 +44,7 @@ class sqlExec
 	private $name = null;
 	private $dbData = null;
 
-	private static $instance=null;
+	private static $instances=[];
 
 	/**
 	 * +----------------------------------------------------------
@@ -212,21 +212,24 @@ class sqlExec
         ];
         $connectData = "";
 
+
         try {
             if (!isset($dsn[$this->sqlType]))
                 throw new \Exception("数据库错误: 我们不支持该类型数据库.({$this->sqlType})");
             $connectData = $dsn[$this->sqlType];
-            //Log::debug("clean",". 当前数据库信息：  {$connectData}");
-            if(self::$instance!==null)return self::$instance;
-            self::$instance=new PDO(
-                $dsn[$this->sqlType],
+            Log::debug("clean",". 当前数据库信息：  {$connectData}");
+            $key=md5($connectData);
+           if(isset(self::$instances[$key]))return self::$instances[$key];
+
+            self::$instances[$key]=new PDO(
+                $connectData,
                 $db_config['username'],
                 $db_config['password'],
                 [
                     PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $db_config['charset'] . '\'',
                     PDO::ATTR_PERSISTENT => true,
                 ]);
-	        return self::$instance;
+	        return self::$instances[$key];
         } catch (PDOException $e) {
             throw new \Exception('数据库错误: ' . $e->getMessage() . ". 数据库信息：  {$connectData}");
         }

@@ -101,18 +101,19 @@ class Server
      */
     private function init()
     {
-        $fp=fopen(EXTEND_TASKER."tasker_server.lock","a");
+        $fp=fopen(EXTEND_TASKER."tasker_server.lock","w+");
         if(!flock($fp,LOCK_EX|LOCK_NB))return;
         //通过文件指针锁定，避免重复拉起服务。
         $this->stop();
-        Db::getInstance()->insert(SQL_INSERT_NORMAL)->keyValue(["lock_time"=>time()])->table("extend_lock")->commit();
+        fwrite($fp,time());
+
         do {
             $this->lock(time());//更新锁定时间
             //循环扫描
             Tasker::getInstance()->run();
             Log::debug("Tasker","循环扫描中...");
             sleep(10);
-            if($this->isStop()){//间歇10秒后如果发现停止
+            if($this->isStop($fp)){//间歇10秒后如果发现停止
                 Log::debug("Tasker","进程退出...");
                 break;
             }
@@ -141,9 +142,10 @@ class Server
      * @return bool
      * +----------------------------------------------------------
      */
-    private function isStop(){
-        $data=Db::getInstance()->select()->table("extend_lock")->limit(1)->commit();
-        if(empty($data))return true;
+    private function isStop($fp){
+       $time=intval(fread($fp,10));
+       if(time()-$time>20)return true;
+       fwrite($fp,time());
         return false;
     }
 

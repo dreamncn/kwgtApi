@@ -27,16 +27,37 @@ class Release
         }
     }
 
+    public static function check(){
+        $fh = fopen('php://stdin', 'r');
+        echo "\n[项目打包程序]项目是否进行完整性校验(y/n)：";
+        $str = fread($fh, 1);
+        fclose($fh);
+
+        if ($str == "y") {
+            //继续打包
+            Config::getInstance("frame")->setLocation(dirname(APP_DIR) . "/release/temp/config/")->set("check", true);
+            echo "\n[项目打包程序]进行完整性校验";
+        } else {
+            Config::getInstance("frame")->setLocation(dirname(APP_DIR) . "/release/temp/config/")->set("check", false);
+            echo "\n[项目打包程序]不进行完整性校验";
+        }
+    }
+
     public static function package()
     {
         $new = dirname(APP_DIR) . "/release/temp";
         File::copyDir(APP_DIR, $new);
-        unlink($new . "/clean.php");
+        File::delFile($new . "/clean.php");
         File::cleanDir($new . "/storage/cache/");//清空文件夹
+        file_put_contents($new . "/storage/cache/.storage","");
         File::cleanDir($new . "/storage/logs/");//清空文件夹
+        file_put_contents($new . "/storage/logs/.storage","");
         File::cleanDir($new . "/storage/route/");//清空文件夹
+        file_put_contents($new . "/storage/route/.storage","");
         File::cleanDir($new . "/storage/trash/");//清空文件夹
+        file_put_contents($new . "/storage/trash/.storage","");
         File::cleanDir($new . "/storage/view/");//清空文件夹
+        file_put_contents($new . "/storage/view/.storage","");
         //删除命令行响应代码
         $rep = ' if(isset($_SERVER[\'CLEAN_CONSOLE\'])&&$_SERVER[\'CLEAN_CONSOLE\']){
             if($_SERVER["REQUEST_URI"]=="clean_check"){
@@ -116,15 +137,15 @@ class Release
         }
         fclose($fh);
 
-        Config::getInstance("frame")->setLocation($new . "/config/")->set("md5",  FileCheck::getMd5($new));
+        Config::getInstance("frame")->setLocation($new . "/config/")->set("md5",  FileCheck::getMd5($new,$new));
 
-
+     //   self::check();
         $fileName=dirname(APP_DIR) . "/release/".$appName."_".$verName."(".$verCode.").zip";
-        //File::zip($new,$new,$fileName );
+
         $zip=new Zip();
-        $zip->Zip($new,$fileName);
+        $zip->Zip("../release/temp",$fileName);
         echo "\n[项目打包程序]php程序已打包至$fileName";
-        File::del($new);
+        //File::del($new);
     }
 
     public static function clean()
@@ -132,15 +153,19 @@ class Release
         $new = dirname(APP_DIR) . "/release/temp";
         File::copyDir(APP_DIR, $new);
         File::cleanDir($new . "/extend/");//清空文件夹
+        file_put_contents($new . "/extend/.storage","");
         //mkdir($new . "/extend/");
         File::cleanDir($new . "/lib/");//清空文件夹
+        file_put_contents($new . "/lib/.storage","");
         //mkdir($new . "/lib/");
         File::cleanDir($new . "/controller/");//清空文件夹
-        File::cleanDir($new . "/static/view");//清空文件夹
+        file_put_contents($new . "/controller/.storage","");
+        File::cleanDir($new . "/static/view/");//清空文件夹
+        file_put_contents($new . "/static/view/.storage","");
         //mkdir($new . "/controller/");
-        File::cleanDir($new . "/public/custom/");//清空文件夹
-        File::cleanDir($new . "/public/layui/");//清空文件夹
-        unlink("$new/storage/sql/1.db");//删除
+        File::del($new . "/public/custom/");
+        File::del($new . "/public/layui/");
+        File::delFile("$new/storage/sql/1.db");//删除
         Config::getInstance("db")->setLocation($new . "/config/")->setAll(Config::getInstance("db")->setLocation("$new/config/")->getOne("master"));
         Config::getInstance("route")->setLocation($new . "/config/")->setAll(["<m>/<c>/<a>"=>"<m>/<c>/<a>"]);
         $fileName=dirname(APP_DIR) . "/release/clean_clean.zip";

@@ -24,7 +24,7 @@ class Log
 private static $instance = null;
 private static $validTime = 30;
 private  $file = null;
-		private $handler;//实例
+		private $handler=[];//实例
 		private $level;//日志有效期30天
 
 	/**
