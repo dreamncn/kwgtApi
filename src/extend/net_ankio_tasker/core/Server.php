@@ -113,7 +113,7 @@ class Server
             Tasker::getInstance()->run();
             Log::debug("Tasker","循环扫描中...");
             sleep(10);
-            if($this->isStop($fp)){//间歇10秒后如果发现停止
+            if($this->isStop()){//间歇10秒后如果发现停止
                 Log::debug("Tasker","进程退出...");
                 break;
             }
@@ -142,11 +142,10 @@ class Server
      * @return bool
      * +----------------------------------------------------------
      */
-    private function isStop($fp){
-       $time=intval(fread($fp,10));
-       if(time()-$time>20)return true;
-       fwrite($fp,time());
-        return false;
+    private function isStop(){
+        $data=Db::getInstance()->select()->table("extend_lock")->limit(1)->commit();
+        if(empty($data))return false;
+        return (time()-intval($data[0]['lock_time'])>20);
     }
 
     /**
