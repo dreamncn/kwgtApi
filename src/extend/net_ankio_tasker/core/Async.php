@@ -55,7 +55,13 @@ class Async
 
         Log::debug("Async",print_r($data,true));
         $port = $url_array['scheme'] == 'http' ? 80 : 443;
-        $fp = fsockopen(($url_array['scheme'] == 'http' ? "" : 'ssl://') . $url_array['host'], $port, $errno, $errstr, 30);
+       try{
+           $fp = fsockopen(($url_array['scheme'] == 'http' ? "" : 'ssl://') . $url_array['host'], $port, $errno, $errstr, 30);
+       }catch (\Exception $e){
+           self::$err = '无法向该URL发起请求' . $errstr;
+           Log::debug("Async","异步发起失败，原因：".self::$err);
+           return false;
+       }
         if (!$fp) {
             self::$err = '无法向该URL发起请求' . $errstr;
             Log::debug("Async","异步发起失败，原因：".self::$err);

@@ -8,7 +8,6 @@ namespace app\vendor\release;
 $Id: PHPZip.php
 */
 
-use app\vendor\debug\StringUtil;
 use ZipArchive;
 
 class Zip

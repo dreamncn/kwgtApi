@@ -72,7 +72,7 @@ class Release
             exitApp("命令行执行完毕");
         }';
 
-        file_put_contents($new . "/vendor/web/Route.php", str_replace($rep, "", file_get_contents($new . "/vendor/web/Route.php")));
+        file_put_contents($new . "/vendor/core/Clean.php", str_replace($rep, "", file_get_contents($new . "/vendor/core/Clean.php")));
 
         Config::getInstance("frame")->setLocation($new . "/config/")->set("debug", false);//关闭调试模式
         $hosts = Config::getInstance("frame")->setLocation($new . "/config/")->getOne("host");
@@ -139,7 +139,7 @@ class Release
 
         Config::getInstance("frame")->setLocation($new . "/config/")->set("md5",  FileCheck::getMd5($new,$new));
 
-     //   self::check();
+        self::check();
         $fileName=dirname(APP_DIR) . "/release/".$appName."_".$verName."(".$verCode.").zip";
 
         $zip=new Zip();

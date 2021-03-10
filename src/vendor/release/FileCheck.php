@@ -146,13 +146,14 @@ class FileCheck
     public static  function getMd5($raw,$dir)
     {
 
-        self::$no_check[]="/storage";
-        self::$no_check[]=".storage";
-        self::$no_check[]=".DS_Store";
-        self::$no_check[]="/config/frame.yml";
-        self::$no_check[]="/extend/net_ankio_cc_defense/data/data.db";
-        self::$no_check[]="/extend/net_ankio_tasker/data/data.db";
-        self::$no_check[]="/extend/net_ankio_tasker/tasker_server.lock";
+        $no_check=[
+            "/storage",
+            ".storage",
+            ".DS_Store",
+            "/config",
+            ".db",
+            ".lock"
+        ];
         if (!is_dir($dir)) {
             return "";
         }
@@ -165,7 +166,7 @@ class FileCheck
                 $file=str_replace("//","/",str_replace($raw,"",$dir). '/' .$entry);
 
                 $find=false;
-                foreach (self::$no_check as $v){
+                foreach ($no_check as $v){
 
                     if(StringUtil::get($file)->contains($v)){
                         $find=true;
@@ -179,8 +180,9 @@ class FileCheck
                     $filemd5s[] = self::getMd5($raw,$dir . '/' . $entry);
 
                 } else {
-                    echo $entry."\n";
-                    $filemd5s[] = md5_file($dir . '/' . $entry);
+                    $md5=md5_file($dir . '/' . $entry);
+                   // echo $entry."   ->    ".$md5."\n";
+                    $filemd5s[] = $md5;
 
                 }
 
@@ -189,8 +191,8 @@ class FileCheck
         }
 
         $d->close();
-        self::$no_check=[];
-        return md5(implode('', $filemd5s));
+       // echo implode('', $filemd5s)."\n";
+        return md5(str_replace("d41d8cd98f00b204e9800998ecf8427e","",implode('', $filemd5s)));
 
     }
 

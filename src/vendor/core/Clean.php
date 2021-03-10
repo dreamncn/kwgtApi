@@ -11,6 +11,7 @@ use app\vendor\debug\Log;
 use app\vendor\event\EventManager;
 use app\vendor\mvc\Controller;
 use app\vendor\release\FileCheck;
+use app\vendor\release\Release;
 use app\vendor\web\Route;
 
 
@@ -44,7 +45,21 @@ class Clean
 
     }
 
-	/**
+    static private function Console(){
+        if(isset($_SERVER['CLEAN_CONSOLE'])&&$_SERVER['CLEAN_CONSOLE']){
+            if($_SERVER["REQUEST_URI"]=="clean_check"){
+                FileCheck::run();
+
+            }else if($_SERVER["REQUEST_URI"]=="clean_release"){
+                Release::run();
+            }else if($_SERVER["REQUEST_URI"]=="clean_clean"){
+                Release::clean();
+            }
+
+            exitApp("命令行执行完毕");
+        }
+    }
+    /**
 	 * +----------------------------------------------------------
 	 * 初始化数据
 	 * +----------------------------------------------------------
@@ -69,6 +84,8 @@ class Clean
         if (in_array(str_replace($GLOBALS['http_scheme'], '', $origin), $GLOBALS["frame"]['host'])) {
             header('Access-Control-Allow-Origin:' . $origin);
         }
+
+        self::Console();//命令行执行
 
         EventManager::fire("afterFrameInit", null);
 

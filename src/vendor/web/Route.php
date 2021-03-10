@@ -114,18 +114,7 @@ class Route
 	 */
 	public static function rewrite()
     {
-        if(isset($_SERVER['CLEAN_CONSOLE'])&&$_SERVER['CLEAN_CONSOLE']){
-            if($_SERVER["REQUEST_URI"]=="clean_check"){
-                FileCheck::run();
 
-            }else if($_SERVER["REQUEST_URI"]=="clean_release"){
-                Release::run();
-            }else if($_SERVER["REQUEST_URI"]=="clean_clean"){
-                Release::clean();
-            }
-
-            exitApp("命令行执行完毕");
-        }
 	    Log::debug('clean', '[Clean]响应URL: ' . Response::getNowAddress());
         $GLOBALS['route_start']=microtime(true);
         Log::debug('clean', '[Route]路由启动时间戳: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
