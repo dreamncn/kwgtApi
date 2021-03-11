@@ -170,7 +170,10 @@ class Clean
 
         }
         if($result!=null){
-            if($controller_obj->isEncode()){
+            if(is_array($result)){
+                header('content-type:application/json');
+                echo json_encode($result);
+            }else if($controller_obj->isEncode()){
                 echo htmlspecialchars($result,ENT_QUOTES,"UTF-8",true);
             }else{
                 echo $result;

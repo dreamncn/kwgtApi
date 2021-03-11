@@ -25,13 +25,7 @@ class DefenseAgainstCSRF
 
     public function verifyCSRFToken()
     {
-        $headers=Request::getHeaderValue("csrfToken");
-        if($headers){
-            if($headers==Cookie::getInstance()->get("csrftoken")){
-                return true;
-            }
-        }
-        return false;
+        return Session::getInstance()->get("csrftoken")===Cookie::getInstance()->get("csrftoken");
     }
 
 
@@ -44,6 +38,7 @@ class DefenseAgainstCSRF
     {
         $token=md5(md5($session.'|'.$salt).'|'.$salt);
         Cookie::getInstance()->set("csrftoken",$token);
+        Session::getInstance()->set("csrftoken",$token,20*60);
         return $token;
     }
 
