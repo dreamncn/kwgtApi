@@ -30,19 +30,19 @@ class Route
 {
 
 
-	/**
-	 * +----------------------------------------------------------
-	 * 路由URL生成
-	 * +----------------------------------------------------------
-	 * @param         $m
-	 * @param         $c
-	 * @param         $a
-	 * @param  array  $params
-	 * +----------------------------------------------------------
-	 * @return mixed|string
-	 * +----------------------------------------------------------
-	 */
-	public static function url($m, $c, $a, $params = [])
+    /**
+     * +----------------------------------------------------------
+     * 路由URL生成
+     * +----------------------------------------------------------
+     * @param         $m
+     * @param         $c
+     * @param         $a
+     * @param  array  $params
+     * +----------------------------------------------------------
+     * @return mixed|string
+     * +----------------------------------------------------------
+     */
+    public static function url($m, $c, $a, $params = [])
     {
         $isRewrite=Config::getInstance("frame")->setLocation(APP_CONF)->getOne("rewrite");
         if(!$isRewrite){
@@ -57,6 +57,7 @@ class Route
         $route = "$m/$c/$a";
         $url = Response::getAddress() . "/";
         $default = $url . $route . $paramsStr;
+        $default = strtolower($default);
         Cache::init(365 * 24 * 60 * 60, APP_ROUTE);
         //初始化路由缓存，不区分大小写
         $data = null;
@@ -73,15 +74,18 @@ class Route
         $arr = str_replace("<a>", $a, $arr);
         $arr = array_flip(array_unique($arr));
 
-
         $route_find = $route;
         if (isset($arr[$route])) {
+
             Log::debug('route', 'Find Rule: ' . $arr[$route]);
             //处理参数部分
             $route_find = $arr[$route];
             $route_find = str_replace("<m>", $m, $route_find);
             $route_find = str_replace("<c>", $c, $route_find);
             $route_find = str_replace("<a>", $a, $route_find);
+
+
+
             foreach ($params as $key => $val) {
                 if (strpos($route_find, "<$key>") !== false) {
                     $route_find = str_replace("<$key>", $val, $route_find);
@@ -107,15 +111,15 @@ class Route
 
     }
 
-	/**
-	 * +----------------------------------------------------------
-	 * 路由重写
-	 * +----------------------------------------------------------
-	 */
-	public static function rewrite()
+    /**
+     * +----------------------------------------------------------
+     * 路由重写
+     * +----------------------------------------------------------
+     */
+    public static function rewrite()
     {
 
-	    Log::debug('clean', '[Clean]响应URL: ' . Response::getNowAddress());
+        Log::debug('clean', '[Clean]响应URL: ' . Response::getNowAddress());
         $GLOBALS['route_start']=microtime(true);
         Log::debug('clean', '[Route]路由启动时间戳: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
 
@@ -207,14 +211,14 @@ class Route
         EventManager::fire("afterRoute", [$__module, $__controller, $__action]);
     }
 
-	/**
-	 * +----------------------------------------------------------
-	 * 路由匹配
-	 * +----------------------------------------------------------
-	 * @return array
-	 * +----------------------------------------------------------
-	 */
-	public static function convertUrl()
+    /**
+     * +----------------------------------------------------------
+     * 路由匹配
+     * +----------------------------------------------------------
+     * @return array
+     * +----------------------------------------------------------
+     */
+    public static function convertUrl()
     {
         $route_arr = [];
 
@@ -226,6 +230,7 @@ class Route
             $url = substr($url, 0, strpos($url, '?'));
         }
         Log::debug("route", "不带参数的URL:$url");
+        Log::debug("route", print_r($GLOBALS['route'],true));
         foreach ($GLOBALS['route'] as $rule => $mapper) {
             $rule = Response::getAddress() . '/' . $rule;
 
@@ -252,20 +257,20 @@ class Route
 
         return $route_arr;
     }
-	/**
-	 * +----------------------------------------------------------
-	 *  判断是否有安装程序，有就跳转
-	 * +----------------------------------------------------------
-	 */
-	private static function isInstall(){
-		//dump($GLOBALS["frame"],true);
-		if($GLOBALS["frame"]["install"]!==""&&!is_file(APP_CONF.'install.lock')){
-			global $__module;
+    /**
+     * +----------------------------------------------------------
+     *  判断是否有安装程序，有就跳转
+     * +----------------------------------------------------------
+     */
+    private static function isInstall(){
+        //dump($GLOBALS["frame"],true);
+        if($GLOBALS["frame"]["install"]!==""&&!is_file(APP_CONF.'install.lock')){
+            global $__module;
 
-			if($__module===$GLOBALS["frame"]["install"])return;
-			//没有锁
-			Response::location(self::url($GLOBALS["frame"]["install"], "main", "index"));
-		}
+            if($__module===$GLOBALS["frame"]["install"])return;
+            //没有锁
+            Response::location(self::url($GLOBALS["frame"]["install"], "main", "index"));
+        }
     }
 }
 

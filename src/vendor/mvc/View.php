@@ -7,6 +7,7 @@ namespace app\vendor\mvc;
 
 use app\vendor\debug\Error;
 use app\vendor\debug\Log;
+use app\vendor\debug\StringUtil;
 
 
 /**
@@ -26,16 +27,16 @@ class View
     private $template_dir, $compile_dir, $right_delimiter, $left_delimiter;
     //      模板路径         编译路径       左边分隔符          右边分隔符
     private $template_vals = [];
-	//      模板变量
+    //      模板变量
 
-	/**
-	 * View constructor.
-	 * @param          $template_dir
-	 * @param          $compile_dir
-	 * @param  string  $left_delimiter
-	 * @param  string  $right_delimiter
-	 */
-	public function __construct($template_dir, $compile_dir, $left_delimiter = '<{', $right_delimiter = '}>')
+    /**
+     * View constructor.
+     * @param          $template_dir
+     * @param          $compile_dir
+     * @param  string  $left_delimiter
+     * @param  string  $right_delimiter
+     */
+    public function __construct($template_dir, $compile_dir, $left_delimiter = '<{', $right_delimiter = '}>')
     {
         $this->left_delimiter = $left_delimiter;
         $this->right_delimiter = $right_delimiter;
@@ -44,16 +45,16 @@ class View
     }
 
 
-	/**
-	 * +----------------------------------------------------------
-	 * 编译并渲染
-	 * +----------------------------------------------------------
-	 * @param $tempalte_name
-	 * +----------------------------------------------------------
-	 * @return false|string
-	 * +----------------------------------------------------------
-	 */
-	public function render($tempalte_name)
+    /**
+     * +----------------------------------------------------------
+     * 编译并渲染
+     * +----------------------------------------------------------
+     * @param $tempalte_name
+     * +----------------------------------------------------------
+     * @return false|string
+     * +----------------------------------------------------------
+     */
+    public function render($tempalte_name)
     {
         $complied_file = $this->compile($tempalte_name);
         Log::debug('view', '编译耗时: ' . strval((microtime(true) - $GLOBALS['display_start']) * 1000) . 'ms');
@@ -65,16 +66,16 @@ class View
     }
 
 
-	/**
-	 * +----------------------------------------------------------
-	 * 模板编译
-	 * +----------------------------------------------------------
-	 * @param $template_name
-	 * +----------------------------------------------------------
-	 * @return string
-	 * +----------------------------------------------------------
-	 */
-	public function compile($template_name)
+    /**
+     * +----------------------------------------------------------
+     * 模板编译
+     * +----------------------------------------------------------
+     * @param $template_name
+     * +----------------------------------------------------------
+     * @return string
+     * +----------------------------------------------------------
+     */
+    public function compile($template_name)
     {
         global $__module;
         $template_name = ($__module == '' ? '' : $__module . DS) . $template_name . '.tpl';
@@ -97,8 +98,8 @@ class View
         $template_data = '<?php use app\vendor\mvc; if(!class_exists("app\\\\vendor\\\\mvc\\\\View", false)) exit("模板文件禁止被直接访问.");?>' . $template_data;
         $template_data = $this->_complie_script_get($template_data);
         $template_data = $this->_complie_script_put($template_data);
+        $template_data = $this->cleanRemark($template_data);
         $this->_clear_compliedfile($template_name);
-
         $tmp_file = $complied_file . uniqid('_tpl', true);
         if (!file_put_contents($tmp_file, $template_data))
             Error::err('错误: 写入 "' . $tmp_file . '" 文件失败.');
@@ -109,20 +110,20 @@ class View
             $success = @rename($tmp_file, $complied_file);
         }
         if (!$success) Error::err('错误: 写入 "' . $complied_file . '" 文件失败.');
-	    Log::debug('view', '编译文件"' . $template_name . '" 成功!');
+        Log::debug('view', '编译文件"' . $template_name . '" 成功!');
         return $complied_file;
     }
 
-	/**
-	 * +----------------------------------------------------------
-	 * 翻译模板语法
-	 * +----------------------------------------------------------
-	 * @param $template_data
-	 * +----------------------------------------------------------
-	 * @return string|string[]|null
-	 * +----------------------------------------------------------
-	 */
-	private function _compile_struct($template_data)
+    /**
+     * +----------------------------------------------------------
+     * 翻译模板语法
+     * +----------------------------------------------------------
+     * @param $template_data
+     * +----------------------------------------------------------
+     * @return string|string[]|null
+     * +----------------------------------------------------------
+     */
+    private function _compile_struct($template_data)
     {
         $foreach_inner_before = '<?php if(!empty($1)){ $_foreach_$3_counter = 0; $_foreach_$3_total = count($1);?>';
         $foreach_inner_after = '<?php $_foreach_$3_index = $_foreach_$3_counter;$_foreach_$3_iteration = $_foreach_$3_counter + 1;$_foreach_$3_first = ($_foreach_$3_counter == 0);$_foreach_$3_last = ($_foreach_$3_counter == $_foreach_$3_total - 1);$_foreach_$3_counter++;?>';
@@ -146,7 +147,7 @@ class View
             '<{include\s*file=(.+?)}>' => '<?php include $_view_obj->compile($1); ?>',
         ];
 
-	    foreach ($pattern_map as $p => $r) {
+        foreach ($pattern_map as $p => $r) {
             $pattern = '/' . str_replace(["<{", "}>"], [$this->left_delimiter . '\s*', '\s*' . $this->right_delimiter], $p) . '/i';
             $count = 1;
             while ($count != 0) {
@@ -156,31 +157,31 @@ class View
         return $template_data;
     }
 
-	/**
-	 * +----------------------------------------------------------
-	 * 函数编译
-	 * +----------------------------------------------------------
-	 * @param $template_data
-	 * +----------------------------------------------------------
-	 * @return string|string[]|null
-	 * +----------------------------------------------------------
-	 */
-	private function _compile_function($template_data)
+    /**
+     * +----------------------------------------------------------
+     * 函数编译
+     * +----------------------------------------------------------
+     * @param $template_data
+     * +----------------------------------------------------------
+     * @return string|string[]|null
+     * +----------------------------------------------------------
+     */
+    private function _compile_function($template_data)
     {
         $pattern = '/' . $this->left_delimiter . '(\w+)\s*(.*?)' . $this->right_delimiter . '/';
         return preg_replace_callback($pattern, [$this, '_compile_function_callback'], $template_data);
     }
 
-	/**
-	 * +----------------------------------------------------------
-	 * js脚本位置重定位
-	 * +----------------------------------------------------------
-	 * @param $template_data
-	 * +----------------------------------------------------------
-	 * @return string|string[]
-	 * +----------------------------------------------------------
-	 */
-	public function _complie_script_get($template_data)
+    /**
+     * +----------------------------------------------------------
+     * js脚本位置重定位
+     * +----------------------------------------------------------
+     * @param $template_data
+     * +----------------------------------------------------------
+     * @return string|string[]
+     * +----------------------------------------------------------
+     */
+    public function _complie_script_get($template_data)
     {
         $isMatched = preg_match_all('/<!--include_start-->([\s\S]*?)<!--include_end-->/', $template_data, $matches);
         if ($isMatched && $isMatched === 1) {
@@ -190,30 +191,50 @@ class View
         return $template_data;
     }
 
-	/**
-	 * +----------------------------------------------------------
-	 * js脚本位置重定位
-	 * +----------------------------------------------------------
-	 * @param $template_data
-	 * +----------------------------------------------------------
-	 * @return string|string[]
-	 * +----------------------------------------------------------
-	 */
-	public function _complie_script_put($template_data)
+    /**
+     * +----------------------------------------------------------
+     * js脚本位置重定位
+     * +----------------------------------------------------------
+     * @param $template_data
+     * +----------------------------------------------------------
+     * @return string|string[]
+     * +----------------------------------------------------------
+     */
+    public function _complie_script_put($template_data)
     {
 
         $template_data = str_replace('<!--template_file_script-->', '<?php echo isset($template_file_script)?base64_decode($template_file_script):"";?>', $template_data);
         return $template_data;
     }
 
-	/**
-	 * +----------------------------------------------------------
-	 * 清除过期的文件
-	 * +----------------------------------------------------------
-	 * @param $tempalte_name
-	 * +----------------------------------------------------------
-	 */
-	private function _clear_compliedfile($tempalte_name)
+    /**
+     * +----------------------------------------------------------
+     * 清除注释
+     * +----------------------------------------------------------
+     * @param $template_data
+     * +----------------------------------------------------------
+     * @return string
+     * +----------------------------------------------------------
+     */
+    public function cleanRemark($template_data){
+        $isMatched = preg_match_all('/<!--[\s\S]*?-->/', $template_data, $matches);
+        if ($isMatched) {
+            foreach ($matches[0] as $match){
+                if(StringUtil::get($match)->startsWith("<!--["))continue;
+                $template_data = str_replace($match,"",$template_data);
+            }
+        }
+        return $template_data;
+    }
+
+    /**
+     * +----------------------------------------------------------
+     * 清除过期的文件
+     * +----------------------------------------------------------
+     * @param $tempalte_name
+     * +----------------------------------------------------------
+     */
+    private function _clear_compliedfile($tempalte_name)
     {
         $dir = scandir($this->compile_dir);
         if ($dir) {
@@ -227,15 +248,15 @@ class View
     }
 
 
-	/**
-	 * +----------------------------------------------------------
-	 * 变量赋值
-	 * +----------------------------------------------------------
-	 * @param          $mixed
-	 * @param  string  $val
-	 * +----------------------------------------------------------
-	 */
-	public function assign($mixed, $val = '')
+    /**
+     * +----------------------------------------------------------
+     * 变量赋值
+     * +----------------------------------------------------------
+     * @param          $mixed
+     * @param  string  $val
+     * +----------------------------------------------------------
+     */
+    public function assign($mixed, $val = '')
     {
         if (is_array($mixed)) {
             foreach ($mixed as $k => $v) {
@@ -246,16 +267,16 @@ class View
         }
     }
 
-	/**
-	 * +----------------------------------------------------------
-	 * 函数回调
-	 * +----------------------------------------------------------
-	 * @param $matches
-	 * +----------------------------------------------------------
-	 * @return string|string[]|null
-	 * +----------------------------------------------------------
-	 */
-	private function _compile_function_callback($matches)
+    /**
+     * +----------------------------------------------------------
+     * 函数回调
+     * +----------------------------------------------------------
+     * @param $matches
+     * +----------------------------------------------------------
+     * @return string|string[]|null
+     * +----------------------------------------------------------
+     */
+    private function _compile_function_callback($matches)
     {
 
         if (empty($matches[2])) return '<?php echo ' . $matches[1] . '();?>';
