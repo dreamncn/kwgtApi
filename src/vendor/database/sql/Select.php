@@ -139,7 +139,10 @@ class Select extends sqlBase
         if (isset($this->opt['page'])) {
             $sql = 'SELECT COUNT(*) as M_COUNTER ';
 
-            $sql .= $this->getOpt('FROM', 'table_name');
+            // dump($this->getOpt('FROM', 'tableName'));
+            // dump($this->tableName,true);
+
+            $sql .= $this->getOpt('FROM', 'tableName');
             $sql .= $this->getOpt('WHERE', 'where');
 
             $sql .= $this->getOpt('ORDER BY', 'order');

@@ -42,6 +42,27 @@ class Response
         return $GLOBALS['http_scheme'] . $_SERVER["HTTP_HOST"];
     }
 
+    public static function getRootDomain(){
+        $url="http://".$_SERVER ['HTTP_HOST'];
+        $hosts = parse_url($url);
+        $host = $hosts['host'];
+        //查看是几级域名
+        $data = explode('.', $host);
+        $n = count($data);
+        //判断是否是双后缀
+        $preg = '/[\w].+\.(com|net|org|gov|edu)\.cn$/';
+        if(($n > 2) && preg_match($preg,$host)){
+            //双后缀取后3位
+            $host = $data[$n-3].'.'.$data[$n-2].'.'.$data[$n-1];
+        }else{
+            //非双后缀取后两位
+            $host = $data[$n-2].'.'.$data[$n-1];
+        }
+        return $host;
+    }
+    public static function getDomain(){
+	    return $_SERVER["HTTP_HOST"];
+    }
 	/**
 	 * +----------------------------------------------------------
 	 * 获取当前访问的地址

@@ -8,6 +8,7 @@ namespace app\vendor\database;
 
 use app\vendor\database\sql\Delete;
 use app\vendor\database\sql\Insert;
+use app\vendor\database\sql\Page;
 use app\vendor\database\sql\Select;
 use app\vendor\database\sql\sqlExec;
 use app\vendor\database\sql\Update;
@@ -98,12 +99,12 @@ class Sql
      * +----------------------------------------------------------
      * 获取分页数据
      * +----------------------------------------------------------
-     * @return array
+     * @return Page
      * +----------------------------------------------------------
      */
     public function getPage()
     {
-        return $this->sqlInstance("Select")->getPage();
+        return new Page($this->sqlInstance("Select")->getPage());
     }
 
     /**

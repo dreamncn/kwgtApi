@@ -34,9 +34,15 @@ class Cookie
 	 */
 	private function __construct(array $options = [])
 	{
+	    $this->init();
 		$this->getOptions($options);
 	}
 
+	private function init(){
+	      $this->domain=Response::getDomain();
+	      $this->httponly=true;
+	      $this->path='/';
+    }
 	/**
 	 * +----------------------------------------------------------
 	 * 获取cookie设置选项
@@ -82,7 +88,7 @@ class Cookie
 		if (is_null(self::$instance)) {
             self::$instance = new Cookie($options);
 		}
-
+        self::$instance->getOptions($options);
 		return self::$instance;
 	}
 

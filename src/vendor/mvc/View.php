@@ -78,11 +78,18 @@ class View
     public function compile($template_name)
     {
         global $__module;
+        $realName=$template_name;
         $template_name = ($__module == '' ? '' : $__module . DS) . $template_name . '.tpl';
         //自动化模板名字
         $file = $this->template_dir . DS . $template_name;
-        if (!file_exists($file))
-            Error::err('错误: 文件"' . $file . '" 不存在!');
+        if (!file_exists($file)){
+            $file2 = APP_TMP  . $realName;
+            if (!file_exists($file2)){
+                Error::err('错误: 文件"' . $file . '" 不存在!');
+            }
+            $file=$file2;
+        }
+
 
         $complied_file = $this->compile_dir . DS . md5(realpath($file)) . '.' . filemtime($file) . '.' . basename($template_name) . '.php';
         if (file_exists($complied_file)) {
@@ -186,7 +193,10 @@ class View
         $isMatched = preg_match_all('/<!--include_start-->([\s\S]*?)<!--include_end-->/', $template_data, $matches);
         if ($isMatched && $isMatched === 1) {
             $script = $matches[1][0];
-            $template_data = str_replace($matches[0][0], '<?php $template_file_script="' . base64_encode($script) . '";?>', $template_data);
+            $fileName=md5($script)."_script.tpl";
+            file_put_contents(APP_TMP.$fileName,$script);
+            $template_data = str_replace($matches[0][0], '<?php $template_file_script="' . $fileName. '";?>', $template_data);
+            /* $template_data = str_replace($matches[0][0], '<?php $template_file_script="' . base64_encode($script) . '";?>', $template_data);*/
         }
         return $template_data;
     }
@@ -203,7 +213,7 @@ class View
     public function _complie_script_put($template_data)
     {
 
-        $template_data = str_replace('<!--template_file_script-->', '<?php echo isset($template_file_script)?base64_decode($template_file_script):"";?>', $template_data);
+        $template_data = str_replace('<!--template_file_script-->', '<?php if(isset($template_file_script))include_once $_view_obj->compile($template_file_script);?>', $template_data);
         return $template_data;
     }
 

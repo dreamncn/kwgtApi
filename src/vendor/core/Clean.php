@@ -31,12 +31,12 @@ class Clean
 {
 
 
-	/**
-	 * +----------------------------------------------------------
-	 * 启动
-	 * +----------------------------------------------------------
-	 */
-	static public function Run()
+    /**
+     * +----------------------------------------------------------
+     * 启动
+     * +----------------------------------------------------------
+     */
+    static public function Run()
     {
         //框架开始类
         self::Init();
@@ -60,11 +60,11 @@ class Clean
         }
     }
     /**
-	 * +----------------------------------------------------------
-	 * 初始化数据
-	 * +----------------------------------------------------------
-	 */
-	static public function Init()
+     * +----------------------------------------------------------
+     * 初始化数据
+     * +----------------------------------------------------------
+     */
+    static public function Init()
     {
         if (isDebug()) {//调试模式不关闭错误告警
             error_reporting(-1);
@@ -99,12 +99,12 @@ class Clean
 
     }
 
-	/**
-	 * +----------------------------------------------------------
-	 *
-	 * +----------------------------------------------------------
-	 */
-	static public function createObj()
+    /**
+     * +----------------------------------------------------------
+     *
+     * +----------------------------------------------------------
+     */
+    static public function createObj()
     {
         global $__module, $__controller, $__action;
         if ($__controller === 'BaseController') Error::_err_router("错误: 基类 'BaseController' 不允许被访问！");
@@ -150,11 +150,11 @@ class Clean
         if ($controller_class_exists && $controller_method_exists) {
             $controller_obj = new $controller_name();
 
-           $result = $controller_obj->$action_name();
+            $result = $controller_obj->$action_name();
             if ($controller_obj->_auto_display) {
 
                 if ($auto_tpl_file_exists) {
-	                Log::debug('clean', '自动输出模板 '.$auto_tpl_name);
+                    Log::debug('clean', '自动输出模板 '.$auto_tpl_name);
                     $result =  $controller_obj->display($auto_tpl_name);
                 }
             }
@@ -163,7 +163,7 @@ class Clean
             $base='app\\controller\\' . $__module . '\\BaseController';
             $controller_obj = new $base();
             if ($auto_tpl_file_exists) {
-	            Log::debug('clean', '无方法输出模板 '.$auto_tpl_name);
+                Log::debug('clean', '无方法输出模板 '.$auto_tpl_name);
                 $result = $controller_obj->display($auto_tpl_name);
 
             }

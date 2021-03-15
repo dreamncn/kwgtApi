@@ -37,8 +37,9 @@ class EventManager
         $data = scandir(APP_EXTEND);
         foreach ($data as $value) {
             if ($value != '.' && $value != '..') {
-                $file = APP_EXTEND . DS . $value . DS . 'register.php';
-                if (file_exists($file)) include_once $file;
+                $file = APP_EXTEND  . $value . DS . 'register.php';
+                if (file_exists($file))
+                    include_once $file;
             }
         }
     }
