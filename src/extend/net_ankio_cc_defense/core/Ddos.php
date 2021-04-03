@@ -46,7 +46,7 @@ class Ddos
      * +----------------------------------------------------------
      */
     private function check(){
-        if(Response::isInner(Request::getClientIP()))return;//内网访问不检测
+     //   if(Response::isInner(Request::getClientIP()))return;//内网访问不检测
         $session=Session::getInstance();
         $record=Record::getInstance();
         if($session->get("ddos_standby")===null){

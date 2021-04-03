@@ -72,7 +72,15 @@
                         <dd><a href="<{url('index','lib','csrf')}>">SSRF与CSRF防御</a></dd>
                     </dl>
                 </li>
-
+                <li class="layui-nav-item">
+                    <a href="javascript:;">功能测试</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="<{url('index','test','who',['id'=>1])}>">SQL注入测试</a></dd>
+                        <dd><a href="<{url('index','test','xss',['str'=>'hello'])}>">XSS测试</a></dd>
+                        <dd><a href="<{url('index','test','ssrf',['url'=>'http://www.baidu.com/'])}>">SSRF测试</a></dd>
+                        <dd><a href="<{url('index','test','upload')}>">文件上传于CSRF测试</a></dd>
+                    </dl>
+                </li>
             </ul>
         </div>
     </div>

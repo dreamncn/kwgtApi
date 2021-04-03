@@ -43,4 +43,15 @@ class StringUtil{
     public function endsWith( String $subString) : bool{
         return substr($this->str, strpos($this->str, $subString)) === $subString;
     }
+
+    public function findEnd($endString){
+        return str_replace($endString,"",substr($this->str,strrpos($this->str,'/')));
+    }
+
+    public function findStart($startString){
+       $str = substr($this->str,0,strpos($this->str,$startString));
+       if($str=="")
+           $str=$this->str;
+       return $str;
+    }
 }

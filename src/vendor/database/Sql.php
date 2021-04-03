@@ -45,7 +45,7 @@ class Sql
      * Sql constructor.
      * @param  string  $tableName
      */
-    protected function __construct($tableName = '')
+    public function __construct($tableName = '')
     {
         $this->sql = new sqlExec();
         if($tableName!=="")
