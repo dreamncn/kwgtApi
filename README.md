@@ -1,5 +1,4 @@
-# CleanPHP
-CleanPHP，快速安全的开发框架。
+
 # CleanPHP
 
 ## 项目简介&功能特性
