@@ -6,13 +6,12 @@
 namespace app\controller\index;
 
 
-class Main extends BaseController
+class Express extends BaseController
 {
-	public function index()
-	{
-
-	}
-
+    function index()
+    {
+        return "403 forbidden";
+    }
 
 
 }

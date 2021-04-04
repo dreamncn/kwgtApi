@@ -3,16 +3,11 @@
  * Copyright (c) 2021. CleanPHP. All Rights Reserved.
  ******************************************************************************/
 
-namespace app\controller\index;
+namespace app\lib\SimpleHtmlDom;
 
-
-class Main extends BaseController
+interface ICallbackNamed
 {
-	public function index()
-	{
+    function hasName();
 
-	}
-
-
-
+    function getName();
 }

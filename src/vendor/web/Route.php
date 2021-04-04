@@ -1,6 +1,6 @@
 <?php
 /*******************************************************************************
- * Copyright (c) 2020. CleanPHP. All Rights Reserved.
+ * Copyright (c) 2021. CleanPHP. All Rights Reserved.
  ******************************************************************************/
 
 namespace app\vendor\web;
@@ -10,8 +10,6 @@ use app\vendor\config\Config;
 use app\vendor\debug\Error;
 use app\vendor\debug\Log;
 use app\vendor\event\EventManager;
-use app\vendor\release\FileCheck;
-use app\vendor\release\Release;
 
 
 /**
@@ -119,13 +117,13 @@ class Route
 	public static function rewrite()
     {
 
-	    Log::debug('clean', '[Clean]响应URL: ' . Response::getNowAddress());
+
+        Log::debug('clean', '[Clean]响应URL: ' . Response::getNowAddress());
         $GLOBALS['route_start']=microtime(true);
         Log::debug('clean', '[Route]路由启动时间戳: ' . strval((microtime(true) - $GLOBALS['frame_start']) * 1000) . 'ms');
 
 
         $isRewrite=Config::getInstance("frame")->setLocation(APP_CONF)->getOne("rewrite");
-
 
         if($isRewrite){
             //不允许的参数
@@ -195,11 +193,13 @@ class Route
                 Log::debug('clean', '[Route]路由路径: ' . $real);
             }
         }else{
+
             if(!isset($_REQUEST['m']))$_GET["m"]="index";
             if(!isset($_REQUEST['a']))$_GET["a"]="index";
             if(!isset($_REQUEST['c']))$_GET["c"]="main";
             $route_arr_cp=[];
         }
+
 
         $_REQUEST = array_merge($_GET, $_POST, $route_arr_cp);
 

@@ -3,16 +3,8 @@
  * Copyright (c) 2021. CleanPHP. All Rights Reserved.
  ******************************************************************************/
 
-namespace app\controller\index;
+namespace app\lib\SimpleHtmlDom;
 
-
-class Main extends BaseController
+class CallbackParam
 {
-	public function index()
-	{
-
-	}
-
-
-
 }

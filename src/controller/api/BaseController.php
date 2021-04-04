@@ -3,7 +3,7 @@
  * Copyright (c) 2021. CleanPHP. All Rights Reserved.
  ******************************************************************************/
 
-namespace app\controller\index;
+namespace app\controller\api;
 
 use app\vendor\mvc\Controller;
 
